@@ -1,0 +1,352 @@
+{
+  "version": 3,
+  "name": "Tumbler Wrap",
+  "canvas": {
+    "width": 120,
+    "height": 251.32741228718345
+  },
+  "displayUnit": "mm",
+  "stockThickness": 1.2,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "machineKind": "laser-rotary",
+  "rotary": {
+    "diameter": 80,
+    "wrapAxis": "y"
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-0",
+      "name": "Default",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-0",
+  "entities": [
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 0
+      },
+      "b": {
+        "x": 25,
+        "y": 251.32741228718345
+      },
+      "id": "ent1",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 95,
+        "y": 0
+      },
+      "b": {
+        "x": 95,
+        "y": 251.32741228718345
+      },
+      "id": "ent2",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 0
+      },
+      "b": {
+        "x": 31,
+        "y": 0
+      },
+      "id": "ent3",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 20.943951023931955
+      },
+      "b": {
+        "x": 31,
+        "y": 20.943951023931955
+      },
+      "id": "ent4",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 41.88790204786391
+      },
+      "b": {
+        "x": 31,
+        "y": 41.88790204786391
+      },
+      "id": "ent5",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 62.831853071795855
+      },
+      "b": {
+        "x": 31,
+        "y": 62.831853071795855
+      },
+      "id": "ent6",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 83.77580409572782
+      },
+      "b": {
+        "x": 31,
+        "y": 83.77580409572782
+      },
+      "id": "ent7",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 104.71975511965978
+      },
+      "b": {
+        "x": 31,
+        "y": 104.71975511965978
+      },
+      "id": "ent8",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 125.66370614359171
+      },
+      "b": {
+        "x": 31,
+        "y": 125.66370614359171
+      },
+      "id": "ent9",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 146.60765716752368
+      },
+      "b": {
+        "x": 31,
+        "y": 146.60765716752368
+      },
+      "id": "ent10",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 167.55160819145564
+      },
+      "b": {
+        "x": 31,
+        "y": 167.55160819145564
+      },
+      "id": "ent11",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 188.4955592153876
+      },
+      "b": {
+        "x": 31,
+        "y": 188.4955592153876
+      },
+      "id": "ent12",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 209.43951023931956
+      },
+      "b": {
+        "x": 31,
+        "y": 209.43951023931956
+      },
+      "id": "ent13",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 230.38346126325152
+      },
+      "b": {
+        "x": 31,
+        "y": 230.38346126325152
+      },
+      "id": "ent14",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "text",
+      "text": "RCAM",
+      "fontId": "roboto-bold",
+      "sizeMM": 18,
+      "position": {
+        "x": 66.3984375,
+        "y": 79.76722176859172
+      },
+      "angle": 1.5707963267948966,
+      "id": "ent15",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con1",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent1",
+        "ent2",
+        "ent3",
+        "ent4",
+        "ent5",
+        "ent6",
+        "ent7",
+        "ent8",
+        "ent9",
+        "ent10",
+        "ent11",
+        "ent12",
+        "ent13",
+        "ent14",
+        "ent15"
+      ]
+    }
+  ],
+  "dimensions": [],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "outside",
+      "stepdown": 1,
+      "stepover": 0.4,
+      "id": "op1",
+      "name": "Engrave rings",
+      "type": "engrave",
+      "entityIds": [
+        "ent1",
+        "ent2"
+      ],
+      "feedrate": 1500,
+      "laserPower": 40,
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1,
+      "laserPasses": 1
+    },
+    {
+      "side": "outside",
+      "stepdown": 1,
+      "stepover": 0.4,
+      "id": "op2",
+      "name": "Engrave 30° ticks",
+      "type": "engrave",
+      "entityIds": [
+        "ent3",
+        "ent4",
+        "ent5",
+        "ent6",
+        "ent7",
+        "ent8",
+        "ent9",
+        "ent10",
+        "ent11",
+        "ent12",
+        "ent13",
+        "ent14"
+      ],
+      "feedrate": 1500,
+      "laserPower": 40,
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1,
+      "laserPasses": 1
+    },
+    {
+      "side": "outside",
+      "stepdown": 1,
+      "stepover": 0.4,
+      "id": "op3",
+      "name": "Fill-engrave name",
+      "type": "engrave",
+      "entityIds": [
+        "ent15"
+      ],
+      "feedrate": 2000,
+      "laserPower": 65,
+      "laserFill": true,
+      "laserFillSpacing": 0.2,
+      "laserOverscan": 2,
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1,
+      "laserPasses": 1
+    }
+  ],
+  "tools": []
+}

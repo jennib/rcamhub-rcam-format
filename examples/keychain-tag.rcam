@@ -1,0 +1,186 @@
+{
+  "version": 3,
+  "name": "Keychain Tag",
+  "canvas": {
+    "width": 90,
+    "height": 50
+  },
+  "displayUnit": "mm",
+  "stockThickness": 3,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-0",
+      "name": "Default",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-0",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 15,
+        "y": 12
+      },
+      "p1": {
+        "x": 74.6873,
+        "y": 36
+      },
+      "id": "ent1",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 25,
+        "y": 24
+      },
+      "radius": 3,
+      "id": "ent2",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "text",
+      "text": "NAME",
+      "fontId": "roboto-regular",
+      "sizeMM": 10,
+      "position": {
+        "x": 35.5248,
+        "y": 20.4453
+      },
+      "angle": 0,
+      "id": "ent3",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con1",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        15,
+        12
+      ]
+    },
+    {
+      "id": "con2",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent2",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "params": [
+        25,
+        24
+      ]
+    },
+    {
+      "id": "con3",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent3",
+          "key": "center"
+        },
+        {
+          "entityId": "ent2",
+          "key": "c"
+        }
+      ],
+      "entities": []
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim1",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent2",
+          "key": "c"
+        },
+        {
+          "entityId": "ent3",
+          "key": "mid_l"
+        }
+      ],
+      "entities": [],
+      "value": 11.35,
+      "driving": true,
+      "offset": -8
+    },
+    {
+      "id": "dim2",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 24,
+      "driving": true,
+      "offset": -10
+    },
+    {
+      "id": "dim3",
+      "type": "diameter",
+      "points": [],
+      "entities": [
+        "ent2"
+      ],
+      "value": 6,
+      "driving": true,
+      "offset": 2.356
+    },
+    {
+      "id": "dim4",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent3",
+          "key": "mid_r"
+        },
+        {
+          "entityId": "ent1",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 11.35,
+      "driving": true,
+      "offset": -8
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [],
+  "tools": []
+}

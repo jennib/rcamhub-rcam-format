@@ -1,0 +1,983 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rcamhub.com/schema/rcam-v3.schema.json",
+  "title": "rcam Project (.rcam) — version 3",
+  "description": "Contract for the rcam v3 file format. A .rcam file is JSON describing a design (not an editor session): unlike v1 it carries no selection/UI state, and it may embed the fonts its text entities use. All lengths are in millimetres, in a Y-up world frame, regardless of displayUnit. See docs/rcam-format-v3.md for the authoring guide.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "canvas",
+    "displayUnit",
+    "entities",
+    "constraints",
+    "dimensions"
+  ],
+  "properties": {
+    "version": {
+      "const": 3,
+      "description": "Format version. Must be exactly 3. The loader upgrades version-1 and version-2 files automatically. v3 removed machine configuration from the file: a .rcam is a drawing, so it no longer carries the author's post-processor, tool changer, rotary axis word or arc tolerance — those come from the opener's own machine profile."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable project name."
+    },
+    "canvas": { "$ref": "#/$defs/canvas" },
+    "displayUnit": {
+      "enum": ["mm", "in"],
+      "description": "Unit the UI presents values in. Does NOT change the file's units — geometry is always mm."
+    },
+    "stockThickness": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Stock thickness in mm. Default 10 if omitted."
+    },
+    "counter": {
+      "type": "number",
+      "description": "Incrementing serial counter, exposed to expressions as the counter/serial/seq keyword. Default 1 if omitted."
+    },
+    "stockRect": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number", "description": "Lower-left X of the stock within the work area (canvas), mm." },
+            "y": { "type": "number", "description": "Lower-left Y of the stock within the work area (canvas), mm." },
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        { "type": "null" }
+      ],
+      "description": "Optional positioned flat stock blank within the work area (canvas). Omitted/null = the stock fills the work area (legacy). Ignored for a rotary cylinder."
+    },
+    "origin": { "$ref": "#/$defs/origin" },
+    "machineKind": {
+      "enum": ["mill", "laser", "mill-rotary", "laser-rotary"],
+      "description": "Machine the document outputs for. Two independent choices: the HEAD (\"mill\" = spindle + Z, the default; \"laser\" = fixed-Z beam, routing export through the beam generator — beam on/off, power + passes, no Z — with the operations using the laser fields laserPower/laserPasses/kerfWidth/laserFill) and the STOCK (a \"-rotary\" kind machines a cylinder, so the canvas is its unrolled surface and the top-level \"rotary\" block is required). The head behaviour is unchanged by the stock. \"mill-rotary\" behaves like \"mill\" except that export WRAPS the finished flat program around the cylinder — one work axis stays linear, the wrapped one is emitted as rotary-axis degrees. \"laser-rotary\" behaves like \"laser\" including at export: the wrapped axis is SUBSTITUTED, i.e. left as its ordinary linear word in surface millimetres, with the machine set up so one revolution equals the circumference of travel on that axis (GRBL, which drives most laser rotaries, has no 4th axis). Its posted program is therefore the flat one plus a setup banner."
+    },
+    "endPosition": {
+      "oneOf": [
+        { "$ref": "#/$defs/vec2" },
+        { "type": "null" }
+      ],
+      "description": "Optional end-of-program park position in work coordinates (mm); the program rapids here at safe Z before M30. { x: 0, y: 0 } parks at the WCS origin. null/omitted leaves the tool where the last toolpath ended."
+    },
+    "toolChangePosition": {
+      "oneOf": [
+        { "$ref": "#/$defs/vec2" },
+        { "type": "null" }
+      ],
+      "description": "Optional park position in work coordinates (mm) the tool rapids to at safe Z before a manual tool change. null/omitted leaves the tool over the work. Ignored with an automatic tool changer and on lasers."
+    },
+    "flip": {
+      "oneOf": [
+        { "$ref": "#/$defs/flip" },
+        { "type": "null" }
+      ],
+      "description": "Optional double-sided (flip) machining setup. When present, operations carry a \"face\" and export produces a top-side and a mirrored bottom-side program. null/omitted = single-sided."
+    },
+    "rotary": {
+      "oneOf": [
+        { "$ref": "#/$defs/rotary" },
+        { "type": "null" }
+      ],
+      "description": "Optional cylindrical/rotary setup — the cylinder the canvas is the unrolled surface of. Required for a \"-rotary\" machineKind, ignored otherwise. null/omitted = flat work."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "job": { "type": "string", "description": "Job name / part number." },
+        "revision": { "type": "string", "description": "Revision identifier (e.g. \"A\", \"v2\")." },
+        "notes": { "type": "string", "description": "Free-form notes." }
+      },
+      "description": "Optional informational job metadata. Affects no geometry; non-empty fields are written as comments in the G-code header. Omitted when all fields are blank."
+    },
+    "groups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/group" },
+      "description": "Named entity groups. Default []."
+    },
+    "blockDefinitions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/blockDefinition" },
+      "description": "Linked block definitions (Phase 2b). Linked group instances reference one by id via definitionId. Default []."
+    },
+    "features": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/feature" },
+      "description": "Parametric generator features: geometry produced by a generator that stays re-editable via its parameters. Default []."
+    },
+    "layers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/layer" },
+      "description": "Layers. If omitted OR empty, a single \"layer-0\" / \"Default\" layer is created — a document always has at least one layer for entities to belong to."
+    },
+    "activeLayerId": {
+      "type": "string",
+      "description": "Id of the active layer. Default \"layer-0\". Ignored (falling back to the first layer) if it names no layer in \"layers\"."
+    },
+    "entities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entity" },
+      "description": "Geometry. May be empty. The reserved origin point \"__origin__\" is injected automatically and need not be authored."
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/constraint" },
+      "description": "Parametric constraints. May be empty — geometry is valid without them."
+    },
+    "dimensions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/dimension" },
+      "description": "Dimensions. Driving dimensions also act as constraints. May be empty."
+    },
+    "variables": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/variable" },
+      "description": "Named numeric variables referenced by dimension/pattern/binding expressions."
+    },
+    "bindings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/scalarBinding" },
+      "description": "Headless parametric bindings (formula → an entity scalar DOF). Default []."
+    },
+    "patterns": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pattern" },
+      "description": "Pattern definitions (linear, circular, hex)."
+    },
+    "operations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/operation" },
+      "description": "CAM toolpath operations."
+    },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool" },
+      "description": "Tool definitions embedded in the file. Operations reference these by toolId; a single tool can drive many operations. Default []."
+    },
+    "fonts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/embeddedFont" },
+      "description": "Non-bundled fonts referenced by text entities, embedded so glyph outlines — and therefore toolpaths — reproduce on any machine. Bundled fonts (e.g. \"roboto-regular\") resolve by id and are omitted."
+    },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/embeddedImage" },
+      "description": "Greyscale pixels for image entities, embedded so a raster engrave reproduces on any machine."
+    }
+  },
+
+  "$defs": {
+    "vec2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number", "description": "mm" },
+        "y": { "type": "number", "description": "mm (Y-up: larger = further from the front)" }
+      }
+    },
+
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0, "description": "Work-area width, mm." },
+        "height": { "type": "number", "exclusiveMinimum": 0, "description": "Work-area height, mm." }
+      }
+    },
+
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "description": "Named work-coordinate-system origin. Default front-left-top.",
+      "properties": {
+        "x": { "enum": ["left", "center", "right"] },
+        "y": { "enum": ["front", "center", "back"] },
+        "z": { "enum": ["top", "bed"] }
+      }
+    },
+
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "entityIds"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "entityIds": { "type": "array", "items": { "type": "string" } },
+        "parentGroupId": {
+          "type": "string",
+          "description": "Id of the group this block is nested inside. A PARENT POINTER, so a block has at most one parent, and entityIds lists only DIRECT entity members. Two rules the schema itself cannot express and the app checks on load: an entity id may appear in at most one group's entityIds, and following parentGroupId must terminate (no cycle)."
+        },
+        "rigid": {
+          "type": "boolean",
+          "description": "When true the group is a rigid block; origin/angle are required. Default false (loose)."
+        },
+        "origin": {
+          "$ref": "#/$defs/vec2",
+          "description": "Block base point, world mm. Required when rigid is true."
+        },
+        "angle": {
+          "type": "number",
+          "description": "Block rotation, radians. Required when rigid is true."
+        },
+        "definitionId": {
+          "type": "string",
+          "description": "Id of the linked block definition this instance references, when it is one."
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Insert-time uniform scale factor (bake-on-scale). Default 1; used to re-materialize linked instances from their definition."
+        }
+      }
+    },
+
+    "blockDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "entities"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "entities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entity" },
+          "description": "DIRECT member geometry in the block's canonical local frame."
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/blockChildRef" },
+          "description": "Nested block references. A definition holds REFERENCES to other definitions, never a second copy of their geometry, so editing a child updates every parent that contains it. The reference graph must be acyclic: a definition may not contain itself at any depth."
+        }
+      }
+    },
+
+    "blockChildRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definitionId", "origin", "angle"],
+      "properties": {
+        "definitionId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The blockDefinitions[] entry this reference instantiates."
+        },
+        "name": {
+          "type": "string",
+          "description": "Instance name override; the definition's own name when omitted."
+        },
+        "origin": {
+          "$ref": "#/$defs/vec2",
+          "description": "Where the child's local (0,0) lands in the PARENT definition's local frame."
+        },
+        "angle": {
+          "type": "number",
+          "description": "Child rotation relative to the parent, radians."
+        },
+        "scale": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Uniform scale RELATIVE to the parent (default 1). Note the asymmetry with group.scale, which is ABSOLUTE (an instance relative to its definition): this one composes multiplicatively down the tree."
+        }
+      }
+    },
+
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "generatorId", "params", "groupId"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "generatorId": { "type": "string", "minLength": 1, "description": "Generator that produced this feature (e.g. \"box-joint\")." },
+        "params": {
+          "type": "object",
+          "additionalProperties": { "type": "number" },
+          "description": "Parameter name → value the feature was generated with (its re-run inputs)."
+        },
+        "groupId": { "type": "string", "minLength": 1, "description": "Id of the group holding this feature's entities." },
+        "offset": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y"],
+          "properties": { "x": { "type": "number" }, "y": { "type": "number" } },
+          "description": "Translation applied to the generator's origin-based output to place it in the work area; re-applied on regenerate."
+        },
+        "paramExprs": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Optional expression per generator param, evaluated against document `variables` and `stock` (the stock thickness). `params` holds the last resolved values as cache/fallback: a param with no entry here, or whose expression fails to evaluate, keeps its cached numeric. The feature regenerates when a variable it references changes."
+        },
+        "keyIds": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Stable generator key → entity id, for entities the generator named (e.g. \"front-wall\"). Regeneration pairs keyed entities by key rather than by emit position, so constraints, dimensions, and CAM references survive output reordering and partial deletes."
+        }
+      }
+    },
+
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "color", "visible", "locked"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "color": { "type": "string", "description": "CSS hex colour, e.g. \"#cdd2da\"." },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixture": { "type": "boolean", "description": "When true, closed shapes on this layer are workholding (clamps/fixtures): not machined, and pre-flight flags any move that would hit one." },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Fixture layers only: clamp height above the stock top, mm. A rapid clears the clamp only above this. Omitted = full-height (blocks any pass)." },
+        "laser": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["feedrate", "laserPower", "laserPasses"],
+          "description": "Laser documents only: beam settings shared by every operation whose geometry sits entirely on this layer (the colour-driven workflow — cut on black, score on red). An operation with \"laserOverride\": true keeps its own instead. Omitted = each operation uses its own settings.",
+          "properties": {
+            "feedrate": { "type": "number", "exclusiveMinimum": 0, "description": "Cutting speed, mm/min." },
+            "laserPower": { "type": "number", "minimum": 0, "maximum": 100, "description": "Beam power, % of machine maximum." },
+            "laserPasses": { "type": "integer", "minimum": 1, "description": "How many times the beam re-traces each path." },
+            "kerfWidth": { "type": "number", "minimum": 0, "description": "Beam kerf, mm. Omitted = leave each operation's own kerf alone." },
+            "airAssist": { "type": "boolean", "description": "Omitted = leave each operation's own air-assist setting alone." },
+            "kind": { "enum": ["cut", "score", "engrave", "fill"], "description": "What the geometry on this layer is FOR. Read when operations are BUILT from the layers (the \"Toolpaths from Layers\" action), NOT applied live the way feedrate/laserPower/laserPasses are: a cut, an engrave and a fill emit fundamentally different geometry, so retyping an existing operation at export time would silently differ from the previewed toolpath. Omitted = this layer tunes the operations that cut it but is not itself a job." },
+            "side": { "enum": ["outside", "inside"], "description": "kind \"cut\" only: which side of the contour the kerf is taken from. OMIT for auto, which is normally what you want: a contour enclosed by another on the same layer is treated as a hole and compensated inward while the outline is compensated outward, so both finish at the drawn size (the layer then builds two operations, holes first). Set explicitly to force one direction throughout." }
+          }
+        }
+      }
+    },
+
+    "entity": {
+      "oneOf": [
+        { "$ref": "#/$defs/lineEntity" },
+        { "$ref": "#/$defs/pointEntity" },
+        { "$ref": "#/$defs/circleEntity" },
+        { "$ref": "#/$defs/rectangleEntity" },
+        { "$ref": "#/$defs/polylineEntity" },
+        { "$ref": "#/$defs/arcEntity" },
+        { "$ref": "#/$defs/bezierEntity" },
+        { "$ref": "#/$defs/textEntity" },
+        { "$ref": "#/$defs/imageEntity" }
+      ]
+    },
+
+    "pointEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "pos"],
+      "description": "A free-standing point. Point DOF keys: p. Snappable, constrainable and dimensionable like any other entity; DXF POINT records import as these. The document's WCS origin is a point too but is NEVER written to a file — it is implicit, and every reader recreates it.",
+      "properties": {
+        "type": { "const": "point" },
+        "id": { "type": "string", "minLength": 1 },
+        "pos": { "$ref": "#/$defs/vec2" },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+    "lineEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "a", "b"],
+      "description": "Point DOF keys: a, b (endpoints), mid (midpoint, pickable but derived).",
+      "properties": {
+        "type": { "const": "line" },
+        "id": { "type": "string", "minLength": 1 },
+        "a": { "$ref": "#/$defs/vec2" },
+        "b": { "$ref": "#/$defs/vec2" },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "circleEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "center", "radius"],
+      "description": "Point DOF key: c (center). Scalar DOF key: r (radius).",
+      "properties": {
+        "type": { "const": "circle" },
+        "id": { "type": "string", "minLength": 1 },
+        "center": { "$ref": "#/$defs/vec2" },
+        "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "rectangleEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "p0", "p1"],
+      "description": "Axis-aligned. p0/p1 are opposite corners (stored normalised to min/max). Point DOF keys: bl, br, tr, tl (corners); mid_b, mid_r, mid_t, mid_l (edge midpoints); center. Corners may be rounded, coved or chamfered via cornerRadii + cornerType — the point keys are unaffected, so a shaped rectangle is constrained and dimensioned exactly like a square one.",
+      "properties": {
+        "type": { "const": "rectangle" },
+        "id": { "type": "string", "minLength": 1 },
+        "p0": { "$ref": "#/$defs/vec2" },
+        "p1": { "$ref": "#/$defs/vec2" },
+        "cornerRadii": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Corner radius per corner, mm, in the order bl, br, tr, tl (the same order as the corner point keys). 0 = a square corner; omitted = all four square. The value is what was asked for, not necessarily what is drawn: two corners sharing an edge are scaled down to fit it when the outline is built, so shrinking a rectangle below its corner size and growing it back restores the corners. All three cornerTypes consume this same distance along each edge, so for \"chamfer\" it is the bevel's setback."
+        },
+        "cornerType": {
+          "enum": ["round", "inverted", "chamfer"],
+          "description": "How every non-zero corner is cut — one type per rectangle, as in Vectric's Corner Type control. \"round\": a convex fillet tangent to both edges. \"inverted\": a concave cove, a quarter circle centred ON the corner and bitten out of it, meeting both edges square (a shape — unrelated to a dogbone, which is a machining relief applied at toolpath time). \"chamfer\": a straight bevel. Default \"round\"; meaningless without cornerRadii."
+        },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "polylineEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "points", "closed"],
+      "description": "Point DOF keys: v<id> (vertices), mid_<id> (segment midpoints, keyed by the segment's START-vertex id). A segment can substitute for a line in line-type constraints via the entity ref \"<polylineId>#<startVertexId>\". The id of vertex i is vertexIds[i] when present, else its index as a string (\"0\",\"1\",…) — so files without vertexIds use v0/mid_0/<id>#0 exactly as before. Vertices may be rounded, coved or chamfered via cornerRadii + cornerType; the point keys are unaffected, so a shaped polyline is constrained and dimensioned exactly like a sharp one.",
+      "properties": {
+        "type": { "const": "polyline" },
+        "id": { "type": "string", "minLength": 1 },
+        "points": { "type": "array", "items": { "$ref": "#/$defs/vec2" }, "minItems": 2 },
+        "vertexIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Optional stable id per vertex, parallel to points (same length). Decouples a vertex's identity from its position so constraints/dimensions survive edits (chamfer/fillet) that insert or remove vertices ahead of them. Omit to default each id to its index as a string."
+        },
+        "closed": { "type": "boolean" },
+        "polygon": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Present only for a pristine regular polygon: lets editors regenerate it by side count / across-flats Ø. Dropped once a vertex is hand-edited. radius = circumradius (centre→vertex); rotation = angle (rad) of vertex 0.",
+          "required": ["sides", "center", "radius", "rotation"],
+          "properties": {
+            "sides": { "type": "integer", "minimum": 3, "maximum": 64 },
+            "center": { "$ref": "#/$defs/vec2" },
+            "radius": { "type": "number", "exclusiveMinimum": 0 },
+            "rotation": { "type": "number", "description": "radians" }
+          }
+        },
+        "cornerRadii": {
+          "type": "object",
+          "description": "Corner size per shaped vertex, mm, keyed by VERTEX ID (the vertexIds entry, not the array index) — the same addressing constraints and dimensions use, so a corner stays on its vertex through any edit that inserts or removes others. Omit, or omit a vertex, for a sharp corner. An open polyline's two end vertices cannot be shaped. The value is what was asked for, not necessarily what is drawn: corners sharing an edge are scaled down to fit it when the outline is built, so pulling a vertex in and back out restores the corner. What the number MEANS follows cornerType: for \"round\" it is the fillet RADIUS (the arc meets each leg radius/tan(angle/2) back from the vertex); for \"chamfer\" it is the bevel's SETBACK along each leg; for \"inverted\" it is the cove's radius, which is also its setback. Those coincide only at 90°, which is why a rectangle can call all three the same number.",
+          "propertyNames": { "minLength": 1 },
+          "additionalProperties": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "cornerType": {
+          "enum": ["round", "inverted", "chamfer"],
+          "description": "How every shaped vertex is cut — one type per polyline, as for a rectangle and as in Vectric's Corner Type control. \"round\": a convex fillet tangent to both legs. \"inverted\": a concave cove centred ON the vertex, meeting both legs square (a shape — unrelated to a dogbone, which is a machining relief applied at toolpath time). \"chamfer\": a straight bevel. Default \"round\"; meaningless without cornerRadii.",
+          "default": "round"
+        },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "arcEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "center", "radius", "startAngle", "endAngle"],
+      "description": "CCW from startAngle to endAngle (radians, world Y-up). Point DOF key: c (center); start/end pickable. Scalar DOF keys: r, sa, ea.",
+      "properties": {
+        "type": { "const": "arc" },
+        "id": { "type": "string", "minLength": 1 },
+        "center": { "$ref": "#/$defs/vec2" },
+        "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "startAngle": { "type": "number", "description": "radians" },
+        "endAngle": { "type": "number", "description": "radians" },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "bezierEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "p0", "p1", "p2", "p3"],
+      "description": "Cubic Bezier. p0=start, p1=start handle, p2=end handle, p3=end. Point DOF keys: p0, p1, p2, p3. Only p0/p3 participate in constraints; p1/p2 are drag-only.",
+      "properties": {
+        "type": { "const": "bezier" },
+        "id": { "type": "string", "minLength": 1 },
+        "p0": { "$ref": "#/$defs/vec2" },
+        "p1": { "$ref": "#/$defs/vec2" },
+        "p2": { "$ref": "#/$defs/vec2" },
+        "p3": { "$ref": "#/$defs/vec2" },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+
+    "textEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "text", "fontId", "sizeMM", "position", "angle"],
+      "description": "Editable text, expanded to glyph contours at CAM export. position is the baseline-left anchor. angle is CCW radians. Point DOF key: pos. If fontId is not a bundled font, the font's bytes must appear in the top-level \"fonts\" array.",
+      "properties": {
+        "type": { "const": "text" },
+        "id": { "type": "string", "minLength": 1 },
+        "text": { "type": "string" },
+        "fontId": { "type": "string", "description": "e.g. \"roboto-regular\" (bundled), or a \"font-XXXXXXXX\" id present in \"fonts\"." },
+        "sizeMM": { "type": "number", "exclusiveMinimum": 0 },
+        "position": { "$ref": "#/$defs/vec2" },
+        "angle": { "type": "number", "description": "radians" },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "imageEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "imageId", "position", "widthMM", "heightMM", "angle"],
+      "description": "A placed raster image for greyscale laser engraving / mill relief carving. position is the bottom-left anchor; the image fills widthMM × heightMM. Point DOF key: pos. The greyscale pixels referenced by imageId must appear in the top-level \"images\" array. `angle` (CCW radians) rotates the image about its anchor; the engrave/relief sweeps along the image's rotated rows, so a non-zero angle is honoured in both the toolpath and the preview.",
+      "properties": {
+        "type": { "const": "image" },
+        "id": { "type": "string", "minLength": 1 },
+        "imageId": { "type": "string", "description": "Id of the pixels in \"images\", e.g. \"img-1a2b3c4d\"." },
+        "position": { "$ref": "#/$defs/vec2" },
+        "widthMM": { "type": "number", "exclusiveMinimum": 0 },
+        "heightMM": { "type": "number", "exclusiveMinimum": 0 },
+        "angle": { "type": "number", "description": "radians" },
+        "flipX": { "type": "boolean", "description": "Mirror the image content left↔right. Default false." },
+        "flipY": { "type": "boolean", "description": "Mirror the image content top↔bottom. Default false." },
+        "aspectLocked": { "type": "boolean", "description": "Whether the aspect ratio is locked. Default true. Edit-time only: with it on, editing one of width/height writes a proportional value/formula to the other." },
+        "constraintResize": { "type": "boolean", "description": "Whether geometric constraints and dimensions may RESIZE the image. Default false (omitted), which makes the image a rigid body that constraints merely move — its corners are nonlinear in width/height/angle, so an image left free reflows ambiguously under a single point constraint. With \"aspectLocked\" the two size scalars are ONE degree of freedom, so the ratio is exact rather than converged; without it, width and height are independent. The main use is calibrating a scan: dimension a feature of known size and the whole image scales to suit." },
+        "constraintRotate": { "type": "boolean", "description": "Whether geometric constraints and dimensions may ROTATE the image (e.g. levelling a tilted scan by making one of its edges horizontal). Default false (omitted). Kept independent of \"constraintResize\" because each freedom lets the solver satisfy the other's constraint the wrong way — a free angle meets a size dimension by tilting, and a free size meets a levelling constraint by shrinking the image away — so grant only the freedom the intent needs." },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "embeddedFont": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "format", "data"],
+      "description": "A font embedded in the file, referenced by textEntity.fontId.",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Stable content-addressed id, e.g. \"font-1a2b3c4d\"." },
+        "name": { "type": "string", "description": "Human-readable font name." },
+        "format": { "enum": ["ttf", "otf", "woff"], "description": "Container format of the embedded bytes." },
+        "data": { "type": "string", "description": "Base64-encoded font bytes." }
+      }
+    },
+
+    "embeddedImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "width", "height", "data"],
+      "description": "A raster image embedded in the file, referenced by imageEntity.imageId. Stored as a downscaled GREYSCALE buffer (one byte per pixel, row-major, row 0 = top, 0 = black) — colour carries no machining information for a laser. When \"zRangeMM\" is present the bytes are a HEIGHT MAP from an imported STL, not a picture: 255 is the model's top surface (no cut) and 0 its base (full depth).",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Stable content-addressed id, e.g. \"img-1a2b3c4d\"." },
+        "name": { "type": "string", "description": "Human-readable image name." },
+        "width": { "type": "integer", "minimum": 1, "description": "Pixel width of the greyscale buffer." },
+        "height": { "type": "integer", "minimum": 1, "description": "Pixel height of the greyscale buffer." },
+        "data": { "type": "string", "description": "Base64-encoded greyscale bytes (length = width × height)." },
+        "zRangeMM": { "type": "number", "exclusiveMinimum": 0, "description": "Present only when the buffer is a HEIGHT MAP (an imported STL) rather than a picture: the model's full height range in mm, i.e. the carve depth at true scale. Its presence changes how a relief op reads the bytes — no gamma, no white threshold, encoded tone — because the bytes are lengths, not tones. Omitted for photographs." }
+      }
+    },
+
+    "pointRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entityId", "key"],
+      "description": "A reference to one named point DOF inside an entity. See each entity's DOF-key list.",
+      "properties": {
+        "entityId": { "type": "string", "minLength": 1 },
+        "key": { "type": "string", "minLength": 1 }
+      }
+    },
+
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": [
+            "coincident", "horizontal", "vertical", "parallel", "perpendicular",
+            "equal", "concentric", "pointOnLine", "tangent", "pointOnArc",
+            "pointOnCircle", "symmetric", "collinear", "midpoint", "angle",
+            "fixedPoint", "center", "fixed"
+          ]
+        },
+        "points": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pointRef" },
+          "description": "Point operands. Count/role depends on type (see docs). Optional — defaults to [] when the type uses only entities."
+        },
+        "entities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Entity operands (entity ids, or polyline-segment refs \"<id>#<index>\"). Count/role depends on type. Optional — defaults to [] when the type uses only points."
+        },
+        "params": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Type-specific numbers: angle→[radians]; fixedPoint→[x, y]; center→optional [axis] (0=X-only, 1=Y-only; omit for both)."
+        }
+      }
+    },
+
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "value", "driving", "offset"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["distance", "horizontal", "vertical", "radius", "diameter", "angle", "arclength", "line-distance", "point-line-distance", "circle-gap", "angle-x", "arc-sweep"]
+        },
+        "points": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pointRef" },
+          "description": "Linear dims: the 2 measured points; point-line-distance: the 1 measured point. Optional — defaults to [] for entity-based dims (radius/diameter/arclength/circle-gap)."
+        },
+        "entities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "radius/diameter/arclength: 1 circle or arc id. angle/line-distance: 2 line ids. point-line-distance: 1 line id, with points[0] the measured point. circle-gap: 2 circle/arc ids (the boundary-to-boundary distance, e.g. an inner/outer offset). Optional — defaults to [] for point-based dims."
+        },
+        "value": { "type": "number", "description": "mm, or radians for type \"angle\"." },
+        "driving": { "type": "boolean", "description": "When true, also constrains the measurement to value." },
+        "offset": { "type": "number", "description": "Placement of the dimension line/leader. Visual only." },
+        "anchors": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[t1, t2] parametric anchors for line-distance extension lines."
+        },
+        "expr": { "type": "string", "description": "Optional formula driving value, e.g. \"width * 2\"." },
+        "hidden": { "type": "boolean", "description": "Not drawn. A hidden driving dimension is how a formula typed into a measurement property field (line length, rect W/H) parks in the engine — it drives geometry but shows no annotation." }
+      }
+    },
+
+    "variable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "expr", "value"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$", "description": "Valid identifier; referenced by expressions." },
+        "expr": { "type": "string", "description": "Raw input string, e.g. \"100\", \"50mm\", \"3.5in\", or a formula referencing other variables like \"width * 0.1\" (evaluated in dependency order)." },
+        "value": { "type": "number", "description": "Cached evaluated value in mm." }
+      }
+    },
+    "scalarBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "entityId", "scalarKey", "expr"],
+      "description": "Headless parametric binding: drives one scalar DOF of an entity (by its dofScalars key, e.g. \"r\" for a circle radius) from a variable formula. Draws nothing; contributes a driving residual (currentScalar − expr) to the solver, so it reconciles with dimensions/constraints via the same over-constrained machinery.",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "entityId": { "type": "string", "minLength": 1 },
+        "scalarKey": { "type": "string", "description": "A dofScalars() key on the entity, e.g. \"r\" (circle/arc radius), \"sa\"/\"ea\" (arc angles), \"w\"/\"h\"/\"angle\" (image width/height/rotation), \"cr\" (rectangle corner radius — one binding drives all four corners, and the entity's own cornerRadii hold the last resolved value)." },
+        "expr": { "type": "string", "description": "Variable formula, e.g. \"plateW/2\"." },
+        "scale": { "type": "number", "description": "Multiplier from the formula's display unit to the scalar's internal unit. Omitted/1 for lengths (mm); π/180 for an angle scalar (sa/ea, or image angle) entered in degrees." }
+      }
+    },
+
+    "pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "sourceIds", "instanceIds", "params"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["linear", "circular", "hex"] },
+        "sourceIds": { "type": "array", "items": { "type": "string" }, "description": "Original (master) entity ids." },
+        "instanceIds": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "string" } },
+          "description": "One sub-array per generated step, listing that step's copy entity ids. Those entities must also exist in `entities`."
+        },
+        "params": {
+          "oneOf": [
+            { "$ref": "#/$defs/linearPatternParams" },
+            { "$ref": "#/$defs/circularPatternParams" },
+            { "$ref": "#/$defs/hexPatternParams" }
+          ]
+        },
+        "boundaryId": { "type": "string", "minLength": 1, "description": "Optional id of a closed entity the pattern is confined to: copies whose motif does not fit wholly inside it are not generated. Whole copies are dropped, never trimmed, so every instance stays a duplicate of the source. The boundary is not part of the pattern and is never copied." },
+        "sourceSnapshot": { "type": "number", "description": "FNV-32 hash of source geometry (and of the boundary, when there is one); staleness check. Optional." }
+      }
+    },
+
+    "linearPatternParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["countX", "countY", "spacingX", "spacingY"],
+      "properties": {
+        "countX": { "type": "integer", "minimum": 1, "description": "Resolved cache of countXExpr." },
+        "countY": { "type": "integer", "minimum": 1, "description": "Resolved cache of countYExpr." },
+        "spacingX": { "type": "number", "description": "mm" },
+        "spacingY": { "type": "number", "description": "mm" },
+        "countXExpr": { "type": "string", "description": "Optional variable expression driving countX, e.g. \"tabs\" or \"n + 1\"; re-evaluated against variables, rounded, clamped ≥1." },
+        "countYExpr": { "type": "string", "description": "Optional variable expression driving countY." },
+        "spacingXExpr": { "type": "string", "description": "Optional variable expression driving spacingX." },
+        "spacingYExpr": { "type": "string", "description": "Optional variable expression driving spacingY." },
+        "spacingMode": { "enum": ["step", "gap"], "description": "What spacingX/spacingY measure: \"step\" (or absent) = centre to centre; \"gap\" = the clear space between copies, so the step becomes the motif's own size plus the gap and a gap of 0 tiles seamlessly. Resolved against the source geometry at build time, so a gapped pattern stays gapped when the motif is resized." },
+        "mirrorCols": { "type": "boolean", "description": "Reflect every other column about its own cell centre. Absent = false." },
+        "mirrorRows": { "type": "boolean", "description": "Reflect every other row about its own cell centre. Absent = false." }
+      }
+    },
+
+    "hexPatternParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cols", "rows", "spacing", "orientation"],
+      "properties": {
+        "cols": { "type": "integer", "minimum": 1, "description": "Resolved cache of colsExpr." },
+        "rows": { "type": "integer", "minimum": 1, "description": "Resolved cache of rowsExpr." },
+        "spacing": { "type": "number", "description": "mm, centre-to-centre between nearest neighbours. The pitch ACROSS the stagger is derived as spacing*√3/2 and is never stored." },
+        "orientation": { "enum": ["row", "column"], "description": "Which axis staggers by half a pitch." },
+        "colsExpr": { "type": "string", "description": "Optional variable expression driving cols; rounded, clamped ≥1." },
+        "rowsExpr": { "type": "string", "description": "Optional variable expression driving rows; rounded, clamped ≥1." },
+        "spacingExpr": { "type": "string", "description": "Optional variable expression driving spacing." }
+      }
+    },
+
+    "circularPatternParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "cx", "cy", "totalAngle"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 1, "description": "Resolved cache of countExpr." },
+        "cx": { "type": "number", "description": "rotation centre X, mm" },
+        "cy": { "type": "number", "description": "rotation centre Y, mm" },
+        "totalAngle": { "type": "number", "description": "radians; 2π = full circle" },
+        "countExpr": { "type": "string", "description": "Optional variable expression driving count; re-evaluated against variables, rounded, clamped ≥2." }
+      }
+    },
+
+    "leadDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "length"],
+      "properties": {
+        "type": { "enum": ["none", "linear", "arc"] },
+        "length": { "type": "number", "description": "mm" }
+      }
+    },
+
+    "tabDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "count", "width", "height"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "strategy": { "enum": ["count", "spacing"], "description": "How tab quantity is set: \"count\" (default) places `count` tabs evenly; \"spacing\" places one roughly every `spacing` mm of perimeter (a longer contour gets more)." },
+        "count": { "type": "integer", "minimum": 0, "description": "Number of tabs, evenly distributed (\"count\" strategy)." },
+        "spacing": { "type": "number", "exclusiveMinimum": 0, "description": "Perimeter distance (mm) between tabs (\"spacing\" strategy)." },
+        "width": { "type": "number", "description": "arc-length of each tab, mm" },
+        "height": { "type": "number", "description": "material left standing above the floor, mm" }
+      }
+    },
+
+    "regionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["containingLoops"],
+      "description": "A pocket target region, identified by the loops that enclose it (each loop = the entity ids whose geometry forms it). Resolved against live geometry at toolpath time so it survives constraint-driven reflow.",
+      "properties": {
+        "containingLoops": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "string" } },
+          "description": "Entity-id sets of the loops enclosing the region; one inner array per loop. The face lies inside exactly these loops and outside all others. An entity that forms SEVERAL disjoint loops (text: one contour per letter, plus a counter per enclosed island) names one of them with a \"#\" suffix carrying that contour's own geometry as centroidX:centroidY:area, in the text's local frame divided by its height, e.g. \"ent7#0.932:0.264:0.097\". It is not an ordinal: moving, rotating, resizing the text or editing a later character keeps the region, while editing an earlier character makes it stop resolving (skipped with a note) rather than silently re-pointing at a different glyph. A bare id is the whole entity's single loop."
+        }
+      }
+    },
+
+    "flip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "registration", "pinDiameter", "pinDepth", "pins"],
+      "description": "Double-sided machining setup. Operations carry a \"face\"; the top ops cut as drawn, then the stock is flipped and the bottom ops cut from a program mirrored about the flip axis. Mill-only.",
+      "properties": {
+        "axis": { "enum": ["h", "v"], "description": "The mirror the flip performs. \"h\" = flip left ↔ right (mirror X about the stock's vertical centreline); \"v\" = flip near ↔ far (mirror Y about the horizontal centreline)." },
+        "registration": { "enum": ["pins", "none"], "description": "How the flipped stock is realigned. \"pins\" bores dowel holes through the stock into the spoilboard at the end of the top-side program; \"none\" leaves it to the operator (e.g. a fixed fence)." },
+        "pinDiameter": { "type": "number", "exclusiveMinimum": 0, "description": "Dowel-pin (hole) diameter, mm." },
+        "pinDepth": { "type": "number", "minimum": 0, "description": "How far past the stock bottom the pin holes bore into the spoilboard, mm." },
+        "pins": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/vec2" },
+          "description": "Registration hole centres, in world/canvas mm. Must be invariant under the mirror for the flip to align (each pin has a mirror-image partner or sits on the flip-axis centreline)."
+        }
+      }
+    },
+
+    "rotary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["diameter", "wrapAxis"],
+      "description": "Cylindrical/rotary setup: one work axis stays linear (the cylinder length), the perpendicular one runs around the circumference. How that wrapped axis is posted depends on the head (see machineKind) — a mill emits it as a rotary word in degrees; a laser substitutes it on its ordinary linear word in surface millimetres. Not combinable with flip.",
+      "properties": {
+        "diameter": { "type": "number", "exclusiveMinimum": 0, "description": "Cylinder stock diameter, mm. 360° of rotation = π·diameter of surface travel." },
+        "wrapAxis": { "enum": ["x", "y"], "description": "Which work axis rolls around the cylinder. \"y\" (default): Y wraps to rotation, X runs along the length. \"x\": swapped." },
+        "zero": { "enum": ["surface", "center"], "description": "Where Z0 sits. \"surface\" (default): Z0 = top of the cylinder surface, cuts negative; gSender needs its \"Visualize non-center zeros\" toggle to visualize it. \"center\": Z0 = rotary axis (centreline), surface at Z = radius — the native rotary convention gSender visualizes with no toggle. Omitted = \"surface\"." }
+      }
+    },
+
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "name", "type", "entityIds", "toolType", "toolNumber",
+        "diameter", "feedrate", "plungeRate", "spindleSpeed", "safeZ",
+        "depth"
+      ],
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "profile" } }, "required": ["type"] },
+          "then": { "required": ["side"] }
+        }
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "type": { "enum": ["profile", "engrave", "drill", "pocket", "chamfer", "vcarve", "inlay", "relief-rough", "score", "face"] },
+        "entityIds": { "type": "array", "items": { "type": "string" }, "description": "Target geometry ids." },
+        "side": { "enum": ["outside", "inside"], "description": "Which side of the contour the cut runs on. Required for \"profile\" (and drives laser kerf offset); ignored — and may be omitted — for every other type." },
+        "followPattern": { "type": "boolean", "description": "When the op's geometry belongs to a pattern, the toolpath covers the whole pattern and follows its count. Set false to cut only the literal entityIds. Default (omitted) = follow." },
+        "face": { "enum": ["top", "bottom"], "description": "Double-sided machining: which face of the stock this op cuts. \"bottom\" ops are machined after the stock is flipped, with geometry mirrored about the flip axis. Absent/\"top\" = the first setup, cut as drawn. Ignored unless the document has \"flip\" set." },
+        "toolId": { "type": "string", "description": "Optional reference to a tool id in the top-level \"tools\" array. When it resolves, that tool's geometry/feeds override the inline toolType/diameter/vAngle/tipAngle/feedrate/plungeRate/spindleSpeed/safeZ fields below (which remain as a fallback). toolNumber and the cut settings (depth/stepdown/stepover) always stay per-operation." },
+        "toolType": { "enum": ["end-mill", "ball-nose", "v-bit", "drill", "tapered-ball-nose"] },
+        "toolNumber": { "type": "integer", "minimum": 1, "description": "T-number (1-based)." },
+        "diameter": { "type": "number", "exclusiveMinimum": 0, "description": "Tool diameter, mm." },
+        "vAngle": { "type": "number", "description": "V-bit / tapered ball-nose included angle, degrees." },
+        "tipDiameter": { "type": "number", "description": "V-bit flat tip / tapered ball-nose ball tip diameter, mm." },
+        "tipAngle": { "type": "number", "description": "Drill tip angle, degrees." },
+        "feedrate": { "type": "number", "exclusiveMinimum": 0, "description": "mm/min" },
+        "plungeRate": { "type": "number", "exclusiveMinimum": 0, "description": "mm/min" },
+        "spindleSpeed": { "type": "number", "minimum": 0, "description": "rpm" },
+        "safeZ": { "type": "number", "description": "mm above work surface" },
+        "depth": { "type": "number", "description": "mm below surface; NEGATIVE for cuts." },
+        "startDepth": { "type": "number", "maximum": 0, "description": "Where the cut BEGINS, mm below the stock surface; NEGATIVE, default 0 (the surface). Measured from the stock top exactly as `depth` is, so the operation removes the slab between the two: startDepth -3 with depth -6 cuts from 3mm down to 6mm down. Use it to machine into a floor an earlier operation already cleared (lettering on a pocket floor) instead of wasting the cut on air above it. Must be shallower than `depth`, or there is nothing to cut. Honoured by profile, pocket, engrave, score, face, drill, chamfer and vcarve; ignored by inlay (which uses the same field internally for its glue gap) and relief-rough, and by any laser operation." },
+        "stepdown": { "type": "number", "exclusiveMinimum": 0, "description": "mm per depth pass (ignored for drill). Optional; defaults to 1.5 when omitted." },
+        "peckDepth": { "type": "number", "minimum": 0, "description": "Drill only: peck increment (mm). Drills the hole in steps, fully retracting between pecks (G83-style). Omitted/0 = single full-depth plunge." },
+        "finishPass": { "type": "boolean", "description": "Profile/pocket: leave a thin radial skin during roughing and remove it in a final full-depth wall pass, cleaning the ridges between depth levels. Default false." },
+        "rampAngle": { "type": "number", "description": "Entry ramp angle (degrees off horizontal) for ops that descend gradually (pocket helix/linear entry, relief-rough ramp). Overrides each mechanism's built-in default; clamped 0.5–45°. Omitted = the default." },
+        "cutDirection": { "enum": ["climb", "conventional"], "description": "Profile only: cut direction relative to an M3 (CW) spindle. \"climb\" (CW outside / CCW inside) finishes cleanly on rigid machines; \"conventional\" is the reverse. Omitted = leave the raw offset winding untouched." },
+        "cornerStyle": { "enum": ["none", "dogbone", "tbone"], "description": "Corner relief. \"dogbone\" adds a diagonal overcut at each concave corner so a mating square part seats. \"tbone\" adds a parallel overcut extending the longer wall. Default \"none\"." },
+        "finishAllowance": { "type": "number", "minimum": 0, "description": "Stock (mm) left for a finishing pass. For profile/pocket: radial wall stock left during roughing, used only when finishPass is true (clamped below the tool radius). For relief-rough: the depth of material left above the final relief surface for the ball-nose finish pass to remove. Default 0.2." },
+        "chamferWidth": { "type": "number", "minimum": 0, "description": "Chamfer only: horizontal width (mm) of the bevel face. The plunge depth is derived from this and the V-bit angle (depth = width / tan(½·vAngle)). Requires a v-bit tool." },
+        "chamferSide": { "enum": ["on", "outside", "inside"], "description": "Chamfer only: which side of the contour the bevel sits on (\"on\" = centred on the edge). Default \"on\"." },
+        "sharpenCorners": { "type": "boolean", "description": "Chamfer only: pull the V-bit tip up into each sharp inside (convex) corner — the bevel tapers to the surface at the corner vertex — so corners come to a crisp point instead of a rounded fillet. Concave corners are left rounded (a V-bit can't reach them). Default false." },
+        "vStep": { "type": "number", "exclusiveMinimum": 0, "description": "V-carve only: radial inset (mm) between offset-peel passes — the pitch that sets floor smoothness. Requires a v-bit tool; uses vAngle for the slope and |depth| as the max (floor) depth. Default 0.4." },
+        "vHopClearance": { "type": "number", "minimum": 0, "description": "V-carve only: clearance height (mm above the stock surface) for rapid hops between a region's contours. > 0 hops at this low height instead of retracting to safeZ between every peel ring (less air time). Omitted/0 = retract to safeZ — the safe default, since a low hop does not clear a clamp/fixture standing above the stock within the carve footprint." },
+        "pocketDepth": { "type": "number", "exclusiveMinimum": 0, "description": "V-carve inlay only: the female pocket's flat floor depth (mm). The male plug runs this deep plus sawAllowance. Default 3." },
+        "glueGap": { "type": "number", "minimum": 0, "description": "V-carve inlay only: clearance for glue (mm). Sinks the male's V profile so the plug is narrower by glueGap · tan(½·vAngle) at every depth; the void at the apex is where the glue goes. Default 0.25." },
+        "sawAllowance": { "type": "number", "minimum": 0, "description": "V-carve inlay only: extra depth on the male (mm), so the plug stands proud of the pocket floor with stock to saw and plane flush after gluing. Default 1.5." },
+        "inlayMargin": { "type": "number", "minimum": 0, "description": "V-carve inlay only: margin (mm) around the design for the male's auto-generated boundary rectangle. Ignored when the design already encloses itself. Default 10." },
+        "coolant": { "enum": ["off", "mist", "flood"], "description": "Coolant for this operation: \"mist\" → M7, \"flood\" → M8 (M9 off). Default \"off\". Only emitted if the machine is flagged as having coolant (a machine-wide app preference)." },
+        "stepover": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "fraction of tool diameter (pocket/clearing). Optional; defaults to 0.4 when omitted." },
+        "pocketStrategy": { "enum": ["offset", "adaptive", "raster"], "description": "Pocket only; default \"offset\". \"adaptive\" trochoids wherever a plain offset loop would bury the cutter deeper than a straight wall step." },
+        "restToolDiameter": { "type": "number", "minimum": 0, "description": "Pocket and relief-rough only. Rest machining: diameter (mm) of the tool that already roughed this. When larger than this operation's own tool, only what that tool could not reach is cut — the corner radii of a pocket, or the valleys of a relief a big cutter cannot drop into (cells holding more than one stepdown of leftover). The previous tool is assumed to be a flat end mill. 0 or absent = off." },
+        "faceTarget": { "enum": ["stock", "bed"], "description": "Facing only. What gets skimmed: the blank (default) or the machine spoilboard. Spoilboard surfacing is zeroed on the board with the machine empty, so it must be posted as its own program." },
+        "faceOverhang": { "type": "number", "minimum": 0, "description": "Facing only. Extra distance (mm) the tool centre runs past the target edge, on top of the tool radius it already overhangs by." },
+        "faceDirection": { "enum": ["x", "y"], "description": "Facing only. Which way the rows run; default \"x\"." },
+        "islandIds": { "type": "array", "items": { "type": "string" }, "description": "Pocket only (legacy): entities treated as islands." },
+        "regions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/regionRef" },
+          "description": "Pocket, v-carve and v-carve inlay: the enclosed regions to clear, identified parametrically (by the loops that enclose each) so they reflow with the model. Resolved against live geometry at toolpath time. Supersedes the older absolute-coordinate seeds."
+        },
+        "tabs": { "$ref": "#/$defs/tabDef" },
+        "leadIn": { "$ref": "#/$defs/leadDef" },
+        "leadOut": { "$ref": "#/$defs/leadDef" },
+        "laserPower": { "type": "number", "minimum": 0, "maximum": 100, "description": "Laser only (machineKind \"laser\"): beam power as a percentage (0–100) of the controller's max (GRBL $30), scaled to an S word. Default 80." },
+        "laserPasses": { "type": "integer", "minimum": 1, "description": "Laser only: number of times the beam re-traces each path (the fixed-Z analogue of milling stepdown). Default 1." },
+        "laserOverride": { "type": "boolean", "description": "Laser only: cut with this operation's own beam settings, ignoring any \"laser\" recipe on the layer its geometry sits on. Omitted/false = follow the layer when it has one. Set on operations whose numbers ARE the point, such as the cells of a material-test grid." },
+        "kerfWidth": { "type": "number", "minimum": 0, "description": "Laser profile only: beam kerf width (mm). Closed profiles are offset by half this — outward for side \"outside\", inward for \"inside\". 0 = cut on the line. Engrave ignores it." },
+        "laserFill": { "type": "boolean", "description": "Laser engrave only: flood the interior of closed shapes with parallel scan lines (area/solid engraving) in addition to outlining them. Closed contours are grouped even–odd so letter counters stay unfilled. Default false." },
+        "laserFillSpacing": { "type": "number", "exclusiveMinimum": 0, "description": "Laser fill only: spacing (mm) between scan lines — roughly the beam/line width. Default 0.2." },
+        "laserOverscan": { "type": "number", "minimum": 0, "description": "Laser fill / raster only: overscan distance (mm) the head runs past each scan line's/row's ends with the beam off, so it's at full speed when the beam fires (avoids over-burned edges). 0 = off. Default 0." },
+        "airAssist": { "type": "boolean", "description": "Laser only: enable air assist for this operation (the post's air command, M8/M9 by default), kept on across consecutive ops that request it and off otherwise. Default false." },
+        "rasterLineInterval": { "type": "number", "exclusiveMinimum": 0, "description": "Image-engrave only (an Engrave op targeting an image entity — a LASER raster or a MILL relief): vertical pitch (mm) between scan rows (the line interval for a laser, the stepover for a mill). Laser default 0.1; mill relief default 0.3." },
+        "rasterDotPitch": { "type": "number", "minimum": 0, "description": "Image-engrave only: horizontal pitch (mm) between dots within a row. Omitted = square dots (uses rasterLineInterval)." },
+        "rasterMinPower": { "type": "number", "minimum": 0, "maximum": 100, "description": "Laser raster engrave only: beam power (%) for the lightest engraved dot (laserPower is the power for a fully black dot). Default 0." },
+        "rasterInvert": { "type": "boolean", "description": "Image-engrave / relief-rough only: engrave/carve the light areas instead of the dark (negative). Default false. Should match between a relief roughing op and its finish op." },
+        "rasterDither": { "enum": ["none", "floyd-steinberg", "atkinson", "jarvis", "ordered"], "description": "Laser raster engrave only: reproduce tone as a 1-bit dot pattern instead of per-dot power modulation. Every fired dot burns at laserPower and tone comes from dot density; rasterMinPower is then unused. floyd-steinberg/atkinson/jarvis are error-diffusion kernels (FS = classic, Jarvis = smoother/wider, Atkinson = higher contrast); ordered = 8x8 Bayer pattern. Omitted or 'none' = greyscale power (default)." },
+        "reliefGamma": { "type": "number", "exclusiveMinimum": 0, "description": "Mill relief only (engrave-on-image or relief-rough): tone curve on carved depth — depth proportional to darkness^gamma. 1 = linear (default). >1 lifts the mid-tones (flatter, shallower background), <1 deepens them. Black/white endpoints are fixed. Should match between a relief roughing op and its finish op." },
+        "halftone": { "type": "boolean", "description": "Mill relief finish only (an Engrave op on an image), V-bit only: reproduce the image as a halftone SCREEN of parallel V-grooves whose WIDTH carries the tone (the PhotoVCarve look) instead of as a carved 2.5-D surface. Row spacing is then DERIVED from the bit's included angle, its flat tip and |depth| so the darkest grooves just meet — rasterLineInterval is ignored — and the along-row pitch stays fine (0.1mm, or rasterDotPitch when set) so the grooves keep the photograph's detail. Default false." },
+        "reliefSteepPass": { "type": "boolean", "description": "Mill relief finish only (an Engrave op on an image): add constant-Z contouring passes on the steep areas and leave those areas out of the raster, instead of rastering the whole relief. A raster stepping across a near-vertical wall leaves ridges spaced by how far the wall climbs in one stepover, so the cusp the stepover was chosen for is not what the wall gets; where the surface is steeper than 45 degrees, contours land closer together and finish it properly. Nothing to size: the contour Z spacing and the 45 degree split are both derived from rasterLineInterval. Default false, and off the emitted program is byte-identical. Ignored when halftone is set." },
+        "reliefWhiteThreshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "Mill relief only, photo/greyscale image (not an STL heightfield): greyscale value at/above which a dot is background and left at the surface (level 0). Default 0.96. An STL heightfield ignores it and keeps the height-map threshold, because a tone threshold on real heights would flatten the top of the model." },
+        "reliefBoundaryIds": { "type": "array", "items": { "type": "string" }, "description": "Mill relief only: entity ids of closed loops enclosing the carve region. When present, the relief raster (rough and finish) is clipped to inside these loops — cells outside are left uncut. Absent/empty = the whole image rectangle." },
+        "reliefBoundaryOffset": { "type": "number", "description": "Mill relief only: distance (mm) to expand reliefBoundaryIds outward before clipping, so the tool's flank reaches the drawn edge. Positive = carve past the loop, negative = inset. Default 0. Ignored without reliefBoundaryIds." },
+
+        "halftoneLand": { "type": "number", "minimum": 0, "description": "V-carve halftone only: surface left standing between grooves in the BLACKEST area, mm. 0 (default) makes the darkest tone solid; a positive value trades peak blackness for a visible line texture and a shorter cut. Never negative — overlapping the darkest grooves saturates the tone before full depth." },
+        "paramExprs": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Optional expression per numeric op field, keyed by field name (e.g. {\"depth\": \"-stock\", \"feedrate\": \"baseFeed * 1.2\"}). Evaluated against document `variables` and `stock` (the stock thickness) before every solve, then clamped to the field's valid range; bare numbers in an expression are internal mm, matching dimension and feature formulas. The sibling numeric field holds the last resolved value as cache/fallback for fields with no expression, or whose expression fails to evaluate. Keys for nested fields use either the flat or dotted form (\"tabCount\"/\"tabs.count\", \"leadInLen\"/\"leadIn.length\"); a nested expression is skipped while its parent object is absent."
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "toolType", "diameter", "feedrate", "plungeRate", "spindleSpeed", "safeZ"],
+      "description": "A reusable tool definition referenced by operations via toolId.",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Unique tool id; the target of operation.toolId." },
+        "name": { "type": "string", "description": "Human-readable tool name." },
+        "number": { "type": "integer", "minimum": 1, "description": "T-number this tool is loaded as: the posted T-word, which indexes the controller's tool table (length/diameter offsets) and, on an ATC machine, the pocket. Optional — absent means no slot assigned yet. Seeds operation.toolNumber when the tool is loaded into an operation; the operation owns it from there, so operation.toolNumber stays authoritative for what is posted, and two tools sharing a number is a pre-flight error." },
+        "unit": { "enum": ["mm", "in"], "description": "The unit this tool is conventionally entered and displayed in (metric vs imperial). Display/entry hint only — diameter/tipDiameter/feedrate/plungeRate/safeZ are always stored in mm." },
+        "toolType": { "enum": ["end-mill", "ball-nose", "v-bit", "drill", "tapered-ball-nose"] },
+        "diameter": { "type": "number", "exclusiveMinimum": 0, "description": "Tool diameter, mm." },
+        "vAngle": { "type": "number", "description": "V-bit / tapered ball-nose included angle, degrees." },
+        "tipDiameter": { "type": "number", "description": "V-bit flat tip / tapered ball-nose ball tip diameter, mm." },
+        "tipAngle": { "type": "number", "description": "Drill tip angle, degrees." },
+        "feedrate": { "type": "number", "exclusiveMinimum": 0, "description": "mm/min" },
+        "plungeRate": { "type": "number", "exclusiveMinimum": 0, "description": "mm/min" },
+        "spindleSpeed": { "type": "number", "minimum": 0, "description": "rpm" },
+        "safeZ": { "type": "number", "description": "mm above work surface" }
+      }
+    }
+  }
+}

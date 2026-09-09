@@ -1,0 +1,172 @@
+# rcam
+
+> rcam (https://rcamhub.com) is a browser-based parametric 2D CAD +
+> CAM application for CNC mills, rotary (4th-axis) machines, and lasers. Its
+> project format, `.rcam`, is plain JSON with a published JSON Schema, and is
+> explicitly designed so that automated tools — including LLMs — can author
+> valid design files.
+
+**Can you only fetch a single URL?** Some AI tools cannot follow links found
+in a fetched page. Fetch [the single-file bundle](https://rcamhub.com/llms-full.txt)
+instead — this index plus the full format guide, the JSON Schema, and the AI
+integration guide, inlined as one plain-text document.
+
+## File format (.rcam)
+
+- [Format guide](https://rcamhub.com/docs/rcam-format-v3.md): the human- and
+  AI-readable authoring guide — point-key vocabulary, constraint semantics,
+  CAM operations, and gotchas the schema can't express
+- [JSON Schema, draft 2020-12](https://rcamhub.com/schema/rcam-v3.schema.json):
+  the machine-readable contract (this URL is also the schema's `$id`)
+- [Examples index](https://rcamhub.com/examples/index.json): bundled golden
+  example projects, each validated against the schema on every commit; fetch
+  any listed file at `https://rcamhub.com/examples/<name>`
+- [AI integration guide](https://rcamhub.com/docs/ai-integration.md): every
+  way an AI can work with rcam — the in-app assistant loop, this index,
+  the headless CLI, and the MCP server — plus authoring tips
+- [Version control guide](https://rcamhub.com/docs/version-control.md): keeping
+  `.rcam` files in git — why saving an unchanged design is byte-identical, and
+  the merge driver that reconciles two edits by shape instead of by line
+  ([rcam-merge.mjs](https://rcamhub.com/rcam-merge.mjs), one
+  dependency-free file run by `node`). Relevant when generating files that will
+  be merged: mint ids the way the format guide describes, not with a counter.
+
+## Parametric features (generators)
+
+- `features[]` in `.rcam`: geometry produced by a built-in generator (box,
+  box-joint, spur gear, ...) that stays re-editable — `{id, generatorId,
+  params, paramExprs?, groupId, offset}`.
+- `paramExprs` (optional) holds an expression per param, evaluated against
+  document `variables` and the built-in keywords (`stock`, `stock_width`,
+  `origin_x`, `pi`, `counter`, …; a user variable of the same name overrides a
+  built-in); `params` holds the
+  last resolved values as cache/fallback for params with no expression, or
+  whose expression fails to evaluate.
+- Features regenerate automatically when a variable they reference changes
+  (and are self-healed on file open if `params` doesn't match what the
+  expressions currently resolve to).
+- Entity ids stay stable across a regeneration, so CAM operations,
+  constraints, and dimensions that reference generated geometry survive a
+  parameter edit.
+- `keyIds` (optional) maps generator-assigned stable keys (e.g. "front-wall")
+  to entity ids; keyed entities keep their ids by key rather than by emit
+  position, so references survive output reordering and partial deletes.
+
+## Groups & blocks (including nesting)
+
+- `groups[]` in `.rcam`: `{id, name, entityIds}`. Adding `"rigid": true` plus
+  `origin` and `angle` makes it a **block** — one rigid body with 3 degrees of
+  freedom, whose members keep ordinary world coordinates.
+- **An entity id may appear in at most one group's `entityIds`.** This is the
+  rule most often broken by generated files: a block inside a block is NOT
+  written by listing the inner block's entities in the outer block as well.
+- **Nest with `parentGroupId`**, which names the containing block. It is a
+  parent pointer, so a block has one parent at most, and following it must
+  terminate — a group may not be its own ancestor.
+- A nested block is frozen relative to its parent: the whole tree solves as one
+  rigid body, and only the outermost block carries the 3 transform variables.
+- `blockDefinitions[]` (`{id, name, entities, children?}`) are shared
+  definitions; a group with a `definitionId` is a linked instance of one.
+  `children[]` are `{definitionId, origin, angle, scale?}` references to other
+  definitions — a definition contains block REFERENCES, never a second copy of
+  the child's geometry — and the reference graph must be acyclic.
+- `group.scale` is ABSOLUTE (the instance relative to its definition);
+  `children[].scale` is RELATIVE to the parent definition.
+- None of these rules is expressible in JSON Schema, so a file that breaks them
+  still validates. The importer reports them as `blocks` errors, and the app
+  repairs them on open rather than refusing the file.
+
+## Parametric CAM operations
+
+- `operations[]` may carry `paramExprs` too — an expression per **numeric op
+  field**, keyed by field name: `{"depth": "-stock", "feedrate": "baseFeed*1.2"}`.
+  Evaluated against `variables` and the built-in keywords before every solve, then clamped to
+  the field's valid range.
+- Always also emit the plain numeric field (`depth`, `feedrate`, ...): it is the
+  last resolved value and the fallback when a field has no expression or its
+  expression fails. A file never needs an expression evaluated to load.
+- Bare numbers in an expression are **millimetres** (as in variable, dimension,
+  and feature formulas) regardless of `displayUnit`.
+- Nested fields take either key spelling: `"tabCount"`/`"tabs.count"`,
+  `"leadInLen"`/`"leadIn.length"`. Ignored while `tabs`/`leadIn`/`leadOut` is absent.
+- `"depth": "-stock"` is the common case — a profile that always cuts through
+  whatever the stock currently is.
+
+## Laser jobs from layers
+
+- A **layer** may carry a `laser` recipe — `{kind?, feedrate, laserPower,
+  laserPasses, kerfWidth?, side?, airAssist?}` — so a design describes how each
+  colour is cut: cut on black, score on red, engrave on blue.
+- `feedrate`/`laserPower`/`laserPasses` are **live**: any operation whose
+  `entityIds` all sit on that layer takes them at toolpath time, so re-tuning a
+  layer re-tunes everything on it. An operation spanning several layers keeps
+  its own settings, and `"laserOverride": true` opts one out entirely.
+- `kind` (`"cut"|"score"|"engrave"|"fill"`) is read when operations are BUILT,
+  not applied live — a cut, an engrave and a fill emit different geometry, so
+  retyping an existing operation at export would not match its preview. A layer
+  with a recipe but no `kind` tunes the operations that cut it without being a
+  job of its own.
+- Emitting layers with kinds and NO `operations` is a valid, compact way to
+  describe a laser job: the user presses **Toolpaths from Layers** and gets one
+  operation per layer, in layer order, named after the layer.
+- Hidden layers (`"visible": false`) and workholding layers (`"fixture": true`)
+  are never cut when a job is built FROM LAYERS. An operation that names
+  workholding geometry explicitly still cuts it — pre-flight warns
+  (`machined-fixture`) rather than dropping the cut silently.
+- A clamp's height above the stock top comes from the layer's `fixtureHeight`,
+  or from the shape's own `fixtureHeight` when clamps of different heights share
+  a layer. Unset at both levels means full-height: it blocks every pass.
+- Kerf direction is automatic unless you set `side`: a contour enclosed by
+  another on the same layer is treated as a hole and compensated inward while
+  the outline goes outward, so both finish at the drawn size.
+## Authoring tips for LLMs
+
+- All lengths are millimetres and all angles are radians (CCW), regardless of
+  the file's `displayUnit`. The world frame is Y-up.
+- You do not need exact coordinates: emit rough positions plus constraints and
+  dimensions, and rcam's parametric solver snaps the geometry exact.
+- A **rounded, coved or chamfered rectangle is still a `rectangle`** — give it
+  `cornerRadii` (one radius per corner, `bl` `br` `tr` `tl`) and `cornerType`
+  (`"round"` | `"inverted"` | `"chamfer"`). Do not tessellate one into a
+  polyline: as a rectangle it keeps its `W`/`H` fields, its corner point keys,
+  and an editable radius, and the arcs reach the toolpath as true arcs. The
+  radius is also the scalar DOF `cr`, so a `bindings[]` entry can drive it from
+  a formula (`{"scalarKey": "cr", "expr": "stock * 2"}`), all four corners at once.
+- A **rounded, coved or chamfered `polyline` is still a `polyline`** — the same
+  two fields, but `cornerRadii` is an object keyed by **vertex id**, not an
+  array: `{"cornerRadii": {"1": 6, "2": 6}, "cornerType": "round"}` shapes the
+  vertices whose `vertexIds` entries are `"1"` and `"2"`. Do not tessellate an
+  arc into extra vertices — as corner data it stays editable, reaches the
+  toolpath as a true arc, and leaves every `v<id>` constraint alone. An open
+  polyline's first and last vertices cannot be shaped. **The number means the
+  fillet RADIUS for `"round"`/`"inverted"` but the bevel SETBACK for
+  `"chamfer"`**; those are the same figure only at a 90° corner, which is why a
+  `rectangle` gets away with one meaning.
+- An embedded image carrying **`zRangeMM`** is a HEIGHT MAP from an imported STL,
+  not a picture: byte 255 is the model's top surface (no cut), byte 0 its base
+  (full depth), and `zRangeMM` is the carve depth in mm at true scale. Preserve
+  the field when editing such a file — dropping it turns the model back into a
+  photograph, and the white-threshold default alone then flattens the top 4% of
+  its height range. For the same reason, do not set `reliefGamma` on a relief
+  operation that reads one; a tone curve on a height map is a geometry error.
+  A model with near-vertical walls also takes `"reliefSteepPass": true` on
+  the finish op: anything steeper than 45° is then cut by constant-Z contours
+  rather than by the raster, which cannot hold a cusp on a wall. It has no
+  settings of its own — the contour spacing is derived from the stepover.
+- A relief rasters the whole image by default. To stop it air-cutting over the
+  background, set `reliefWhiteThreshold` (0..1, default 0.96) so dots at/above
+  that greyscale are background and skipped — and/or `reliefBoundaryIds` to a
+  list of closed-loop entity ids (with `reliefBoundaryOffset` mm to expand it)
+  so only the inside of those loops is carved. Both apply to the rough and the
+  finish pass; the threshold is ignored on an STL heightfield.
+
+- Declare `"version": 3` and validate your output against the schema before
+  presenting it to a user.
+- Opening a file in rcam reports schema, solver, and CAM lint problems;
+  iterate on that feedback rather than aiming for a perfect first attempt.
+- Agents on the user's machine with a rcam checkout can run those same
+  checks headlessly (CLI: `npm run cli -- validate|post|render|open|decode`)
+  or as MCP tools (`npm run mcp`), including `open` — which delivers a
+  validated design straight into the user's browser via a share-link URL —
+  and `decode`, which turns a copied share link back into .rcam JSON. See
+  the AI integration guide above.

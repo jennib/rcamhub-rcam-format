@@ -1,0 +1,269 @@
+{
+  "version": 3,
+  "name": "Fold-Up Tray",
+  "canvas": {
+    "width": 150,
+    "height": 130
+  },
+  "displayUnit": "mm",
+  "stockThickness": 1.5,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "machineKind": "laser",
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-0",
+      "name": "Default",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-0",
+  "entities": [
+    {
+      "type": "polyline",
+      "points": [
+        {
+          "x": 35,
+          "y": 10
+        },
+        {
+          "x": 115,
+          "y": 10
+        },
+        {
+          "x": 115,
+          "y": 35
+        },
+        {
+          "x": 140,
+          "y": 35
+        },
+        {
+          "x": 140,
+          "y": 95
+        },
+        {
+          "x": 115,
+          "y": 95
+        },
+        {
+          "x": 115,
+          "y": 120
+        },
+        {
+          "x": 35,
+          "y": 120
+        },
+        {
+          "x": 35,
+          "y": 95
+        },
+        {
+          "x": 10,
+          "y": 95
+        },
+        {
+          "x": 10,
+          "y": 35
+        },
+        {
+          "x": 35,
+          "y": 35
+        }
+      ],
+      "vertexIds": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11"
+      ],
+      "closed": true,
+      "id": "ent-mtpn1wq8-f19iv4",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 35,
+        "y": 35
+      },
+      "b": {
+        "x": 115,
+        "y": 35
+      },
+      "id": "ent-mtpn1wq8-r8hwsz",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 115,
+        "y": 35
+      },
+      "b": {
+        "x": 115,
+        "y": 95
+      },
+      "id": "ent-mtpn1wq8-81mra0",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 115,
+        "y": 95
+      },
+      "b": {
+        "x": 35,
+        "y": 95
+      },
+      "id": "ent-mtpn1wq8-ow82oz",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 35,
+        "y": 95
+      },
+      "b": {
+        "x": 35,
+        "y": 35
+      },
+      "id": "ent-mtpn1wq8-zhyx4w",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-mtpn1wq8-npkhv6",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-mtpn1wq8-f19iv4"
+      ]
+    },
+    {
+      "id": "con-mtpn1wq8-0jbgpf",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-mtpn1wq8-r8hwsz"
+      ]
+    },
+    {
+      "id": "con-mtpn1wq8-vrll39",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-mtpn1wq8-81mra0"
+      ]
+    },
+    {
+      "id": "con-mtpn1wq8-fzzr27",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-mtpn1wq8-ow82oz"
+      ]
+    },
+    {
+      "id": "con-mtpn1wq8-oma7jz",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-mtpn1wq8-zhyx4w"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-mtpn1wq8-2agiw6",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-mtpn1wq8-r8hwsz",
+          "key": "a"
+        },
+        {
+          "entityId": "ent-mtpn1wq8-r8hwsz",
+          "key": "b"
+        }
+      ],
+      "entities": [],
+      "value": 80,
+      "driving": true,
+      "offset": -12
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "outside",
+      "stepdown": 1.5,
+      "stepover": 0.4,
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1.5,
+      "laserPasses": 1,
+      "id": "op1",
+      "name": "Score the fold lines",
+      "type": "score",
+      "entityIds": [
+        "ent-mtpn1wq8-r8hwsz",
+        "ent-mtpn1wq8-81mra0",
+        "ent-mtpn1wq8-ow82oz",
+        "ent-mtpn1wq8-zhyx4w"
+      ],
+      "feedrate": 2400,
+      "laserPower": 22
+    },
+    {
+      "side": "outside",
+      "stepdown": 1.5,
+      "stepover": 0.4,
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1.5,
+      "laserPasses": 1,
+      "id": "op2",
+      "name": "Cut the net",
+      "type": "profile",
+      "entityIds": [
+        "ent-mtpn1wq8-f19iv4"
+      ],
+      "feedrate": 600,
+      "laserPower": 95
+    }
+  ],
+  "tools": []
+}

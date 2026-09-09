@@ -1,0 +1,207 @@
+# rcam AI integration
+
+rcam is built so AI tools — chat assistants and autonomous agents alike —
+can author, check, and iterate on real, machinable designs. This guide covers
+every integration surface. It is published at
+**`https://rcamhub.com/docs/ai-integration.md`**; the file-format contract it
+builds on lives in the [.rcam format guide](rcam-format-v3.md).
+
+The design principle behind all of it: **optimize the AI's second attempt, not
+its first.** A language model authoring CAD blind will make mistakes; what
+makes the workflow reliable is a tight feedback loop — validate, solve,
+dry-run the toolpaths, render — with errors reported in a form the AI can act
+on. Every surface below closes that loop at a different level.
+
+---
+
+## The AI Assistant (in the app)
+
+**File ▸ AI Assistant** is the copy/paste loop for people using any AI chat
+(Claude, ChatGPT, Gemini, …). No API keys, no accounts — the human is the
+transport.
+
+**Step 1 — Copy a prompt.** The dialog builds a self-contained prompt and
+copies it to the clipboard. It bundles:
+
+- your machine context: machine kind, post-processor, sheet size, stock size
+  and thickness, origin, rotary/flip setup — everything the AI must respect
+  and would otherwise guess;
+- your tool library, so operations reference real tools by `toolId`;
+- the **complete .rcam format guide**, embedded, so it works even for models
+  without web access;
+- your request (typed into the dialog, or left as a placeholder to fill in
+  chat).
+
+Two modes: **New design** authors from scratch for your machine; **Modify
+current design** embeds the current document (minus font/image payloads) and
+asks for the complete updated file back.
+
+**Step 2 — Paste the reply.** Paste the AI's answer — code fences and
+surrounding prose are stripped automatically — and click **Check & Import**.
+The paste runs the full checking pipeline (see below). On success the design
+loads; the import is **undoable** (Ctrl+Z restores your previous drawing), so
+a wrong modification costs nothing. On failure, **Copy Error Report for AI**
+puts a markdown fix-it report on the clipboard; paste it back into the chat
+and the AI corrects its own file.
+
+### What the checker verifies
+
+Every pasted file passes through, in order:
+
+| Check | Catches |
+|-------|---------|
+| JSON | malformed output, truncated replies |
+| Schema | wrong/missing fields, bad enum values (violations name the allowed values) |
+| Loader | anything rcam itself cannot open |
+| References | operations/constraints/dimensions/bindings pointing at entities that don't exist; unknown `toolId`s |
+| Solver | contradictory constraint systems that don't converge; geometry stored away from where its own driving dimensions put it (a warning — the file opens, then visibly moves) |
+| Bounds | geometry outside the sheet |
+| Toolpath dry-run | operations that would silently produce **no cutting moves** (e.g. a profile over geometry that doesn't close) |
+| Lint | Apollo pre-flight findings over the dry-run program(s) — toolpaths outside the stock, over-deep cuts, fast plunges, missing tool-change pauses — reported as **warnings**, so machinability advice never blocks an import |
+
+The dry-run matters most: it is entirely possible to write a file that is
+schema-valid, loads, and solves — and cuts air. The dry-run generates the
+actual machine program(s) — routed by machine kind exactly as export does
+(mill, laser, rotary wrap, double-sided flip) — and surfaces every skip the
+generator would emit, then pre-flights the result so the import check says
+what the export lint would say.
+
+The same pipeline also reviews every `.rcam` opened from disk (**File ▸
+Open**): the file opens immediately, then a dialog lists any issues found,
+with the same one-click **Copy AI fix-it report**. Clean files open in
+silence — so an AI-authored file reaching the app by any route gets checked.
+
+---
+
+## Stable URLs for web-connected AIs
+
+Everything an AI needs to author `.rcam` files is served at stable URLs,
+indexed by [`/llms.txt`](https://rcamhub.com/llms.txt):
+
+| URL | Contents |
+|-----|----------|
+| `https://rcamhub.com/llms.txt` | index of all of the below |
+| `https://rcamhub.com/llms-full.txt` | **single-fetch bundle**: the index, format guide, JSON Schema, and this guide inlined in one file — for fetch tools that cannot follow links out of a fetched page |
+| `https://rcamhub.com/docs/rcam-format-v3.md` | the authoring guide: entity/constraint/dimension vocabulary, CAM operations, gotchas |
+| `https://rcamhub.com/schema/rcam-v3.schema.json` | machine-readable JSON Schema (draft 2020-12; this URL is its `$id`) |
+| `https://rcamhub.com/docs/ai-integration.md` | this document |
+| `https://rcamhub.com/examples/index.json` | list of bundled golden examples |
+| `https://rcamhub.com/examples/<name>.rcam` | any listed example (all schema-validated on every commit) |
+
+---
+
+## Headless CLI
+
+For scripts and agents working in a rcam checkout (`git clone` +
+`npm install`), the same pipeline runs in Node with no browser window:
+
+```bash
+npm run cli -- validate part.rcam            # the full checking pipeline above
+npm run cli -- post part.rcam -o out/        # G-code (.nc) + Apollo pre-flight lint
+npm run cli -- render part.rcam -o part.png  # PNG of the design via headless Chromium
+npm run cli -- open part.rcam                # validate, then open in the user's browser
+npm run cli -- decode "<share-url>"          # share link → .rcam JSON (quote the URL!)
+```
+
+- **`validate`** exits 0 on success (warnings allowed), 1 when any check
+  fails, printing the same fix-it report the dialog produces.
+- **`post`** routes by machine kind exactly as the app's export button does —
+  mill, laser, rotary wrap (one wrapped program), double-sided flip (side A +
+  side B) — writes the `.nc` file(s), and runs the Apollo pre-flight lint
+  (bounds, over-deep, rapid-through-stock, fast plunge, fixture collisions,
+  missing tool-change pauses) on each. Exits 1 if any lint **error** is found
+  (files are still written).
+- **`render`** boots the real app on an ephemeral dev server and screenshots
+  the drawing canvas — geometry, dimensions, and stock outline exactly as
+  rcam draws them. First call pays a ~10 s browser boot.
+- **`open`** is the hand-off: it validates (refusing on errors), encodes the
+  design into a share-link URL — the `#d=` fragment format, so the design
+  never touches a server — and launches the default browser at it. rcam
+  opens with the design loaded as a fresh document. `--url http://localhost:5173/`
+  targets a dev server instead of rcamhub.com. Designs too large for a URL
+  (typically image-bearing reliefs) are refused with a save-the-file hint.
+- **`decode`** is `open` in reverse: it turns a share link — the user copies
+  one with **File ▸ Copy Share Link** — back into pretty-printed `.rcam` JSON
+  (to stdout, or `-o out.rcam`). That makes "modify my current design" a
+  loop: decode the user's link, edit, `validate`, hand back with `open`.
+  Quote the URL so the shell doesn't eat the `#…` fragment.
+
+---
+
+## MCP server
+
+The [Model Context Protocol](https://modelcontextprotocol.io) server gives MCP
+clients — Claude Code, Claude Desktop, and others — the full **author →
+validate → post → look at a render → open in the user's browser** loop as
+tools. From a rcam checkout:
+
+```bash
+claude mcp add rcam -- npx tsx mcp/server.ts   # Claude Code
+npm run mcp                                        # or run it directly (stdio)
+```
+
+| Tool | Purpose |
+|------|---------|
+| `get_format_guide` | the complete .rcam authoring guide (read before authoring) |
+| `list_examples` / `get_example` | bundled golden example projects |
+| `validate_rcam` | the full checking pipeline; returns a fix-it report |
+| `post_gcode` | machine program(s) + Apollo pre-flight lint findings |
+| `render_preview` | a PNG **image** of the design — the agent can look at what it made and catch geometry that validates but is wrong |
+| `read_share_link` | the reverse hand-off: decode a share link (**File ▸ Copy Share Link**) back into `.rcam` JSON, so the agent can read the user's current design |
+| `open_in_app` | the hand-off: validate, then open the design in the **user's** browser via a share-link URL (client-side only; refuses invalid designs) |
+
+`render_preview` boots a headless browser on first call (~10 s) and reuses it
+afterwards.
+
+An effective agent loop: `get_format_guide` → author → `validate_rcam` →
+fix until clean → `render_preview` → eyeball → `post_gcode` → review lint →
+`open_in_app` to hand the finished design to the user. To **modify** the
+user's current design, start the loop with their share link: ask for
+**File ▸ Copy Share Link**, read it with `read_share_link`, then author the
+changes and hand back as above.
+
+---
+
+## Tips for LLM authors
+
+The [format guide](rcam-format-v3.md) is the contract; these are the
+highest-leverage habits:
+
+- **All lengths are millimetres and all angles radians (CCW), always** —
+  `displayUnit` only changes what the human sees. The world frame is Y-up.
+- **You don't need perfect coordinates.** Emit rough positions plus
+  constraints and driving dimensions; the parametric solver snaps geometry
+  exact. For simple parts, plain coordinates with no constraints are equally
+  valid — don't add constraint systems you don't need.
+- **Omit what doesn't apply.** `side` is required only on `profile`
+  operations; `stepdown`/`stepover` are optional with sensible defaults. A
+  drill needs none of them.
+- **`depth` is negative for cuts** (mm below the stock surface). A through
+  cut goes slightly past the stock thickness.
+- **Built-in keywords are available in any expression.** `stock` (or `$stock`)
+  is the material thickness in mm — use `"expr": "stock"` or `"expr": "stock + 0.1"`
+  for a parametric depth (e.g. a box joint) instead of a hardcoded number. The
+  full set is in the format guide's Variables section: `stock_width`/`stock_height`
+  (the blank), `sheet_width`/`sheet_height` (the work area), `origin_x`/`origin_y`/
+  `origin_z` (the WCS datum), `pi`/`e`, `counter`/`serial`/`seq`, and — on a rotary
+  job — `stock_diameter`/`stock_length`/`stock_circumference`/`stock_wall`. A
+  user-defined variable of the same name overrides a built-in.
+- **T-Bones and Dog-bones are supported.** Use `"cornerStyle": "tbone"` or `"dogbone"`
+  on `profile` and `pocket` operations if the tool needs to reach sharp inside
+  corners for mating parts.
+- **Closed shapes can be composite.** A rounded rectangle authored as 4 lines
+  + 4 tangent fillet arcs profiles as one closed loop — endpoints just have
+  to meet.
+- **For a laser design, describe the LAYERS, not the operations.** Put a
+  `laser` recipe on each layer — `{kind, feedrate, laserPower, laserPasses}` —
+  and you may leave `operations` empty: the user presses **Toolpaths from
+  Layers** and gets one correctly-typed operation per layer, in layer order.
+  You cannot get the entity lists, the kerf direction or the cut order wrong
+  that way, and `kind` (`cut`/`score`/`engrave`/`fill`) is far easier to get
+  right than an operation `type` plus its flags. Power and speed on a layer
+  are live, so the user can re-tune after a test cut without rebuilding.
+- **Never author `__origin__`**, and never include `fonts`/`images` arrays;
+  keep existing `fontId`/`imageId` references intact when modifying.
+- **Expect a report, not applause.** When the user (or agent harness) returns
+  a "rcam import report", fix every listed issue and reply with the
+  complete corrected file as a single JSON code block — never a diff.

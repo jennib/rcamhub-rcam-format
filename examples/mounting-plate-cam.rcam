@@ -1,0 +1,456 @@
+{
+  "version": 3,
+  "name": "Mounting Plate + CAM",
+  "canvas": {
+    "width": 170,
+    "height": 130
+  },
+  "displayUnit": "mm",
+  "stockThickness": 10,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-0",
+      "name": "Default",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-0",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 25,
+        "y": 25
+      },
+      "p1": {
+        "x": 145,
+        "y": 105
+      },
+      "id": "ent1",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 85,
+        "y": 25
+      },
+      "b": {
+        "x": 85,
+        "y": 105
+      },
+      "id": "ent2",
+      "isConstruction": true,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 25,
+        "y": 65
+      },
+      "b": {
+        "x": 145,
+        "y": 65
+      },
+      "id": "ent3",
+      "isConstruction": true,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 40,
+        "y": 40
+      },
+      "radius": 4,
+      "id": "ent4",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 130,
+        "y": 40
+      },
+      "radius": 4,
+      "id": "ent5",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 130,
+        "y": 90
+      },
+      "radius": 4,
+      "id": "ent6",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 40,
+        "y": 90
+      },
+      "radius": 4,
+      "id": "ent7",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con1",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        25,
+        25
+      ]
+    },
+    {
+      "id": "con2",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent2",
+          "key": "a"
+        },
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "br"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con3",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent2",
+          "key": "b"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tr"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con4",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent3",
+          "key": "a"
+        },
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tl"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con5",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent3",
+          "key": "b"
+        },
+        {
+          "entityId": "ent1",
+          "key": "br"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tr"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con6",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent4",
+          "key": "c"
+        },
+        {
+          "entityId": "ent5",
+          "key": "c"
+        }
+      ],
+      "entities": [
+        "ent2"
+      ]
+    },
+    {
+      "id": "con7",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent4",
+          "key": "c"
+        },
+        {
+          "entityId": "ent7",
+          "key": "c"
+        }
+      ],
+      "entities": [
+        "ent3"
+      ]
+    },
+    {
+      "id": "con8",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent7",
+          "key": "c"
+        },
+        {
+          "entityId": "ent6",
+          "key": "c"
+        }
+      ],
+      "entities": [
+        "ent2"
+      ]
+    },
+    {
+      "id": "con9",
+      "type": "equal",
+      "points": [],
+      "entities": [
+        "ent4",
+        "ent5"
+      ]
+    },
+    {
+      "id": "con10",
+      "type": "equal",
+      "points": [],
+      "entities": [
+        "ent4",
+        "ent7"
+      ]
+    },
+    {
+      "id": "con11",
+      "type": "equal",
+      "points": [],
+      "entities": [
+        "ent4",
+        "ent6"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim1",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 120,
+      "driving": true,
+      "offset": -19
+    },
+    {
+      "id": "dim2",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent1",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 80,
+      "driving": true,
+      "offset": -19
+    },
+    {
+      "id": "dim3",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent4",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": -17.5
+    },
+    {
+      "id": "dim4",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent4",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": -17.5
+    },
+    {
+      "id": "dim5",
+      "type": "diameter",
+      "points": [],
+      "entities": [
+        "ent4"
+      ],
+      "value": 8,
+      "driving": true,
+      "offset": -2.356
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "outside",
+      "stepdown": 3,
+      "stepover": 0.4,
+      "id": "op1",
+      "name": "Drill holes",
+      "type": "drill",
+      "entityIds": [
+        "ent4",
+        "ent5",
+        "ent6",
+        "ent7"
+      ],
+      "toolId": "tool-drill-8",
+      "toolType": "drill",
+      "toolNumber": 1,
+      "diameter": 8,
+      "tipAngle": 118,
+      "feedrate": 200,
+      "plungeRate": 120,
+      "spindleSpeed": 6000,
+      "safeZ": 5,
+      "depth": -12
+    },
+    {
+      "side": "outside",
+      "stepdown": 2,
+      "stepover": 0.4,
+      "id": "op2",
+      "name": "Profile outline",
+      "type": "profile",
+      "entityIds": [
+        "ent1"
+      ],
+      "toolId": "tool-em-6",
+      "toolType": "end-mill",
+      "toolNumber": 2,
+      "diameter": 6,
+      "feedrate": 900,
+      "plungeRate": 250,
+      "spindleSpeed": 18000,
+      "safeZ": 5,
+      "depth": -12,
+      "tabs": {
+        "enabled": true,
+        "count": 4,
+        "width": 10,
+        "height": 2
+      },
+      "leadIn": {
+        "type": "arc",
+        "length": 3
+      },
+      "leadOut": {
+        "type": "arc",
+        "length": 3
+      }
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-drill-8",
+      "name": "8mm Drill",
+      "toolType": "drill",
+      "diameter": 8,
+      "tipAngle": 118,
+      "feedrate": 200,
+      "plungeRate": 120,
+      "spindleSpeed": 6000,
+      "safeZ": 5
+    },
+    {
+      "id": "tool-em-6",
+      "name": "6mm End Mill",
+      "toolType": "end-mill",
+      "diameter": 6,
+      "feedrate": 900,
+      "plungeRate": 250,
+      "spindleSpeed": 18000,
+      "safeZ": 5
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "version": 3,
+  "name": "Surfaced Sign Blank",
+  "canvas": {
+    "width": 220,
+    "height": 140
+  },
+  "displayUnit": "mm",
+  "stockThickness": 20,
+  "stockRect": {
+    "x": 10,
+    "y": 10,
+    "width": 200,
+    "height": 120
+  },
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-0",
+      "name": "Default",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-0",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 30,
+        "y": 25
+      },
+      "p1": {
+        "x": 190,
+        "y": 115
+      },
+      "cornerRadii": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "cornerType": "round",
+      "id": "ent-mtpn4rp3-rg6ywt",
+      "isConstruction": false,
+      "layerId": "layer-0"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-mtpn4rp3-fvzrus",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-mtpn4rp3-rg6ywt",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        30,
+        25
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-mtpn4rp3-3h7w64",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-mtpn4rp3-rg6ywt",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-mtpn4rp3-rg6ywt",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 160,
+      "driving": true,
+      "offset": -14
+    },
+    {
+      "id": "dim-mtpn4rp3-hhloiu",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-mtpn4rp3-rg6ywt",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-mtpn4rp3-rg6ywt",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 90,
+      "driving": true,
+      "offset": -14
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "inside",
+      "stepdown": 1,
+      "stepover": 0.6,
+      "id": "op1",
+      "name": "Skim the blank flat",
+      "type": "face",
+      "entityIds": [],
+      "toolId": "tool-surf-25",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 25,
+      "feedrate": 3000,
+      "plungeRate": 500,
+      "spindleSpeed": 15000,
+      "safeZ": 5,
+      "depth": -1,
+      "faceTarget": "stock",
+      "faceDirection": "x"
+    },
+    {
+      "side": "outside",
+      "stepdown": 5,
+      "stepover": 0.4,
+      "id": "op2",
+      "name": "Cut the sign blank",
+      "type": "profile",
+      "entityIds": [
+        "ent-mtpn4rp3-rg6ywt"
+      ],
+      "toolId": "tool-em-6",
+      "toolType": "end-mill",
+      "toolNumber": 2,
+      "diameter": 6,
+      "feedrate": 1200,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 5,
+      "startDepth": -1,
+      "depth": -21,
+      "tabs": {
+        "enabled": true,
+        "count": 4,
+        "width": 8,
+        "height": 3
+      },
+      "leadIn": {
+        "type": "arc",
+        "length": 3
+      },
+      "leadOut": {
+        "type": "arc",
+        "length": 3
+      }
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-surf-25",
+      "name": "25mm Surfacing Bit",
+      "toolType": "end-mill",
+      "diameter": 25,
+      "feedrate": 3000,
+      "plungeRate": 500,
+      "spindleSpeed": 15000,
+      "safeZ": 5
+    },
+    {
+      "id": "tool-em-6",
+      "name": "6mm End Mill",
+      "toolType": "end-mill",
+      "diameter": 6,
+      "feedrate": 1200,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 5
+    }
+  ]
+}
