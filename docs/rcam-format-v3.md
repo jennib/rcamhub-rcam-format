@@ -394,8 +394,8 @@ whole entity, which is what a plain `line` always is.
 |--------|-----------------|------------------------------------------|-------------|
 | `line` | `a`, `b` (Vec2) | `a`, `b` endpoints; `mid` (derived, pickable) | — |
 | `circle` | `center` (Vec2), `radius` | `c` center | `r` radius |
-| `rectangle` | `p0`, `p1` (opposite corners), `cornerRadii` (number[4], optional), `cornerType` (optional) | corners `bl` `br` `tr` `tl`; edge mids `mid_b` `mid_r` `mid_t` `mid_l`; `center` | `cr` corner radius |
-| `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
+| `rectangle` | `p0`, `p1` (opposite corners), `cornerRadii` (number[4], optional), `cornerType` / `cornerTypes` (optional) | corners `bl` `br` `tr` `tl`; edge mids `mid_b` `mid_r` `mid_t` `mid_l`; `center` | `cr` corner radius |
+| `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |
 | `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` (constrainable); `p1` `p2` (drag-only) | — |
 | `point` | `pos` (Vec2) | `p` | — |
@@ -407,8 +407,8 @@ Notes:
 - `rectangle` is axis-aligned; `p0`/`p1` are normalised to min/max corners on load.
 - A **rectangle's corners can be shaped** without it ceasing to be a rectangle.
   `cornerRadii` is one radius per corner in mm, ordered `bl`, `br`, `tr`, `tl` —
-  the same order as the corner point keys — and `cornerType` says how each
-  non-zero one is cut:
+  the same order as the corner point keys — and a **treatment per corner** says
+  how each non-zero one is cut:
   - `"round"` (default) — a convex fillet, tangent to both edges.
   - `"inverted"` — a concave cove: a quarter circle centred *on* the corner and
     bitten out of it, so it meets both edges square. This is a shape, not a
@@ -417,9 +417,21 @@ Notes:
   - `"chamfer"` — a straight bevel. `cornerRadii` is its setback along each edge,
     which is why all three types share one field.
 
-  There is one type per rectangle, matching the `Corner Type` control in the
-  properties panel (and Vectric's). Both fields are optional: omit them for a
-  square rectangle, which is how every file written before they existed reads.
+  The treatments are **per corner**: a chamfer on one corner beside a fillet on
+  the next is a single rectangle, as it is in AutoCAD and Fusion. They are
+  written two ways, and a reader must accept both:
+
+  - `cornerType` — one of the three strings, meaning *every* corner. Written
+    whenever the shaped corners agree, which is the ordinary case and the only
+    thing any file written before mixing existed can contain.
+  - `cornerTypes` — an array of four, in the same `bl`, `br`, `tr`, `tl` order
+    as `cornerRadii`. Written only when the shaped corners differ, and takes
+    precedence over `cornerType` when both appear.
+
+  So a rectangle whose corners all match reads, and round-trips, exactly as it
+  did before mixing was possible. A square corner still carries a treatment; it
+  simply draws nothing. Both fields are optional: omit them for a square
+  rectangle, which is how every file written before they existed reads.
   The **point keys are unchanged** — `bl` is still the theoretical corner even
   when it is rounded away — so constraints and dimensions on a shaped rectangle
   behave exactly as on a square one, and adding a radius never disturbs them.
@@ -451,9 +463,14 @@ Notes:
 - A **polyline's corners can be shaped** without it ceasing to be a polyline, and
   without the vertices moving. `cornerRadii` is an object keyed by **vertex id**
   — `{"3": 5}` puts a 5mm corner on the vertex whose id is `"3"` — and
-  `cornerType` (`"round"` | `"inverted"` | `"chamfer"`, one per polyline) says how
-  every shaped vertex is cut. Both are optional; omit them, or omit a vertex, for
-  sharp corners, which is how every file written before they existed reads.
+  a **treatment per vertex** (`"round"` | `"inverted"` | `"chamfer"`) says how
+  each shaped vertex is cut. As for a rectangle, that treatment is written as
+  the scalar `cornerType` while every shaped vertex agrees, and as `cornerTypes`
+  — an object keyed by vertex id, exactly as `cornerRadii` is — only when they
+  differ; `cornerTypes` wins where both name a vertex, and a shaped vertex named
+  by neither falls back to `"round"`. All are optional; omit them, or omit a
+  vertex, for sharp corners, which is how every file written before they existed
+  reads.
 
   It is keyed by id rather than being a fourth array parallel to `points` and
   `vertexIds` for the reason `vertexIds` exists at all: a polyline's vertex set
@@ -463,8 +480,8 @@ Notes:
   and dimensions behave exactly as on a sharp polyline. An open polyline's two
   **end vertices cannot be shaped**: there is no far leg to be tangent to.
 
-  **What the number means follows `cornerType`**, and this is the one place a
-  polyline's corners are not simply a rectangle's:
+  **What the number means follows that vertex's own treatment**, and this is the
+  one place a polyline's corners are not simply a rectangle's:
   - `"round"` — the fillet **radius**. The arc is tangent to both legs and meets
     them `radius / tan(θ/2)` back from the vertex, where θ is the angle between
     the legs.

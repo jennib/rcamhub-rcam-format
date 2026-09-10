@@ -126,8 +126,10 @@ integration guide, inlined as one plain-text document.
 - You do not need exact coordinates: emit rough positions plus constraints and
   dimensions, and rcam's parametric solver snaps the geometry exact.
 - A **rounded, coved or chamfered rectangle is still a `rectangle`** — give it
-  `cornerRadii` (one radius per corner, `bl` `br` `tr` `tl`) and `cornerType`
-  (`"round"` | `"inverted"` | `"chamfer"`). Do not tessellate one into a
+  `cornerRadii` (one radius per corner, `bl` `br` `tr` `tl`) and a treatment per
+  corner (`"round"` | `"inverted"` | `"chamfer"`): `cornerType` for one treatment
+  on every corner, or `cornerTypes` (four, same order) to mix a chamfer with a
+  fillet on one rectangle. Do not tessellate one into a
   polyline: as a rectangle it keeps its `W`/`H` fields, its corner point keys,
   and an editable radius, and the arcs reach the toolpath as true arcs. The
   radius is also the scalar DOF `cr`, so a `bindings[]` entry can drive it from
@@ -135,7 +137,8 @@ integration guide, inlined as one plain-text document.
 - A **rounded, coved or chamfered `polyline` is still a `polyline`** — the same
   two fields, but `cornerRadii` is an object keyed by **vertex id**, not an
   array: `{"cornerRadii": {"1": 6, "2": 6}, "cornerType": "round"}` shapes the
-  vertices whose `vertexIds` entries are `"1"` and `"2"`. Do not tessellate an
+  vertices whose `vertexIds` entries are `"1"` and `"2"`. To mix treatments, use
+  `cornerTypes` keyed the same way — `{"1": "chamfer", "2": "round"}`. Do not tessellate an
   arc into extra vertices — as corner data it stays editable, reaches the
   toolpath as a true arc, and leaves every `v<id>` constraint alone. An open
   polyline's first and last vertices cannot be shaped. **The number means the
