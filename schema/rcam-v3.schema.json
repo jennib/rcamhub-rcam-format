@@ -584,7 +584,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["type", "id", "text", "fontId", "sizeMM", "position", "angle"],
-      "description": "Editable text, expanded to glyph contours at CAM export. position is the baseline-left anchor. angle is CCW radians. Point DOF key: pos. If fontId is not a bundled font, the font's bytes must appear in the top-level \"fonts\" array.",
+      "description": "Editable text, expanded to glyph contours at CAM export. Line breaks are newlines inside \"text\". position anchors line 0 — its baseline-LEFT for align \"left\", baseline-centre for \"center\", baseline-right for \"right\". angle is CCW radians. Point DOF key: pos. If fontId is not a bundled font, the font's bytes must appear in the top-level \"fonts\" array.",
       "properties": {
         "type": { "const": "text" },
         "id": { "type": "string", "minLength": 1 },
@@ -593,6 +593,8 @@
         "sizeMM": { "type": "number", "exclusiveMinimum": 0 },
         "position": { "$ref": "#/$defs/vec2" },
         "angle": { "type": "number", "description": "radians" },
+        "align": { "enum": ["left", "center", "right"], "description": "How the rows of a multi-line block line up. Omitted = \"left\"." },
+        "lineSpacing": { "type": "number", "exclusiveMinimum": 0, "description": "Row pitch as a multiple of sizeMM. Omitted = 1.2." },
         "isConstruction": { "type": "boolean" },
         "name": { "type": "string" },
         "visible": { "type": "boolean" },

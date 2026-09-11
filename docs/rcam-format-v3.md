@@ -400,7 +400,7 @@ whole entity, which is what a plain `line` always is.
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |
 | `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` (constrainable); `p1` `p2` (drag-only) | — |
 | `point` | `pos` (Vec2) | `p` | — |
-| `text` | `text`, `fontId`, `sizeMM`, `position`, `angle` (rad) | `pos` baseline-left anchor; ink-box `bl` `br` `tr` `tl`, edge mids `mid_b` `mid_r` `mid_t` `mid_l`, `center` (all derived) | — |
+| `text` | `text` (newlines are line breaks), `fontId`, `sizeMM`, `position`, `angle` (rad), `align` (`left`/`center`/`right`, optional), `lineSpacing` (multiple of `sizeMM`, optional) | `pos` baseline-left anchor; ink-box `bl` `br` `tr` `tl`, edge mids `mid_b` `mid_r` `mid_t` `mid_l`, `center` (all derived) | — |
 | `image` | `imageId`, `position` (bottom-left), `widthMM`, `heightMM`, `angle` (rad) | `pos` bottom-left anchor | — |
 
 Notes:
