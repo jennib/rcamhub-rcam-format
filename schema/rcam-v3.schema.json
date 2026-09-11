@@ -360,6 +360,7 @@
         { "$ref": "#/$defs/lineEntity" },
         { "$ref": "#/$defs/pointEntity" },
         { "$ref": "#/$defs/circleEntity" },
+        { "$ref": "#/$defs/ellipseEntity" },
         { "$ref": "#/$defs/rectangleEntity" },
         { "$ref": "#/$defs/polylineEntity" },
         { "$ref": "#/$defs/arcEntity" },
@@ -415,6 +416,27 @@
         "id": { "type": "string", "minLength": 1 },
         "center": { "$ref": "#/$defs/vec2" },
         "radius": { "type": "number", "exclusiveMinimum": 0 },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "ellipseEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "center", "rx", "ry"],
+      "description": "Point DOF key: c (center). Scalar DOF keys: rx, ry, angle. rx/ry are SEMI-axes (radii), as in AutoCAD's ELLIPSE and SVG's <ellipse>.",
+      "properties": {
+        "type": { "const": "ellipse" },
+        "id": { "type": "string", "minLength": 1 },
+        "center": { "$ref": "#/$defs/vec2" },
+        "rx": { "type": "number", "exclusiveMinimum": 0, "description": "Semi-axis along the ellipse's own x, mm." },
+        "ry": { "type": "number", "exclusiveMinimum": 0, "description": "Semi-axis along the ellipse's own y, mm." },
+        "angle": { "type": "number", "description": "CCW rotation of the rx axis from +X, radians (world Y-up). Omitted = 0." },
         "isConstruction": { "type": "boolean" },
         "name": { "type": "string" },
         "visible": { "type": "boolean" },

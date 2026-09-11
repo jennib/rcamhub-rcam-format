@@ -394,6 +394,7 @@ whole entity, which is what a plain `line` always is.
 |--------|-----------------|------------------------------------------|-------------|
 | `line` | `a`, `b` (Vec2) | `a`, `b` endpoints; `mid` (derived, pickable) | — |
 | `circle` | `center` (Vec2), `radius` | `c` center | `r` radius |
+| `ellipse` | `center` (Vec2), `rx`, `ry` (**semi**-axes, i.e. radii), `angle` (rad CCW from +X, optional) | `c` center | `rx`, `ry`, `angle` |
 | `rectangle` | `p0`, `p1` (opposite corners), `cornerRadii` (number[4], optional), `cornerType` / `cornerTypes` (optional) | corners `bl` `br` `tr` `tl`; edge mids `mid_b` `mid_r` `mid_t` `mid_l`; `center` | `cr` corner radius |
 | `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |

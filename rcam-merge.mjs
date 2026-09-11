@@ -79,6 +79,10 @@ function describeEntityJson(o, unit) {
 			return `Line${name}${ax !== null && ay !== null && bx !== null && by !== null ? ` ${len(Math.hypot(bx - ax, by - ay), unit)}` : ""}${at(o.a, unit)}`;
 		}
 		case "circle": return `Circle${name} ⌀${len(num(o.radius) === null ? null : o.radius * 2, unit)}${at(o.center, unit)}`;
+		case "ellipse": {
+			const d = (v) => len(num(v) === null ? null : v * 2, unit);
+			return `Ellipse${name} ${d(o.rx)} × ${d(o.ry)}${at(o.center, unit)}`;
+		}
 		case "arc": return `Arc${name} R${len(o.radius, unit)}${at(o.center, unit)}`;
 		case "rectangle": {
 			const p0 = o.p0 ?? {};
