@@ -580,7 +580,7 @@ whole entity, which is what a plain `line` always is.
 | `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |
 | `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` endpoints; `p1` `p2` handles — all four are solver DOFs and all four are constrainable | — |
-| `polybezier` | `nodes[]` (each `{id, pos, inH, outH, smooth}`), `closed` (bool, optional) | knots `n<id>` (solver DOFs, constrainable); handles `n<id>.in` / `n<id>.out` (draggable only — neither solver DOFs nor constraint targets, because a smooth node's handles move each other) | — |
+| `polybezier` | `nodes[]` (each `{id, pos, inH, outH, smooth}`), `closed` (bool, optional), `fit` (bool, optional — true means the handles are COMPUTED so the curve passes through its knots; they are still written, so a reader ignoring the flag gets the same shape) | knots `n<id>` (solver DOFs, constrainable); handles `n<id>.in` / `n<id>.out` (draggable only — neither solver DOFs nor constraint targets, because a smooth node's handles move each other) | — |
 | `point` | `pos` (Vec2) | `p` | — |
 | `text` | `text` (newlines are line breaks), `fontId`, `sizeMM`, `position`, `angle` (rad), `align` (`left`/`center`/`right`, optional), `lineSpacing` (multiple of `sizeMM`, optional) | `pos` baseline-left anchor; ink-box `bl` `br` `tr` `tl`, edge mids `mid_b` `mid_r` `mid_t` `mid_l`, `center` (all derived) | — |
 | `image` | `imageId`, `position` (bottom-left), `widthMM`, `heightMM`, `angle` (rad) | `pos` bottom-left anchor | — |
@@ -1902,6 +1902,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
           }
         },
         "closed": { "type": "boolean", "description": "Omitted = open." },
+        "fit": { "type": "boolean", "description": "Omitted = the handles are the author's, drawn with the Pen tool. When true the curve is a FITTED spline: the handles are computed from the knots so the curve passes smoothly through every one of them, and moving a knot recomputes them. inH/outH are still written out, so a reader that ignores this flag gets the same shape." },
         "isConstruction": { "type": "boolean" },
         "name": { "type": "string" },
         "visible": { "type": "boolean" },

@@ -472,6 +472,7 @@
           }
         },
         "closed": { "type": "boolean", "description": "Omitted = open." },
+        "fit": { "type": "boolean", "description": "Omitted = the handles are the author's, drawn with the Pen tool. When true the curve is a FITTED spline: the handles are computed from the knots so the curve passes smoothly through every one of them, and moving a knot recomputes them. inH/outH are still written out, so a reader that ignores this flag gets the same shape." },
         "isConstruction": { "type": "boolean" },
         "name": { "type": "string" },
         "visible": { "type": "boolean" },
