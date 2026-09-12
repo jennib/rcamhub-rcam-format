@@ -97,6 +97,13 @@ function describeEntityJson(o, unit) {
 			return `${sides !== null ? `Polygon${name} (${sides} sides)` : `${o.closed ? "Closed" : "Open"} polyline${name} (${pts.length} points)`}${at(pts[0], unit)}`;
 		}
 		case "bezier": return `Bezier curve${name}${at(o.p0, unit)}`;
+		case "polybezier": {
+			const nodes = Array.isArray(o.nodes) ? o.nodes : [];
+			const segs = nodes.length < 2 ? 0 : o.closed === true ? nodes.length : nodes.length - 1;
+			const what = o.closed === true ? "Closed curve" : "Curve";
+			const first = nodes[0] ?? {};
+			return `${what}${name} (${segs} segment${segs === 1 ? "" : "s"})${at(first.pos, unit)}`;
+		}
 		case "text": {
 			const t = typeof o.text === "string" ? o.text : "";
 			return `Text "${t.length > 18 ? `${t.slice(0, 18)}…` : t}"${at(o.position, unit)}`;

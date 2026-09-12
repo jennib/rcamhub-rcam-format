@@ -361,6 +361,7 @@
         { "$ref": "#/$defs/pointEntity" },
         { "$ref": "#/$defs/circleEntity" },
         { "$ref": "#/$defs/ellipseEntity" },
+        { "$ref": "#/$defs/polyBezierEntity" },
         { "$ref": "#/$defs/rectangleEntity" },
         { "$ref": "#/$defs/polylineEntity" },
         { "$ref": "#/$defs/arcEntity" },
@@ -437,6 +438,40 @@
         "rx": { "type": "number", "exclusiveMinimum": 0, "description": "Semi-axis along the ellipse's own x, mm." },
         "ry": { "type": "number", "exclusiveMinimum": 0, "description": "Semi-axis along the ellipse's own y, mm." },
         "angle": { "type": "number", "description": "CCW rotation of the rx axis from +X, radians (world Y-up). Omitted = 0." },
+        "isConstruction": { "type": "boolean" },
+        "name": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "fixtureHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Workholding only: this clamp's own height above the stock top, mm, overriding its fixture layer's height so clamps of different heights can share a layer. Omitted = inherit the layer's." },
+        "layerId": { "type": "string" }
+      }
+    },
+
+    "polyBezierEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "nodes"],
+      "description": "A chain of cubic Bezier segments. Segment i runs nodes[i].pos -> nodes[i].outH -> nodes[i+1].inH -> nodes[i+1].pos, so adjacent segments SHARE their knot. Point DOF key per node: n<id> (the knot). Handles are draggable as n<id>.in / n<id>.out but are neither solver DOFs nor constraint targets — a smooth node's two handles move each other, so they cannot be independent solver variables. A closed chain has one more segment than it has nodes.",
+      "properties": {
+        "type": { "const": "polybezier" },
+        "id": { "type": "string", "minLength": 1 },
+        "nodes": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "pos", "inH", "outH", "smooth"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "description": "Stable across inserts; point keys are built from it, never from the array index." },
+              "pos": { "$ref": "#/$defs/vec2", "description": "On-curve knot." },
+              "inH": { "$ref": "#/$defs/vec2", "description": "Absolute control point for the segment ARRIVING at pos." },
+              "outH": { "$ref": "#/$defs/vec2", "description": "Absolute control point for the segment LEAVING pos." },
+              "smooth": { "type": "boolean", "description": "Hold inH and outH collinear through pos. false is a deliberate corner." }
+            }
+          }
+        },
+        "closed": { "type": "boolean", "description": "Omitted = open." },
         "isConstruction": { "type": "boolean" },
         "name": { "type": "string" },
         "visible": { "type": "boolean" },
@@ -562,7 +597,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["type", "id", "p0", "p1", "p2", "p3"],
-      "description": "Cubic Bezier. p0=start, p1=start handle, p2=end handle, p3=end. Point DOF keys: p0, p1, p2, p3. Only p0/p3 participate in constraints; p1/p2 are drag-only.",
+      "description": "Cubic Bezier. p0=start, p1=start handle, p2=end handle, p3=end. Point DOF keys: p0, p1, p2, p3 — all four are solver DOFs and all four can be constraint targets. (For a handle that genuinely cannot be constrained, see polybezier.)",
       "properties": {
         "type": { "const": "bezier" },
         "id": { "type": "string", "minLength": 1 },

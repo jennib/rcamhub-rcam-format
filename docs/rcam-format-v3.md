@@ -398,7 +398,8 @@ whole entity, which is what a plain `line` always is.
 | `rectangle` | `p0`, `p1` (opposite corners), `cornerRadii` (number[4], optional), `cornerType` / `cornerTypes` (optional) | corners `bl` `br` `tr` `tl`; edge mids `mid_b` `mid_r` `mid_t` `mid_l`; `center` | `cr` corner radius |
 | `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |
-| `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` (constrainable); `p1` `p2` (drag-only) | — |
+| `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` endpoints; `p1` `p2` handles — all four are solver DOFs and all four are constrainable | — |
+| `polybezier` | `nodes[]` (each `{id, pos, inH, outH, smooth}`), `closed` (bool, optional) | knots `n<id>` (solver DOFs, constrainable); handles `n<id>.in` / `n<id>.out` (draggable only — neither solver DOFs nor constraint targets, because a smooth node's handles move each other) | — |
 | `point` | `pos` (Vec2) | `p` | — |
 | `text` | `text` (newlines are line breaks), `fontId`, `sizeMM`, `position`, `angle` (rad), `align` (`left`/`center`/`right`, optional), `lineSpacing` (multiple of `sizeMM`, optional) | `pos` baseline-left anchor; ink-box `bl` `br` `tr` `tl`, edge mids `mid_b` `mid_r` `mid_t` `mid_l`, `center` (all derived) | — |
 | `image` | `imageId`, `position` (bottom-left), `widthMM`, `heightMM`, `angle` (rad) | `pos` bottom-left anchor | — |
