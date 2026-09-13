@@ -12,17 +12,29 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Keychain tag",
+    "revision": "A",
+    "notes": "Double-click NAME and type a longer name — the tag grows to fit it. The 12mm margins either side of the name are what drive the length, so the tag has no width dimension of its own."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
-      "color": "#cdd2da",
+      "id": "layer-cut",
+      "name": "Cut",
+      "color": "#ff6b6b",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-engrave",
+      "name": "Engrave",
+      "color": "#4dabf7",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-cut",
   "entities": [
     {
       "type": "rectangle",
@@ -31,12 +43,13 @@
         "y": 12
       },
       "p1": {
-        "x": 74.6873,
+        "x": 75.9873046875,
         "y": 36
       },
-      "id": "ent1",
+      "id": "ent-tag-body",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-cut",
+      "name": "Tag body"
     },
     {
       "type": "circle",
@@ -45,9 +58,10 @@
         "y": 24
       },
       "radius": 3,
-      "id": "ent2",
+      "id": "ent-tag-hole",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-cut",
+      "name": "Keyring hole"
     },
     {
       "type": "text",
@@ -55,22 +69,23 @@
       "fontId": "roboto-regular",
       "sizeMM": 10,
       "position": {
-        "x": 35.5248,
-        "y": 20.4453
+        "x": 36.1748046875,
+        "y": 20.4453125
       },
       "angle": 0,
-      "id": "ent3",
+      "id": "ent-tag-name",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-engrave",
+      "name": "Name text"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-tag-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-tag-body",
           "key": "bl"
         }
       ],
@@ -81,31 +96,38 @@
       ]
     },
     {
-      "id": "con2",
-      "type": "fixedPoint",
+      "id": "con-tag-hole-centred",
+      "type": "center",
       "points": [
         {
-          "entityId": "ent2",
+          "entityId": "ent-tag-hole",
           "key": "c"
+        },
+        {
+          "entityId": "ent-tag-body",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-tag-body",
+          "key": "tl"
         }
       ],
       "entities": [],
       "params": [
-        25,
-        24
+        1
       ]
     },
     {
-      "id": "con3",
+      "id": "con-tag-name-level",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent3",
-          "key": "center"
+          "entityId": "ent-tag-hole",
+          "key": "c"
         },
         {
-          "entityId": "ent2",
-          "key": "c"
+          "entityId": "ent-tag-name",
+          "key": "center"
         }
       ],
       "entities": []
@@ -113,33 +135,15 @@
   ],
   "dimensions": [
     {
-      "id": "dim1",
-      "type": "horizontal",
-      "points": [
-        {
-          "entityId": "ent2",
-          "key": "c"
-        },
-        {
-          "entityId": "ent3",
-          "key": "mid_l"
-        }
-      ],
-      "entities": [],
-      "value": 11.35,
-      "driving": true,
-      "offset": -8
-    },
-    {
-      "id": "dim2",
+      "id": "dim-tag-height",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-tag-body",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-tag-body",
           "key": "tl"
         }
       ],
@@ -149,33 +153,69 @@
       "offset": -10
     },
     {
-      "id": "dim3",
+      "id": "dim-tag-hole-inset",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-tag-body",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-tag-hole",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "value": 10,
+      "driving": true,
+      "offset": 7
+    },
+    {
+      "id": "dim-tag-hole-dia",
       "type": "diameter",
       "points": [],
       "entities": [
-        "ent2"
+        "ent-tag-hole"
       ],
       "value": 6,
       "driving": true,
       "offset": 2.356
     },
     {
-      "id": "dim4",
+      "id": "dim-tag-margin-left",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent3",
+          "entityId": "ent-tag-hole",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-tag-name",
+          "key": "mid_l"
+        }
+      ],
+      "entities": [],
+      "value": 12,
+      "driving": true,
+      "offset": 14
+    },
+    {
+      "id": "dim-tag-margin-right",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-tag-name",
           "key": "mid_r"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-tag-body",
           "key": "br"
         }
       ],
       "entities": [],
-      "value": 11.35,
+      "value": 12,
       "driving": true,
-      "offset": -8
+      "offset": 14
     }
   ],
   "variables": [],
