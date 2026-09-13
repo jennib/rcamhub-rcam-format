@@ -121,8 +121,15 @@ integration guide, inlined as one plain-text document.
   the outline goes outward, so both finish at the drawn size.
 ## Authoring tips for LLMs
 
-- All lengths are millimetres and all angles are radians (CCW), regardless of
-  the file's `displayUnit`. The world frame is Y-up.
+- All lengths are millimetres. Angles are radians (CCW) everywhere except the
+  two dimension types listed next, which are in degrees. Neither depends on the
+  file's `displayUnit`. The world frame is Y-up.
+- `angle-x` — a line's direction from +X, signed — has a `value` in **DEGREES**.
+- `arc-sweep` — an arc's included angle, 0–360 — has a `value` in **DEGREES**.
+- Those two back a property field, and a dimension's `expr` lands in `value`
+  with no unit applied, so they store the unit you type. Emitting
+  `{"type": "angle-x", "value": 0.785}` meaning 45° gives a line at 0.785° —
+  plausible-looking and wrong. Write `45`.
 - You do not need exact coordinates: emit rough positions plus constraints and
   dimensions, and rcam's parametric solver snaps the geometry exact.
 - A **rounded, coved or chamfered rectangle is still a `rectangle`** — give it

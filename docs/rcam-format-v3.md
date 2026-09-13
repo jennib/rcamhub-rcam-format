@@ -85,7 +85,9 @@ vocabularies is unchanged.
 - **All lengths are millimetres**, always — regardless of `displayUnit`.
   `displayUnit` (`"mm"` or `"in"`) only controls how the UI presents numbers.
 - The world frame is **Y-up**: increasing `y` moves away from the machine front.
-- **Angles are radians**, measured CCW, in the world frame.
+- **Angles are radians**, measured CCW, in the world frame — except the two
+  dimension types documented as DEGREES below (`angle-x` and `arc-sweep`), which
+  store the unit their property field is typed in.
 - The drawing lives inside `canvas` (`width` × `height`, mm), which represents the
   work area / stock footprint.
 
@@ -631,8 +633,10 @@ corners in `points[1]`/`points[2]`, whose midpoint is the centre.
 ## Dimensions
 
 A dimension measures geometry and, when `"driving": true`, forces that measurement
-to equal `value` (acting as a constraint). `value` is mm, or **radians** for
-`type: "angle"`. `offset` is purely visual placement.
+to equal `value` (acting as a constraint). `value` is mm, **radians** for
+`type: "angle"`, and **degrees** for `angle-x` and `arc-sweep` — the two types
+that back a property field, where the number you type is the number stored.
+`offset` is purely visual placement.
 
 | `type` | Operands | Measures |
 |--------|----------|----------|
@@ -646,7 +650,7 @@ to equal `value` (acting as a constraint). `value` is mm, or **radians** for
 | `line-distance` | `entities[2]` lines (or segment refs) | perpendicular gap between two parallel lines |
 | `point-line-distance` | `points[1]` + `entities[1]` line (or a segment ref) | perpendicular distance from that point to that line. Drawn as one straight run from the point to its foot, so `offset` is unused |
 | `circle-gap` | `entities[2]` circles/arcs | edge-to-edge gap: radii difference when one lies inside the other (a ring's wall, even off-centre), otherwise the clearance between the edges |
-| `angle-x` | `entities[1]` line | direction from the +X axis, in DEGREES (signed, -180..180). The one angular type stored in degrees, because it backs the Angle property field and a dimension's `expr` is evaluated straight into `value` with no unit applied — storing radians would make `45` and a variable worth `45` mean different things in the same box. Backs the Angle property field as a hidden dimension, and is also placed visibly: pick a line, click open space, then Tab. |
+| `angle-x` | `entities[1]` line | direction from the +X axis, in DEGREES (signed, -180..180). One of the two angular types stored in degrees (`arc-sweep` is the other), because it backs the Angle property field and a dimension's `expr` is evaluated straight into `value` with no unit applied — storing radians would make `45` and a variable worth `45` mean different things in the same box. Backs the Angle property field as a hidden dimension, and is also placed visibly: pick a line, click open space, then Tab. |
 | `arc-sweep` | `entities[1]` arc | included angle (sweep) in DEGREES, normalised to [0, 360). Unlike `angle-x` its residual is NOT wrapped: a 350° arc and a 10° arc are different arcs, so the shortest path is the wrong answer. Written only as a hidden driving dimension. |
 
 Optional: `anchors` (`[t1, t2]`, where a `line-distance` sits along its two
