@@ -1472,17 +1472,64 @@ seed lands inside its region — for that you need to load the file in rcam.
 The files in [`examples/`](../examples/) form a difficulty progression and are the
 canonical, tested references:
 
+Every one is generated from a builder in `scripts/` and checked byte-for-byte, so
+what is described here is what the file contains. `test/guideListsEveryExample.test.ts`
+fails if this list and the directory disagree — the list is hand-written, and it
+had gone stale by eleven files before that check existed.
+
+**Sketch — geometry, constraints, parameters**
+
 - `keychain-tag.rcam` — smallest complete part (rectangle, circle, text, driving dims).
 - `mounting-plate.rcam` — fully-constrained plate with `equal` + `symmetric` holes.
 - `bracket.rcam` — L-profile driven to "fully constrained" with per-segment H/V constraints.
+  Worth reading for how FEW dimensions it needs: six vertices are twelve degrees of
+  freedom, the H/V constraints take six and the corner pin two, so exactly four remain.
 - `bolt-circle.rcam` — `variables` + a circular `pattern`.
+- `parametric-box.rcam` — the three parametric channels side by side: a dimension
+  `expr`, a `ScalarBinding` (which drives geometry and draws nothing), and `stock`
+  as a built-in.
+- `block-hole-pattern.rcam` — `blockDefinitions` + `groups` with `definitionId`: one
+  definition placed four times, each instance `rigid` with its own `angle`. Note that
+  a rigid block's degrees of freedom belong to the block, so a `fixedPoint` on one of
+  its members is dropped as internal — `fixed` is what holds an instance.
+- `rcam-logo.rcam` — the only file with no `operations` at all: `isConstruction`
+  geometry, a `bezier`, and driving `diameter` dimensions.
+
+**CAM — toolpaths and the order they run in**
+
 - `mounting-plate-cam.rcam` — drill + tabbed profile `operations`.
 - `enclosure-lid.rcam` — pocket with parametric region `containingLoops` and an island.
+- `clamped-toolplate.rcam` — a positioned `stockRect` (the blank inside a larger work
+  area), a `features[]` entry from the `clamp` generator, a layer with `fixture: true`
+  so pre-flight treats its shapes as keep-outs, and the only use of
+  `pocketStrategy: "adaptive"`. Note `safeZ` clears the *fixtures*, not the stock.
+- `nested-sheet.rcam` — many parts on one sheet: holes bored while each part is still
+  attached, all outlines cut last, tabs on every part.
+- `flip-spacer-block.rcam` — `flip` + per-operation `face`: two setups, two posted
+  programs, located by registration pins whose positions must be unchanged by the
+  mirror.
+- `surfaced-sign-blank.rcam` — `face` (which names no geometry, taking its extent from
+  the blank) followed by a profile carrying `startDepth`, because skimming does not
+  move the Z datum.
+- `box-joint-tab-slot.rcam` — `cornerStyle: "tbone"`, without which a round cutter
+  leaves a fillet in every square inside corner and the joint will not seat.
 - `vcarve-sign.rcam` — `vcarve` + `chamfer` operations sharing one v-bit via the `tools` library.
+- `inlay-coaster.rcam` — `inlay`, where `glueGap`, `sawAllowance` and `pocketDepth` are
+  a fit rather than three independent preferences.
+- `relief-medallion.rcam` — a height-map `image` with `zRangeMM` (so the bytes are
+  lengths, not tone), roughed by `relief-rough` then finished.
+
+**Other machine kinds**
+
 - `laser-coaster.rcam` — `machineKind: "laser"` with outline/fill engraves and a kerf-compensated cut.
+- `fold-tray.rcam` — `score` beside `profile`, on layers carrying their own `laser`
+  recipes, so re-tuning a layer moves every operation on it.
 - `rotary-spiral-dowel.rcam` — `machineKind: "mill-rotary"` + the `rotary` cylinder block.
 - `tumbler-wrap.rcam` — `machineKind: "laser-rotary"`: the same `rotary` block with a beam
   head, so the wrapped axis is substituted rather than wrapped.
+
+In both rotary files the canvas height is π × diameter **exactly**, because the
+canvas *is* the unrolled surface: a rounded constant leaves the wrap seam open.
 
 ==============================================================================
 SECTION: .rcam JSON Schema (draft 2020-12)
