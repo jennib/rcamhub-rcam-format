@@ -12,17 +12,29 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Mounting plate",
+    "revision": "A",
+    "notes": "Double-click 120 or 80 and the holes track their corners; double-click Ø8 and all four resize. Only the bottom-left hole is positioned — the rest are mirrored about the centrelines, which are themselves held to the plate's midpoints."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-part",
+      "name": "Part",
       "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-centrelines",
+      "name": "Centrelines",
+      "color": "#868e96",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-part",
   "entities": [
     {
       "type": "rectangle",
@@ -34,9 +46,10 @@
         "x": 145,
         "y": 105
       },
-      "id": "ent1",
+      "id": "ent-plate",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Plate outline"
     },
     {
       "type": "line",
@@ -48,9 +61,10 @@
         "x": 85,
         "y": 105
       },
-      "id": "ent2",
+      "id": "ent-centreline-v",
       "isConstruction": true,
-      "layerId": "layer-0"
+      "layerId": "layer-centrelines",
+      "name": "Centreline, vertical"
     },
     {
       "type": "line",
@@ -62,9 +76,10 @@
         "x": 145,
         "y": 65
       },
-      "id": "ent3",
+      "id": "ent-centreline-h",
       "isConstruction": true,
-      "layerId": "layer-0"
+      "layerId": "layer-centrelines",
+      "name": "Centreline, horizontal"
     },
     {
       "type": "circle",
@@ -73,9 +88,10 @@
         "y": 40
       },
       "radius": 4,
-      "id": "ent4",
+      "id": "ent-hole-bl",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Hole, bottom left"
     },
     {
       "type": "circle",
@@ -84,9 +100,10 @@
         "y": 40
       },
       "radius": 4,
-      "id": "ent5",
+      "id": "ent-hole-br",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Hole, bottom right"
     },
     {
       "type": "circle",
@@ -95,9 +112,10 @@
         "y": 90
       },
       "radius": 4,
-      "id": "ent6",
+      "id": "ent-hole-tr",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Hole, top right"
     },
     {
       "type": "circle",
@@ -106,18 +124,19 @@
         "y": 90
       },
       "radius": 4,
-      "id": "ent7",
+      "id": "ent-hole-tl",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Hole, top left"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-plate-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         }
       ],
@@ -128,243 +147,243 @@
       ]
     },
     {
-      "id": "con2",
+      "id": "con-centreline-v-a",
       "type": "midpoint",
       "points": [
         {
-          "entityId": "ent2",
+          "entityId": "ent-centreline-v",
           "key": "a"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "br"
         }
       ],
       "entities": []
     },
     {
-      "id": "con3",
+      "id": "con-centreline-v-b",
       "type": "midpoint",
       "points": [
         {
-          "entityId": "ent2",
+          "entityId": "ent-centreline-v",
           "key": "b"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "tl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "tr"
         }
       ],
       "entities": []
     },
     {
-      "id": "con4",
+      "id": "con-centreline-h-a",
       "type": "midpoint",
       "points": [
         {
-          "entityId": "ent3",
+          "entityId": "ent-centreline-h",
           "key": "a"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "tl"
         }
       ],
       "entities": []
     },
     {
-      "id": "con5",
+      "id": "con-centreline-h-b",
       "type": "midpoint",
       "points": [
         {
-          "entityId": "ent3",
+          "entityId": "ent-centreline-h",
           "key": "b"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "br"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "tr"
         }
       ],
       "entities": []
     },
     {
-      "id": "con6",
+      "id": "con-hole-mirror-v",
       "type": "symmetric",
       "points": [
         {
-          "entityId": "ent4",
+          "entityId": "ent-hole-bl",
           "key": "c"
         },
         {
-          "entityId": "ent5",
+          "entityId": "ent-hole-br",
           "key": "c"
         }
       ],
       "entities": [
-        "ent2"
+        "ent-centreline-v"
       ]
     },
     {
-      "id": "con7",
+      "id": "con-hole-mirror-h",
       "type": "symmetric",
       "points": [
         {
-          "entityId": "ent4",
+          "entityId": "ent-hole-bl",
           "key": "c"
         },
         {
-          "entityId": "ent7",
+          "entityId": "ent-hole-tl",
           "key": "c"
         }
       ],
       "entities": [
-        "ent3"
+        "ent-centreline-h"
       ]
     },
     {
-      "id": "con8",
+      "id": "con-hole-mirror-v2",
       "type": "symmetric",
       "points": [
         {
-          "entityId": "ent7",
+          "entityId": "ent-hole-tl",
           "key": "c"
         },
         {
-          "entityId": "ent6",
+          "entityId": "ent-hole-tr",
           "key": "c"
         }
       ],
       "entities": [
-        "ent2"
+        "ent-centreline-v"
       ]
     },
     {
-      "id": "con9",
+      "id": "con-hole-equal-1",
       "type": "equal",
       "points": [],
       "entities": [
-        "ent4",
-        "ent5"
+        "ent-hole-bl",
+        "ent-hole-br"
       ]
     },
     {
-      "id": "con10",
+      "id": "con-hole-equal-2",
       "type": "equal",
       "points": [],
       "entities": [
-        "ent4",
-        "ent7"
+        "ent-hole-bl",
+        "ent-hole-tl"
       ]
     },
     {
-      "id": "con11",
+      "id": "con-hole-equal-3",
       "type": "equal",
       "points": [],
       "entities": [
-        "ent4",
-        "ent6"
+        "ent-hole-bl",
+        "ent-hole-tr"
       ]
     }
   ],
   "dimensions": [
     {
-      "id": "dim1",
+      "id": "dim-plate-width",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "br"
         }
       ],
       "entities": [],
       "value": 120,
       "driving": true,
-      "offset": -19
+      "offset": -12
     },
     {
-      "id": "dim2",
+      "id": "dim-plate-height",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "tl"
         }
       ],
       "entities": [],
       "value": 80,
       "driving": true,
-      "offset": -19
+      "offset": -12
     },
     {
-      "id": "dim3",
+      "id": "dim-hole-inset-x",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent4",
+          "entityId": "ent-hole-bl",
           "key": "c"
         }
       ],
       "entities": [],
       "value": 15,
       "driving": true,
-      "offset": -17.5
+      "offset": 8
     },
     {
-      "id": "dim4",
+      "id": "dim-hole-inset-y",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-plate",
           "key": "bl"
         },
         {
-          "entityId": "ent4",
+          "entityId": "ent-hole-bl",
           "key": "c"
         }
       ],
       "entities": [],
       "value": 15,
       "driving": true,
-      "offset": -17.5
+      "offset": 8
     },
     {
-      "id": "dim5",
+      "id": "dim-hole-dia",
       "type": "diameter",
       "points": [],
       "entities": [
-        "ent4"
+        "ent-hole-bl"
       ],
       "value": 8,
       "driving": true,
-      "offset": -2.356
+      "offset": 2.356
     }
   ],
   "variables": [],
