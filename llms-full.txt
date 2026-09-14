@@ -305,7 +305,8 @@ vocabularies is unchanged.
   "operations": [ /* CAM toolpaths */ ],
   "tools": [ /* reusable tool definitions referenced by operations */ ],
   "fonts": [ /* embedded non-bundled fonts used by text entities */ ],
-  "blockDefinitions": [ /* linked rigid-block definitions, see below */ ]
+  "blockDefinitions": [ /* linked rigid-block definitions, see below */ ],
+  "features": [ /* re-editable generator output, see below */ ]
 }
 ```
 
@@ -586,7 +587,7 @@ whole entity, which is what a plain `line` always is.
 | `circle` | `center` (Vec2), `radius` | `c` center | `r` radius |
 | `ellipse` | `center` (Vec2), `rx`, `ry` (**semi**-axes, i.e. radii), `angle` (rad CCW from +X, optional) | `c` center | `rx`, `ry`, `angle` |
 | `rectangle` | `p0`, `p1` (opposite corners), `cornerRadii` (number[4], optional), `cornerType` / `cornerTypes` (optional) | corners `bl` `br` `tr` `tl`; edge mids `mid_b` `mid_r` `mid_t` `mid_l`; `center` | `cr` corner radius |
-| `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
+| `polyline` | `points` (Vec2[]), `vertexIds` (string[], optional), `closed` (bool), `cornerRadii` (object keyed by vertex id, optional), `cornerType` / `cornerTypes` (optional), `polygon` (optional, see below) | vertices `v<id>`; segment mids `mid_<id>` (id of the segment's start vertex) | `cr` corner size |
 | `arc` | `center`, `radius`, `startAngle`, `endAngle` (rad, CCW) | `c` center; `start`, `end` (derived) | `r`, `sa`, `ea` |
 | `bezier` | `p0` `p1` `p2` `p3` (start, start handle, end handle, end) | `p0` `p3` endpoints; `p1` `p2` handles — all four are solver DOFs and all four are constrainable | — |
 | `polybezier` | `nodes[]` (each `{id, pos, inH, outH, smooth}`), `closed` (bool, optional), `fit` (bool, optional — true means the handles are COMPUTED so the curve passes through its knots; they are still written, so a reader ignoring the flag gets the same shape) | knots `n<id>` (solver DOFs, constrainable); handles `n<id>.in` / `n<id>.out` (draggable only — neither solver DOFs nor constraint targets, because a smooth node's handles move each other) | — |
@@ -639,6 +640,14 @@ Notes:
   load. Unlike a circle's `r`, `cr` is **not** a solver freedom: no constraint
   type reads a corner radius, so it is held fixed unless a binding drives it, and
   a rectangle's DOF count is the same either way.
+- A **regular polygon keeps a note saying so.** A polyline drawn with the Polygon
+  tool carries `polygon: { sides, radius, rotation }` — `sides` is the side count
+  (3–64), `radius` the CIRCUMradius (centre to a vertex, not across the flats),
+  and `rotation` the angle in radians of vertex 0. It lets an editor offer "8
+  sides, 40mm across flats" instead of sixteen loose numbers. It is dropped the
+  moment a vertex is hand-edited, because the shape is then no longer regular and
+  the note would be a lie. Omit it and you get an ordinary polyline, which is
+  always safe.
 - A **polyline vertex carries a stable id.** `vertexIds[i]` is the id of `points[i]`;
   point keys are `v<id>` and `mid_<id>` (the midpoint of the segment that *starts*
   at vertex `<id>`). The id is decoupled from the array position so a constraint or
@@ -985,6 +994,47 @@ it does not generate geometry on load.
   re-layering it — is overwritten the next time the pattern regenerates. Edit the
   source (or the pattern params/variables) instead; the copies follow.
 
+## Features (generator output)
+
+`features[]` records geometry a built-in generator produced — a finger box, a
+spur gear, a kumiko lattice — so it stays **re-editable** instead of becoming
+anonymous lines the moment it is drawn. Change a parameter and the feature is
+regenerated in place.
+
+```jsonc
+{
+  "id": "feat-1",
+  "generatorId": "box-joint",        // which generator made it
+  "params": { "width": 120, "fingers": 5 },   // the re-run inputs, resolved values
+  "paramExprs": { "width": "boxW" }, // optional: a formula per param
+  "groupId": "grp-3",                // the group holding this feature's entities
+  "offset": { "x": 40, "y": 20 },    // optional: where the output was placed
+  "keyIds": { "front-wall": "ent-9" } // optional: generator key -> entity id
+}
+```
+
+- **`groupId` is the link to the geometry.** A feature owns no entities directly;
+  it names the group that holds them. That group must exist, and the usual rule
+  applies — an entity belongs to at most one group.
+- **`params` are the last resolved values**, and are the fallback. A param with a
+  `paramExprs` entry is re-evaluated against `variables` and the built-in
+  keywords (`stock`, `pi`, …) before every solve; one whose expression fails to
+  evaluate keeps its cached number. So a file never needs an expression to
+  evaluate in order to load.
+- **`keyIds` survives reordering.** A generator names the entities it cares about
+  (`"front-wall"`), and regeneration pairs them up by KEY rather than by emit
+  position — so a constraint, dimension or toolpath pointing at generated
+  geometry still points at the same part of it after a parameter edit. Entries
+  whose entity has been deleted are pruned.
+- Entity ids are otherwise **stable across a regeneration**, which is what lets
+  CAM operations reference generated geometry at all.
+
+Writing `features[]` by hand is not the usual path — emit the geometry and leave
+the array out. It is documented because a file that carries one is asserting that
+the geometry can be rebuilt from these numbers, and a wrong `groupId` or a
+`generatorId` this build does not know makes that false.
+
+
 ## CAM operations
 
 Each operation is a toolpath over some `entityIds`. Required fields cover the tool
@@ -1200,6 +1250,7 @@ instead:
 | `rasterLineInterval` | `engrave` (image) | **raster engrave** (an Engrave op whose target is an `image` entity): vertical pitch (mm) between scan rows. Default 0.1 |
 | `rasterDotPitch` | `engrave` (image) | raster: horizontal pitch (mm) between dots in a row. Omitted = square dots (= `rasterLineInterval`) |
 | `rasterMinPower` | `engrave` (image) | raster: beam power (%) for the lightest engraved dot; `laserPower` is the power for a fully black dot. Default 0 |
+| `rasterDither` | `engrave` (image), laser | raster: reproduce tone as a **1-bit dot pattern** instead of modulating power per dot. Every fired dot burns at `laserPower` and tone comes from dot DENSITY, so `rasterMinPower` is unused. `floyd-steinberg` (classic), `jarvis` (smoother, wider kernel), `atkinson` (higher contrast) are error-diffusion; `ordered` is an 8x8 Bayer pattern. Omitted or `none` = greyscale power, the default |
 | `rasterInvert` | `engrave` (image) | raster: engrave the light areas instead of the dark (photo negative). Default false |
 | `laserOverride` | both | cut with this op's own beam settings, ignoring any `laser` recipe on its layer (see below). Default false |
 

@@ -12,17 +12,22 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "L-bracket",
+    "revision": "A",
+    "notes": "Fully constrained by six horizontal/vertical constraints plus four dimensions — edit any of them and the outline reflows while staying square. A fifth dimension would over-constrain it: the H/V constraints and the corner pin already account for eight of the twelve degrees of freedom."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-part",
+      "name": "Part",
       "color": "#cdd2da",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-part",
   "entities": [
     {
       "type": "polyline",
@@ -61,18 +66,19 @@
         "5"
       ],
       "closed": true,
-      "id": "ent1",
+      "id": "ent-bracket",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bracket outline"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-bracket-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v0"
         }
       ],
@@ -83,126 +89,126 @@
       ]
     },
     {
-      "id": "con2",
+      "id": "con-bracket-seg0-horizontal",
       "type": "horizontal",
       "points": [],
       "entities": [
-        "ent1#0"
+        "ent-bracket#0"
       ]
     },
     {
-      "id": "con3",
+      "id": "con-bracket-seg1-vertical",
       "type": "vertical",
       "points": [],
       "entities": [
-        "ent1#1"
+        "ent-bracket#1"
       ]
     },
     {
-      "id": "con4",
+      "id": "con-bracket-seg2-horizontal",
       "type": "horizontal",
       "points": [],
       "entities": [
-        "ent1#2"
+        "ent-bracket#2"
       ]
     },
     {
-      "id": "con5",
+      "id": "con-bracket-seg3-vertical",
       "type": "vertical",
       "points": [],
       "entities": [
-        "ent1#3"
+        "ent-bracket#3"
       ]
     },
     {
-      "id": "con6",
+      "id": "con-bracket-seg4-horizontal",
       "type": "horizontal",
       "points": [],
       "entities": [
-        "ent1#4"
+        "ent-bracket#4"
       ]
     },
     {
-      "id": "con7",
+      "id": "con-bracket-seg5-vertical",
       "type": "vertical",
       "points": [],
       "entities": [
-        "ent1#5"
+        "ent-bracket#5"
       ]
     }
   ],
   "dimensions": [
     {
-      "id": "dim1",
+      "id": "dim-bracket-span",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v0"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v1"
         }
       ],
       "entities": [],
       "value": 80,
       "driving": true,
-      "offset": -12
+      "offset": -10
     },
     {
-      "id": "dim2",
+      "id": "dim-bracket-rise",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v0"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v5"
         }
       ],
       "entities": [],
       "value": 60,
       "driving": true,
-      "offset": -12
+      "offset": -10
     },
     {
-      "id": "dim3",
+      "id": "dim-bracket-leg-h",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v1"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v2"
         }
       ],
       "entities": [],
       "value": 25,
       "driving": true,
-      "offset": 12
+      "offset": 10
     },
     {
-      "id": "dim4",
+      "id": "dim-bracket-leg-v",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v4"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-bracket",
           "key": "v5"
         }
       ],
       "entities": [],
       "value": 25,
       "driving": true,
-      "offset": 12
+      "offset": 10
     }
   ],
   "variables": [],

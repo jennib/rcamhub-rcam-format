@@ -12,17 +12,22 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Bolt flange",
+    "revision": "A",
+    "notes": "Change pcd in the Variables panel and the bolt circle re-spreads; change holeDia and every hole resizes. Only the green hole is parametric — the other five are pattern copies, regenerated from it rather than solved, which is why they read as under-defined."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-part",
+      "name": "Flange",
       "color": "#cdd2da",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-part",
   "entities": [
     {
       "type": "circle",
@@ -31,9 +36,10 @@
         "y": 65
       },
       "radius": 55,
-      "id": "ent1",
+      "id": "ent-flange-od",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Flange outside"
     },
     {
       "type": "circle",
@@ -42,9 +48,10 @@
         "y": 65
       },
       "radius": 15,
-      "id": "ent2",
+      "id": "ent-bore",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Centre bore"
     },
     {
       "type": "circle",
@@ -53,9 +60,10 @@
         "y": 65
       },
       "radius": 4,
-      "id": "ent3",
+      "id": "ent-bolt-hole-0",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole (pattern source)"
     },
     {
       "type": "circle",
@@ -64,9 +72,10 @@
         "y": 99.64101615137754
       },
       "radius": 4,
-      "id": "ent4",
+      "id": "ent-bolt-hole-1",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole 2"
     },
     {
       "type": "circle",
@@ -75,9 +84,10 @@
         "y": 99.64101615137756
       },
       "radius": 4,
-      "id": "ent5",
+      "id": "ent-bolt-hole-2",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole 3"
     },
     {
       "type": "circle",
@@ -86,9 +96,10 @@
         "y": 65
       },
       "radius": 4,
-      "id": "ent6",
+      "id": "ent-bolt-hole-3",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole 4"
     },
     {
       "type": "circle",
@@ -97,9 +108,10 @@
         "y": 30.358983848622458
       },
       "radius": 4,
-      "id": "ent7",
+      "id": "ent-bolt-hole-4",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole 5"
     },
     {
       "type": "circle",
@@ -108,18 +120,19 @@
         "y": 30.358983848622437
       },
       "radius": 4,
-      "id": "ent8",
+      "id": "ent-bolt-hole-5",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Bolt hole 6"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-flange-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-flange-od",
           "key": "c"
         }
       ],
@@ -130,24 +143,24 @@
       ]
     },
     {
-      "id": "con2",
+      "id": "con-bore-concentric",
       "type": "concentric",
       "points": [],
       "entities": [
-        "ent1",
-        "ent2"
+        "ent-flange-od",
+        "ent-bore"
       ]
     },
     {
-      "id": "con3",
+      "id": "con-hole-on-axis",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent2",
+          "entityId": "ent-bore",
           "key": "c"
         },
         {
-          "entityId": "ent3",
+          "entityId": "ent-bolt-hole-0",
           "key": "c"
         }
       ],
@@ -156,37 +169,37 @@
   ],
   "dimensions": [
     {
-      "id": "dim1",
+      "id": "dim-flange-od",
       "type": "diameter",
       "points": [],
       "entities": [
-        "ent1"
+        "ent-flange-od"
       ],
       "value": 110,
       "driving": true,
       "offset": -0.7
     },
     {
-      "id": "dim2",
+      "id": "dim-bore",
       "type": "diameter",
       "points": [],
       "entities": [
-        "ent2"
+        "ent-bore"
       ],
       "value": 30,
       "driving": true,
       "offset": 2.2
     },
     {
-      "id": "dim3",
+      "id": "dim-pcd",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent2",
+          "entityId": "ent-bore",
           "key": "c"
         },
         {
-          "entityId": "ent3",
+          "entityId": "ent-bolt-hole-0",
           "key": "c"
         }
       ],
@@ -197,11 +210,11 @@
       "expr": "pcd / 2"
     },
     {
-      "id": "dim4",
+      "id": "dim-hole-dia",
       "type": "diameter",
       "points": [],
       "entities": [
-        "ent3"
+        "ent-bolt-hole-0"
       ],
       "value": 8,
       "driving": true,
@@ -211,13 +224,13 @@
   ],
   "variables": [
     {
-      "id": "var1",
+      "id": "var-pcd",
       "name": "pcd",
       "expr": "80",
       "value": 80
     },
     {
-      "id": "var2",
+      "id": "var-holeDia",
       "name": "holeDia",
       "expr": "8",
       "value": 8
@@ -226,26 +239,26 @@
   "bindings": [],
   "patterns": [
     {
-      "id": "pat1",
+      "id": "pat-bolt-circle",
       "kind": "circular",
       "sourceIds": [
-        "ent3"
+        "ent-bolt-hole-0"
       ],
       "instanceIds": [
         [
-          "ent4"
+          "ent-bolt-hole-1"
         ],
         [
-          "ent5"
+          "ent-bolt-hole-2"
         ],
         [
-          "ent6"
+          "ent-bolt-hole-3"
         ],
         [
-          "ent7"
+          "ent-bolt-hole-4"
         ],
         [
-          "ent8"
+          "ent-bolt-hole-5"
         ]
       ],
       "params": {
