@@ -1,0 +1,321 @@
+{
+  "version": 3,
+  "name": "Clamped Toolplate",
+  "canvas": {
+    "width": 320,
+    "height": 220
+  },
+  "displayUnit": "mm",
+  "stockThickness": 25,
+  "stockRect": {
+    "x": 40,
+    "y": 30,
+    "width": 240,
+    "height": 160
+  },
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "metadata": {
+    "job": "Clamped toolplate",
+    "revision": "A",
+    "notes": "The clamps are a generator feature on a fixture layer, so pre-flight treats them as keep-outs — drag one over the pocket and machined-fixture reports an error. The pocket is roughed adaptive because 14mm deep with a ⌀6 cutter is where contour-parallel loading spikes. The plate is never cut free: it stays clamped."
+  },
+  "groups": [
+    {
+      "id": "grp-clamp-left",
+      "name": "Clamp",
+      "entityIds": [
+        "ent-clamp-left-clamp"
+      ]
+    },
+    {
+      "id": "grp-clamp-right",
+      "name": "Clamp",
+      "entityIds": [
+        "ent-clamp-right-clamp"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "feat-clamp-left",
+      "generatorId": "clamp",
+      "params": {
+        "edge": 0,
+        "along": 0,
+        "width": 70,
+        "reach": 40,
+        "overhang": 12,
+        "height": 20
+      },
+      "groupId": "grp-clamp-left",
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "keyIds": {
+        "clamp": "ent-clamp-left-clamp"
+      }
+    },
+    {
+      "id": "feat-clamp-right",
+      "generatorId": "clamp",
+      "params": {
+        "edge": 1,
+        "along": 0,
+        "width": 70,
+        "reach": 40,
+        "overhang": 12,
+        "height": 20
+      },
+      "groupId": "grp-clamp-right",
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "keyIds": {
+        "clamp": "ent-clamp-right-clamp"
+      }
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer-plate",
+      "name": "Plate",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-workholding",
+      "name": "Workholding",
+      "color": "#e0a555",
+      "visible": true,
+      "locked": false,
+      "fixture": true
+    }
+  ],
+  "activeLayerId": "layer-plate",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 40,
+        "y": 30
+      },
+      "p1": {
+        "x": 280,
+        "y": 190
+      },
+      "id": "ent-plate",
+      "isConstruction": false,
+      "layerId": "layer-plate",
+      "name": "Plate outline"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 85,
+        "y": 75
+      },
+      "p1": {
+        "x": 235,
+        "y": 145
+      },
+      "id": "ent-pocket",
+      "isConstruction": false,
+      "layerId": "layer-plate",
+      "name": "Pocket boundary"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 12,
+        "y": 75
+      },
+      "p1": {
+        "x": 52,
+        "y": 145
+      },
+      "id": "ent-clamp-left-clamp",
+      "isConstruction": false,
+      "layerId": "layer-workholding",
+      "fixtureHeight": 20
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 268,
+        "y": 75
+      },
+      "p1": {
+        "x": 308,
+        "y": 145
+      },
+      "id": "ent-clamp-right-clamp",
+      "isConstruction": false,
+      "layerId": "layer-workholding",
+      "fixtureHeight": 20
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-plate-pin",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        40,
+        30
+      ]
+    },
+    {
+      "id": "con-pocket-centred",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent-pocket",
+          "key": "center"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "tr"
+        }
+      ],
+      "entities": []
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-plate-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 240,
+      "driving": true,
+      "offset": -14
+    },
+    {
+      "id": "dim-plate-height",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 160,
+      "driving": true,
+      "offset": -14
+    },
+    {
+      "id": "dim-pocket-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-pocket",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-pocket",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 150,
+      "driving": true,
+      "offset": 8
+    },
+    {
+      "id": "dim-pocket-height",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-pocket",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-pocket",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 70,
+      "driving": true,
+      "offset": 8
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "toolId": "tool-em-6",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 6,
+      "feedrate": 1400,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 25,
+      "id": "op-pocket-recess",
+      "name": "Pocket recess (adaptive)",
+      "type": "pocket",
+      "side": "inside",
+      "entityIds": [],
+      "regions": [
+        {
+          "containingLoops": [
+            [
+              "ent-pocket"
+            ]
+          ]
+        }
+      ],
+      "depth": -14,
+      "stepdown": 4,
+      "stepover": 0.35,
+      "pocketStrategy": "adaptive",
+      "finishPass": true,
+      "finishAllowance": 0.3
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-em-6",
+      "name": "6mm End Mill",
+      "toolType": "end-mill",
+      "diameter": 6,
+      "feedrate": 1400,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 25
+    }
+  ]
+}

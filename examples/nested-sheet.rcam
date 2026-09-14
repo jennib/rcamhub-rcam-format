@@ -1,0 +1,466 @@
+{
+  "version": 3,
+  "name": "Nested Sheet",
+  "canvas": {
+    "width": 250,
+    "height": 132
+  },
+  "displayUnit": "mm",
+  "stockThickness": 12,
+  "stockRect": {
+    "x": 0,
+    "y": 0,
+    "width": 250,
+    "height": 132
+  },
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "metadata": {
+    "job": "Six-up nested sheet",
+    "revision": "A",
+    "notes": "Order is the whole lesson: every hole is bored while its part is still attached, and all six outlines are profiled last, so the sheet stays rigid as long as possible and there is one tool change instead of six. Every part keeps four tabs. The 8mm gap has to clear the ⌀3 cutter — tighten it and profile-collision fires."
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-parts",
+      "name": "Part outlines",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-holes",
+      "name": "Holes",
+      "color": "#63e6be",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-parts",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 12,
+        "y": 12
+      },
+      "p1": {
+        "x": 82,
+        "y": 62
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-1",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 1 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 22,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-1a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 1 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 72,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-1b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 1 hole B"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 90,
+        "y": 12
+      },
+      "p1": {
+        "x": 160,
+        "y": 62
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-2",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 2 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 100,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-2a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 2 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 150,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-2b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 2 hole B"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 168,
+        "y": 12
+      },
+      "p1": {
+        "x": 238,
+        "y": 62
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-3",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 3 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 178,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-3a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 3 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 228,
+        "y": 37
+      },
+      "radius": 2.5,
+      "id": "ent-hole-3b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 3 hole B"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 12,
+        "y": 70
+      },
+      "p1": {
+        "x": 82,
+        "y": 120
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-4",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 4 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 22,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-4a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 4 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 72,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-4b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 4 hole B"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 90,
+        "y": 70
+      },
+      "p1": {
+        "x": 160,
+        "y": 120
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-5",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 5 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 100,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-5a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 5 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 150,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-5b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 5 hole B"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 168,
+        "y": 70
+      },
+      "p1": {
+        "x": 238,
+        "y": 120
+      },
+      "cornerRadii": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "cornerType": "round",
+      "id": "ent-part-6",
+      "isConstruction": false,
+      "layerId": "layer-parts",
+      "name": "Part 6 outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 178,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-6a",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 6 hole A"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 228,
+        "y": 95
+      },
+      "radius": 2.5,
+      "id": "ent-hole-6b",
+      "isConstruction": false,
+      "layerId": "layer-holes",
+      "name": "Part 6 hole B"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-nest-fixed",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-part-1",
+        "ent-part-2",
+        "ent-part-3",
+        "ent-part-4",
+        "ent-part-5",
+        "ent-part-6",
+        "ent-hole-1a",
+        "ent-hole-1b",
+        "ent-hole-2a",
+        "ent-hole-2b",
+        "ent-hole-3a",
+        "ent-hole-3b",
+        "ent-hole-4a",
+        "ent-hole-4b",
+        "ent-hole-5a",
+        "ent-hole-5b",
+        "ent-hole-6a",
+        "ent-hole-6b"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-part-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-part-1",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-part-1",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 70,
+      "driving": false,
+      "offset": -8
+    },
+    {
+      "id": "dim-nest-gap",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-part-1",
+          "key": "br"
+        },
+        {
+          "entityId": "ent-part-2",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "value": 8,
+      "driving": false,
+      "offset": -18
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "toolId": "tool-em-3",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 3,
+      "feedrate": 900,
+      "plungeRate": 250,
+      "spindleSpeed": 20000,
+      "safeZ": 5,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "id": "op-bore-holes",
+      "name": "Bore all holes",
+      "type": "profile",
+      "side": "inside",
+      "entityIds": [
+        "ent-hole-1a",
+        "ent-hole-1b",
+        "ent-hole-2a",
+        "ent-hole-2b",
+        "ent-hole-3a",
+        "ent-hole-3b",
+        "ent-hole-4a",
+        "ent-hole-4b",
+        "ent-hole-5a",
+        "ent-hole-5b",
+        "ent-hole-6a",
+        "ent-hole-6b"
+      ],
+      "depth": -12.5
+    },
+    {
+      "toolId": "tool-em-3",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 3,
+      "feedrate": 900,
+      "plungeRate": 250,
+      "spindleSpeed": 20000,
+      "safeZ": 5,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "id": "op-cut-outlines",
+      "name": "Cut all outlines (tabbed)",
+      "type": "profile",
+      "side": "outside",
+      "entityIds": [
+        "ent-part-1",
+        "ent-part-2",
+        "ent-part-3",
+        "ent-part-4",
+        "ent-part-5",
+        "ent-part-6"
+      ],
+      "depth": -12.5,
+      "tabs": {
+        "enabled": true,
+        "count": 4,
+        "width": 6,
+        "height": 2
+      }
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-em-3",
+      "name": "3mm End Mill",
+      "toolType": "end-mill",
+      "diameter": 3,
+      "feedrate": 900,
+      "plungeRate": 250,
+      "spindleSpeed": 20000,
+      "safeZ": 5
+    }
+  ]
+}

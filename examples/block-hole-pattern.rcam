@@ -1,0 +1,475 @@
+{
+  "version": 3,
+  "name": "Block Hole Pattern",
+  "canvas": {
+    "width": 230,
+    "height": 170
+  },
+  "displayUnit": "mm",
+  "stockThickness": 10,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "metadata": {
+    "job": "Plate with four mounting feet",
+    "revision": "A",
+    "notes": "The four feet are INSTANCES of one block definition, not copies — edit the definition and all four follow. Rigid means the solver gives the degrees of freedom to the block as a whole — three per instance, x/y/angle, however many circles it holds. Hold one with `fixed`: a fixedPoint on a member lives INSIDE the block, and internal constraints are dropped, so it does nothing at all. Each instance is rotated a quarter turn more, so every anti-rotation dowel points in toward the plate centre."
+  },
+  "groups": [
+    {
+      "id": "grp-foot-1",
+      "name": "Mounting foot",
+      "entityIds": [
+        "ent-foot-boss",
+        "ent-foot-bore",
+        "ent-foot-dowel"
+      ],
+      "rigid": true,
+      "origin": {
+        "x": 43,
+        "y": 43
+      },
+      "angle": 0,
+      "definitionId": "blk-mounting-foot"
+    },
+    {
+      "id": "grp-foot-2",
+      "name": "Mounting foot",
+      "entityIds": [
+        "ent-foot2-boss",
+        "ent-foot2-bore",
+        "ent-foot2-dowel"
+      ],
+      "rigid": true,
+      "origin": {
+        "x": 187,
+        "y": 43
+      },
+      "angle": 1.5707963267948966,
+      "definitionId": "blk-mounting-foot"
+    },
+    {
+      "id": "grp-foot-3",
+      "name": "Mounting foot",
+      "entityIds": [
+        "ent-foot3-boss",
+        "ent-foot3-bore",
+        "ent-foot3-dowel"
+      ],
+      "rigid": true,
+      "origin": {
+        "x": 187,
+        "y": 127
+      },
+      "angle": 3.141592653589793,
+      "definitionId": "blk-mounting-foot"
+    },
+    {
+      "id": "grp-foot-4",
+      "name": "Mounting foot",
+      "entityIds": [
+        "ent-foot4-boss",
+        "ent-foot4-bore",
+        "ent-foot4-dowel"
+      ],
+      "rigid": true,
+      "origin": {
+        "x": 43,
+        "y": 127
+      },
+      "angle": -1.5707963267948966,
+      "definitionId": "blk-mounting-foot"
+    }
+  ],
+  "blockDefinitions": [
+    {
+      "id": "blk-mounting-foot",
+      "name": "Mounting foot",
+      "entities": [
+        {
+          "type": "circle",
+          "center": {
+            "x": 0,
+            "y": 0
+          },
+          "radius": 8,
+          "id": "ent-def-boss",
+          "isConstruction": false,
+          "layerId": "layer-feet"
+        },
+        {
+          "type": "circle",
+          "center": {
+            "x": 0,
+            "y": 0
+          },
+          "radius": 3.25,
+          "id": "ent-def-bore",
+          "isConstruction": false,
+          "layerId": "layer-feet"
+        },
+        {
+          "type": "circle",
+          "center": {
+            "x": 5.5,
+            "y": 5.5
+          },
+          "radius": 2,
+          "id": "ent-def-dowel",
+          "isConstruction": false,
+          "layerId": "layer-feet"
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer-plate",
+      "name": "Plate",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-feet",
+      "name": "Mounting feet",
+      "color": "#63e6be",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-plate",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 15,
+        "y": 15
+      },
+      "p1": {
+        "x": 215,
+        "y": 155
+      },
+      "id": "ent-plate",
+      "isConstruction": false,
+      "layerId": "layer-plate",
+      "name": "Plate outline"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 43,
+        "y": 43
+      },
+      "radius": 8,
+      "id": "ent-foot-boss",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot boss"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 43,
+        "y": 43
+      },
+      "radius": 3.25,
+      "id": "ent-foot-bore",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot bore"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 48.5,
+        "y": 48.5
+      },
+      "radius": 2,
+      "id": "ent-foot-dowel",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Anti-rotation dowel"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 187,
+        "y": 43
+      },
+      "radius": 8,
+      "id": "ent-foot2-boss",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot boss"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 187,
+        "y": 43
+      },
+      "radius": 3.25,
+      "id": "ent-foot2-bore",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot bore"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 181.5,
+        "y": 48.5
+      },
+      "radius": 2,
+      "id": "ent-foot2-dowel",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Anti-rotation dowel"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 187,
+        "y": 127
+      },
+      "radius": 8,
+      "id": "ent-foot3-boss",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot boss"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 187,
+        "y": 127
+      },
+      "radius": 3.25,
+      "id": "ent-foot3-bore",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot bore"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 181.5,
+        "y": 121.5
+      },
+      "radius": 2,
+      "id": "ent-foot3-dowel",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Anti-rotation dowel"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 43,
+        "y": 127
+      },
+      "radius": 8,
+      "id": "ent-foot4-boss",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot boss"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 43,
+        "y": 127
+      },
+      "radius": 3.25,
+      "id": "ent-foot4-bore",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Foot bore"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 48.5,
+        "y": 121.5
+      },
+      "radius": 2,
+      "id": "ent-foot4-dowel",
+      "isConstruction": false,
+      "layerId": "layer-feet",
+      "name": "Anti-rotation dowel"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-plate-pin",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        15,
+        15
+      ]
+    },
+    {
+      "id": "con-grp-foot-1-fixed",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-foot-boss",
+        "ent-foot-bore",
+        "ent-foot-dowel"
+      ]
+    },
+    {
+      "id": "con-grp-foot-2-fixed",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-foot2-boss",
+        "ent-foot2-bore",
+        "ent-foot2-dowel"
+      ]
+    },
+    {
+      "id": "con-grp-foot-3-fixed",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-foot3-boss",
+        "ent-foot3-bore",
+        "ent-foot3-dowel"
+      ]
+    },
+    {
+      "id": "con-grp-foot-4-fixed",
+      "type": "fixed",
+      "points": [],
+      "entities": [
+        "ent-foot4-boss",
+        "ent-foot4-bore",
+        "ent-foot4-dowel"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-plate-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 200,
+      "driving": true,
+      "offset": -12
+    },
+    {
+      "id": "dim-plate-height",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-plate",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-plate",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 140,
+      "driving": true,
+      "offset": -12
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "inside",
+      "toolType": "drill",
+      "feedrate": 300,
+      "plungeRate": 150,
+      "spindleSpeed": 4000,
+      "safeZ": 5,
+      "depth": -11,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "peckDepth": 3,
+      "id": "op-drill-bores",
+      "name": "Drill M6 clearance bores",
+      "type": "drill",
+      "entityIds": [
+        "ent-foot-bore",
+        "ent-foot2-bore",
+        "ent-foot3-bore",
+        "ent-foot4-bore"
+      ],
+      "toolId": "tool-drill-65",
+      "toolNumber": 1,
+      "diameter": 6.5
+    },
+    {
+      "side": "inside",
+      "toolType": "drill",
+      "feedrate": 250,
+      "plungeRate": 120,
+      "spindleSpeed": 5000,
+      "safeZ": 5,
+      "depth": -11,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "peckDepth": 3,
+      "id": "op-drill-dowels",
+      "name": "Drill dowel holes",
+      "type": "drill",
+      "entityIds": [
+        "ent-foot-dowel",
+        "ent-foot2-dowel",
+        "ent-foot3-dowel",
+        "ent-foot4-dowel"
+      ],
+      "toolId": "tool-drill-4",
+      "toolNumber": 2,
+      "diameter": 4
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-drill-65",
+      "name": "6.5mm Drill",
+      "toolType": "drill",
+      "diameter": 6.5,
+      "feedrate": 300,
+      "plungeRate": 150,
+      "spindleSpeed": 4000,
+      "safeZ": 5
+    },
+    {
+      "id": "tool-drill-4",
+      "name": "4mm Drill",
+      "toolType": "drill",
+      "diameter": 4,
+      "feedrate": 250,
+      "plungeRate": 120,
+      "spindleSpeed": 5000,
+      "safeZ": 5
+    }
+  ]
+}
