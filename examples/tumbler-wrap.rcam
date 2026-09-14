@@ -17,17 +17,41 @@
     "diameter": 80,
     "wrapAxis": "y"
   },
+  "metadata": {
+    "job": "Tumbler wrap, ⌀80",
+    "revision": "A",
+    "notes": "The canvas height IS the circumference (π × 80), so a line spanning it closes on itself when the sheet rolls up — that is why the rings are lines, not circles. Twelve ticks, not thirteen: a tick at the top edge is the same line on the rod as the one at the bottom. Change the diameter and the canvas height must follow."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
-      "color": "#cdd2da",
+      "id": "layer-marks",
+      "name": "Rings & ticks",
+      "color": "#4dabf7",
       "visible": true,
-      "locked": false
+      "locked": false,
+      "laser": {
+        "kind": "engrave",
+        "feedrate": 1500,
+        "laserPower": 40,
+        "laserPasses": 1
+      }
+    },
+    {
+      "id": "layer-name",
+      "name": "Name",
+      "color": "#da77f2",
+      "visible": true,
+      "locked": false,
+      "laser": {
+        "kind": "fill",
+        "feedrate": 2000,
+        "laserPower": 65,
+        "laserPasses": 1
+      }
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-marks",
   "entities": [
     {
       "type": "line",
@@ -39,9 +63,10 @@
         "x": 25,
         "y": 251.32741228718345
       },
-      "id": "ent1",
+      "id": "ent-ring-start",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Band ring, start"
     },
     {
       "type": "line",
@@ -53,9 +78,10 @@
         "x": 95,
         "y": 251.32741228718345
       },
-      "id": "ent2",
+      "id": "ent-ring-end",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Band ring, end"
     },
     {
       "type": "line",
@@ -67,9 +93,10 @@
         "x": 31,
         "y": 0
       },
-      "id": "ent3",
+      "id": "ent-tick-0",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 0°"
     },
     {
       "type": "line",
@@ -81,9 +108,10 @@
         "x": 31,
         "y": 20.943951023931955
       },
-      "id": "ent4",
+      "id": "ent-tick-1",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 30°"
     },
     {
       "type": "line",
@@ -95,9 +123,10 @@
         "x": 31,
         "y": 41.88790204786391
       },
-      "id": "ent5",
+      "id": "ent-tick-2",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 60°"
     },
     {
       "type": "line",
@@ -109,9 +138,10 @@
         "x": 31,
         "y": 62.831853071795855
       },
-      "id": "ent6",
+      "id": "ent-tick-3",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 90°"
     },
     {
       "type": "line",
@@ -123,9 +153,10 @@
         "x": 31,
         "y": 83.77580409572782
       },
-      "id": "ent7",
+      "id": "ent-tick-4",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 120°"
     },
     {
       "type": "line",
@@ -137,9 +168,10 @@
         "x": 31,
         "y": 104.71975511965978
       },
-      "id": "ent8",
+      "id": "ent-tick-5",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 150°"
     },
     {
       "type": "line",
@@ -151,9 +183,10 @@
         "x": 31,
         "y": 125.66370614359171
       },
-      "id": "ent9",
+      "id": "ent-tick-6",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 180°"
     },
     {
       "type": "line",
@@ -165,9 +198,10 @@
         "x": 31,
         "y": 146.60765716752368
       },
-      "id": "ent10",
+      "id": "ent-tick-7",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 210°"
     },
     {
       "type": "line",
@@ -179,9 +213,10 @@
         "x": 31,
         "y": 167.55160819145564
       },
-      "id": "ent11",
+      "id": "ent-tick-8",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 240°"
     },
     {
       "type": "line",
@@ -193,9 +228,10 @@
         "x": 31,
         "y": 188.4955592153876
       },
-      "id": "ent12",
+      "id": "ent-tick-9",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 270°"
     },
     {
       "type": "line",
@@ -207,9 +243,10 @@
         "x": 31,
         "y": 209.43951023931956
       },
-      "id": "ent13",
+      "id": "ent-tick-10",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 300°"
     },
     {
       "type": "line",
@@ -221,9 +258,10 @@
         "x": 31,
         "y": 230.38346126325152
       },
-      "id": "ent14",
+      "id": "ent-tick-11",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-marks",
+      "name": "Tick, 330°"
     },
     {
       "type": "text",
@@ -232,35 +270,36 @@
       "sizeMM": 18,
       "position": {
         "x": 66.3984375,
-        "y": 79.76722176859172
+        "y": 100.10071786234172
       },
       "angle": 1.5707963267948966,
-      "id": "ent15",
+      "id": "ent-name",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-name",
+      "name": "Name"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-layout-fixed",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent1",
-        "ent2",
-        "ent3",
-        "ent4",
-        "ent5",
-        "ent6",
-        "ent7",
-        "ent8",
-        "ent9",
-        "ent10",
-        "ent11",
-        "ent12",
-        "ent13",
-        "ent14",
-        "ent15"
+        "ent-ring-start",
+        "ent-ring-end",
+        "ent-tick-0",
+        "ent-tick-1",
+        "ent-tick-2",
+        "ent-tick-3",
+        "ent-tick-4",
+        "ent-tick-5",
+        "ent-tick-6",
+        "ent-tick-7",
+        "ent-tick-8",
+        "ent-tick-9",
+        "ent-tick-10",
+        "ent-tick-11",
+        "ent-name"
       ]
     }
   ],
@@ -271,17 +310,28 @@
   "operations": [
     {
       "side": "outside",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -1,
       "stepdown": 1,
       "stepover": 0.4,
-      "id": "op1",
+      "laserPasses": 1,
+      "id": "op-engrave-rings",
       "name": "Engrave rings",
       "type": "engrave",
       "entityIds": [
-        "ent1",
-        "ent2"
+        "ent-ring-start",
+        "ent-ring-end"
       ],
       "feedrate": 1500,
-      "laserPower": 40,
+      "laserPower": 40
+    },
+    {
+      "side": "outside",
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 0.2,
@@ -289,31 +339,31 @@
       "spindleSpeed": 0,
       "safeZ": 5,
       "depth": -1,
-      "laserPasses": 1
-    },
-    {
-      "side": "outside",
       "stepdown": 1,
       "stepover": 0.4,
-      "id": "op2",
+      "laserPasses": 1,
+      "id": "op-engrave-ticks",
       "name": "Engrave 30° ticks",
       "type": "engrave",
       "entityIds": [
-        "ent3",
-        "ent4",
-        "ent5",
-        "ent6",
-        "ent7",
-        "ent8",
-        "ent9",
-        "ent10",
-        "ent11",
-        "ent12",
-        "ent13",
-        "ent14"
+        "ent-tick-0",
+        "ent-tick-1",
+        "ent-tick-2",
+        "ent-tick-3",
+        "ent-tick-4",
+        "ent-tick-5",
+        "ent-tick-6",
+        "ent-tick-7",
+        "ent-tick-8",
+        "ent-tick-9",
+        "ent-tick-10",
+        "ent-tick-11"
       ],
       "feedrate": 1500,
-      "laserPower": 40,
+      "laserPower": 40
+    },
+    {
+      "side": "outside",
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 0.2,
@@ -321,31 +371,20 @@
       "spindleSpeed": 0,
       "safeZ": 5,
       "depth": -1,
-      "laserPasses": 1
-    },
-    {
-      "side": "outside",
       "stepdown": 1,
       "stepover": 0.4,
-      "id": "op3",
+      "laserPasses": 1,
+      "id": "op-fill-name",
       "name": "Fill-engrave name",
       "type": "engrave",
       "entityIds": [
-        "ent15"
+        "ent-name"
       ],
       "feedrate": 2000,
       "laserPower": 65,
       "laserFill": true,
       "laserFillSpacing": 0.2,
-      "laserOverscan": 2,
-      "toolType": "end-mill",
-      "toolNumber": 1,
-      "diameter": 0.2,
-      "plungeRate": 300,
-      "spindleSpeed": 0,
-      "safeZ": 5,
-      "depth": -1,
-      "laserPasses": 1
+      "laserOverscan": 2
     }
   ],
   "tools": []

@@ -12,17 +12,29 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "V-carve inlay coaster",
+    "revision": "A",
+    "notes": "One operation cuts BOTH halves: the female pocket in this board and the male plug from a second board of the same thickness. glueGap sinks the male's V so the flanks seat before the apex, sawAllowance is the stock you plane off afterwards, and the O's counter has to survive as standing material on the male."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-board",
+      "name": "Coaster blank",
       "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-design",
+      "name": "Inlay design",
+      "color": "#da77f2",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-design",
   "entities": [
     {
       "type": "rectangle",
@@ -34,9 +46,10 @@
         "x": 130,
         "y": 130
       },
-      "id": "ent-mtp3qb1j-kgfhf3",
+      "id": "ent-coaster-blank",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-board",
+      "name": "Coaster blank"
     },
     {
       "type": "text",
@@ -48,18 +61,19 @@
         "y": 53.6484375
       },
       "angle": 0,
-      "id": "ent-mtp3qb1m-r5jlrg",
+      "id": "ent-inlay-word",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-design",
+      "name": "Inlay lettering"
     }
   ],
   "constraints": [
     {
-      "id": "con-mtp3qb1m-ylfn7t",
+      "id": "con-blank-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent-mtp3qb1j-kgfhf3",
+          "entityId": "ent-coaster-blank",
           "key": "bl"
         }
       ],
@@ -70,32 +84,32 @@
       ]
     },
     {
-      "id": "con-mtp3qb1m-jsxi9a",
-      "type": "fixedPoint",
+      "id": "con-word-centred",
+      "type": "center",
       "points": [
         {
-          "entityId": "ent-mtp3qb1m-r5jlrg",
-          "key": "pos"
+          "entityId": "ent-inlay-word",
+          "key": "center"
+        },
+        {
+          "entityId": "ent-coaster-blank",
+          "key": "center"
         }
       ],
-      "entities": [],
-      "params": [
-        23.1240234375,
-        53.6484375
-      ]
+      "entities": []
     }
   ],
   "dimensions": [
     {
-      "id": "dim-mtp3qb1m-ylanzv",
+      "id": "dim-blank-width",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent-mtp3qb1j-kgfhf3",
+          "entityId": "ent-coaster-blank",
           "key": "bl"
         },
         {
-          "entityId": "ent-mtp3qb1j-kgfhf3",
+          "entityId": "ent-coaster-blank",
           "key": "br"
         }
       ],
@@ -105,15 +119,15 @@
       "offset": -14
     },
     {
-      "id": "dim-mtp3qb1m-kifbrc",
+      "id": "dim-blank-height",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent-mtp3qb1j-kgfhf3",
+          "entityId": "ent-coaster-blank",
           "key": "bl"
         },
         {
-          "entityId": "ent-mtp3qb1j-kgfhf3",
+          "entityId": "ent-coaster-blank",
           "key": "tl"
         }
       ],
@@ -128,9 +142,13 @@
   "patterns": [],
   "operations": [
     {
+      "id": "op-inlay-word",
+      "name": "Inlay OAK",
+      "type": "inlay",
+      "entityIds": [
+        "ent-inlay-word"
+      ],
       "side": "outside",
-      "stepdown": 3,
-      "stepover": 0.4,
       "toolId": "tool-vbit-60",
       "toolType": "v-bit",
       "toolNumber": 1,
@@ -140,12 +158,8 @@
       "plungeRate": 300,
       "spindleSpeed": 18000,
       "safeZ": 5,
-      "id": "op1",
-      "name": "Inlay OAK",
-      "type": "inlay",
-      "entityIds": [
-        "ent-mtp3qb1m-r5jlrg"
-      ],
+      "stepdown": 3,
+      "stepover": 0.4,
       "depth": -3,
       "pocketDepth": 3,
       "vStep": 0.4,

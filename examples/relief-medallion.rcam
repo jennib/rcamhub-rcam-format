@@ -12,17 +12,22 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Relief medallion",
+    "revision": "A",
+    "notes": "A relief is one job stored as two operations, and the rough must run first — the finish is only cheap because the rough already took the bulk. The image is a height map, not a picture: zRangeMM makes 255 the top surface and 0 the base, and switches off every tone control, because these bytes are lengths."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-medallion",
+      "name": "Medallion",
       "color": "#cdd2da",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-medallion",
   "entities": [
     {
       "type": "image",
@@ -37,18 +42,19 @@
       "flipX": false,
       "flipY": false,
       "aspectLocked": true,
-      "id": "ent-mtp4e45y-i9drww",
+      "id": "ent-medallion",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-medallion",
+      "name": "Medallion height map"
     }
   ],
   "constraints": [
     {
-      "id": "con-mtp4e45z-6w205b",
+      "id": "con-medallion-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent-mtp4e45y-i9drww",
+          "entityId": "ent-medallion",
           "key": "center"
         }
       ],
@@ -66,13 +72,11 @@
   "operations": [
     {
       "side": "outside",
-      "stepdown": 2,
-      "stepover": 0.5,
       "entityIds": [
-        "ent-mtp4e45y-i9drww"
+        "ent-medallion"
       ],
       "depth": -12,
-      "id": "op1",
+      "id": "op-relief-rough",
       "name": "3-D Relief 1 Rough",
       "type": "relief-rough",
       "toolId": "tool-em-6",
@@ -83,18 +87,18 @@
       "plungeRate": 400,
       "spindleSpeed": 18000,
       "safeZ": 5,
+      "stepdown": 2,
+      "stepover": 0.5,
       "finishAllowance": 0.4,
       "rampAngle": 3
     },
     {
       "side": "outside",
-      "stepdown": 2,
-      "stepover": 0.4,
       "entityIds": [
-        "ent-mtp4e45y-i9drww"
+        "ent-medallion"
       ],
       "depth": -12,
-      "id": "op2",
+      "id": "op-relief-finish",
       "name": "3-D Relief 1",
       "type": "engrave",
       "toolId": "tool-bn-6",
@@ -105,6 +109,8 @@
       "plungeRate": 400,
       "spindleSpeed": 20000,
       "safeZ": 5,
+      "stepdown": 2,
+      "stepover": 0.4,
       "rasterLineInterval": 0.6000000000000001,
       "reliefSteepPass": true
     }

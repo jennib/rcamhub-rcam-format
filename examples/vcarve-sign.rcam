@@ -12,17 +12,29 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Carved shop sign",
+    "revision": "A",
+    "notes": "The same 60° bit does two different jobs: v-carve varies its depth with the width of each letter, while chamfer follows the border at one fixed depth to break the edge. Both run before the profile — once the board is cut free it is loose on the spoilboard."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-board",
+      "name": "Board",
       "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-lettering",
+      "name": "Lettering",
+      "color": "#da77f2",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-lettering",
   "entities": [
     {
       "type": "rectangle",
@@ -34,9 +46,10 @@
         "x": 190,
         "y": 90
       },
-      "id": "ent1",
+      "id": "ent-board",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-board",
+      "name": "Sign board"
     },
     {
       "type": "text",
@@ -44,22 +57,23 @@
       "fontId": "roboto-bold",
       "sizeMM": 28,
       "position": {
-        "x": 72.8,
-        "y": 50
+        "x": 72.853515625,
+        "y": 50.046875
       },
       "angle": 0,
-      "id": "ent2",
+      "id": "ent-lettering",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-lettering",
+      "name": "Lettering"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-board-pin",
       "type": "fixedPoint",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-board",
           "key": "bl"
         }
       ],
@@ -70,32 +84,32 @@
       ]
     },
     {
-      "id": "con2",
-      "type": "fixedPoint",
+      "id": "con-lettering-centred",
+      "type": "center",
       "points": [
         {
-          "entityId": "ent2",
-          "key": "pos"
+          "entityId": "ent-lettering",
+          "key": "center"
+        },
+        {
+          "entityId": "ent-board",
+          "key": "center"
         }
       ],
-      "entities": [],
-      "params": [
-        72.8,
-        50
-      ]
+      "entities": []
     }
   ],
   "dimensions": [
     {
-      "id": "dim1",
+      "id": "dim-board-width",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-board",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-board",
           "key": "br"
         }
       ],
@@ -105,15 +119,15 @@
       "offset": -14
     },
     {
-      "id": "dim2",
+      "id": "dim-board-height",
       "type": "vertical",
       "points": [
         {
-          "entityId": "ent1",
+          "entityId": "ent-board",
           "key": "bl"
         },
         {
-          "entityId": "ent1",
+          "entityId": "ent-board",
           "key": "tl"
         }
       ],
@@ -129,14 +143,6 @@
   "operations": [
     {
       "side": "outside",
-      "stepdown": 5,
-      "stepover": 0.4,
-      "id": "op1",
-      "name": "V-carve lettering",
-      "type": "vcarve",
-      "entityIds": [
-        "ent2"
-      ],
       "toolId": "tool-vbit-60",
       "toolType": "v-bit",
       "toolNumber": 1,
@@ -146,19 +152,19 @@
       "plungeRate": 300,
       "spindleSpeed": 18000,
       "safeZ": 5,
+      "stepover": 0.4,
+      "id": "op-vcarve-lettering",
+      "name": "V-carve lettering",
+      "type": "vcarve",
+      "entityIds": [
+        "ent-lettering"
+      ],
       "depth": -5,
+      "stepdown": 5,
       "vStep": 0.4
     },
     {
       "side": "outside",
-      "stepdown": 3.5,
-      "stepover": 0.4,
-      "id": "op2",
-      "name": "Chamfer border",
-      "type": "chamfer",
-      "entityIds": [
-        "ent1"
-      ],
       "toolId": "tool-vbit-60",
       "toolType": "v-bit",
       "toolNumber": 1,
@@ -168,20 +174,26 @@
       "plungeRate": 300,
       "spindleSpeed": 18000,
       "safeZ": 5,
+      "stepover": 0.4,
+      "id": "op-chamfer-border",
+      "name": "Chamfer border",
+      "type": "chamfer",
+      "entityIds": [
+        "ent-board"
+      ],
       "depth": -3.5,
+      "stepdown": 3.5,
       "chamferWidth": 2,
       "chamferSide": "inside"
     },
     {
-      "side": "outside",
-      "stepdown": 3,
-      "stepover": 0.4,
-      "id": "op3",
+      "id": "op-cut-board",
       "name": "Cut out board",
       "type": "profile",
       "entityIds": [
-        "ent1"
+        "ent-board"
       ],
+      "side": "outside",
       "toolId": "tool-em-6",
       "toolType": "end-mill",
       "toolNumber": 2,
@@ -191,6 +203,8 @@
       "spindleSpeed": 18000,
       "safeZ": 5,
       "depth": -19,
+      "stepdown": 3,
+      "stepover": 0.4,
       "tabs": {
         "enabled": true,
         "count": 4,
@@ -210,7 +224,7 @@
   "tools": [
     {
       "id": "tool-vbit-60",
-      "name": "60° V-Bit",
+      "name": "60° V-Bit (1/2\")",
       "toolType": "v-bit",
       "diameter": 12,
       "vAngle": 60,

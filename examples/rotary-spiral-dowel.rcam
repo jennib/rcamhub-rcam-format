@@ -3,7 +3,7 @@
   "name": "Rotary Spiral Dowel",
   "canvas": {
     "width": 150,
-    "height": 94.2478
+    "height": 94.24777960769379
   },
   "displayUnit": "mm",
   "stockThickness": 12,
@@ -17,17 +17,29 @@
     "diameter": 30,
     "wrapAxis": "y"
   },
+  "metadata": {
+    "job": "Spiral-fluted dowel",
+    "revision": "A",
+    "notes": "The canvas height IS the circumference (π × 30), computed rather than typed — a rounded constant leaves the wrap seam open. A straight line on this unrolled sheet is a helix on the rod, which is why a rotary job is drawn flat."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
-      "color": "#cdd2da",
+      "id": "layer-flutes",
+      "name": "Rings & flutes",
+      "color": "#4dabf7",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-name",
+      "name": "Name",
+      "color": "#da77f2",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-flutes",
   "entities": [
     {
       "type": "line",
@@ -37,11 +49,12 @@
       },
       "b": {
         "x": 10,
-        "y": 94.2478
+        "y": 94.24777960769379
       },
-      "id": "ent1",
+      "id": "ent-ring-start",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-flutes",
+      "name": "Ring, start"
     },
     {
       "type": "line",
@@ -51,11 +64,12 @@
       },
       "b": {
         "x": 140,
-        "y": 94.2478
+        "y": 94.24777960769379
       },
-      "id": "ent2",
+      "id": "ent-ring-end",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-flutes",
+      "name": "Ring, end"
     },
     {
       "type": "line",
@@ -65,11 +79,12 @@
       },
       "b": {
         "x": 50,
-        "y": 94.2478
+        "y": 94.24777960769379
       },
-      "id": "ent3",
+      "id": "ent-flute-a",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-flutes",
+      "name": "Spiral flute A"
     },
     {
       "type": "line",
@@ -79,11 +94,12 @@
       },
       "b": {
         "x": 132,
-        "y": 94.2478
+        "y": 94.24777960769379
       },
-      "id": "ent4",
+      "id": "ent-flute-b",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-flutes",
+      "name": "Spiral flute B"
     },
     {
       "type": "text",
@@ -91,40 +107,27 @@
       "fontId": "roboto-regular",
       "sizeMM": 8,
       "position": {
-        "x": 55,
-        "y": 44.3
+        "x": 63.8359375,
+        "y": 44.28013980384689
       },
       "angle": 0,
-      "id": "ent5",
+      "id": "ent-name",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-name",
+      "name": "Name"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-layout-fixed",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent1",
-        "ent2",
-        "ent3",
-        "ent4"
-      ]
-    },
-    {
-      "id": "con2",
-      "type": "fixedPoint",
-      "points": [
-        {
-          "entityId": "ent5",
-          "key": "pos"
-        }
-      ],
-      "entities": [],
-      "params": [
-        55,
-        44.3
+        "ent-ring-start",
+        "ent-ring-end",
+        "ent-flute-a",
+        "ent-flute-b",
+        "ent-name"
       ]
     }
   ],
@@ -134,18 +137,16 @@
   "patterns": [],
   "operations": [
     {
-      "side": "outside",
-      "stepdown": 0.75,
-      "stepover": 0.4,
-      "id": "op1",
+      "id": "op-rings-and-flutes",
       "name": "Rings & spiral flutes",
       "type": "engrave",
       "entityIds": [
-        "ent1",
-        "ent2",
-        "ent3",
-        "ent4"
+        "ent-ring-start",
+        "ent-ring-end",
+        "ent-flute-a",
+        "ent-flute-b"
       ],
+      "side": "outside",
       "toolId": "tool-bn-3",
       "toolType": "ball-nose",
       "toolNumber": 1,
@@ -154,18 +155,18 @@
       "plungeRate": 250,
       "spindleSpeed": 12000,
       "safeZ": 5,
-      "depth": -1.5
+      "depth": -1.5,
+      "stepdown": 0.75,
+      "stepover": 0.4
     },
     {
-      "side": "outside",
-      "stepdown": 0.6,
-      "stepover": 0.4,
-      "id": "op2",
+      "id": "op-engrave-name",
       "name": "Engrave name",
       "type": "engrave",
       "entityIds": [
-        "ent5"
+        "ent-name"
       ],
+      "side": "outside",
       "toolId": "tool-vb-30",
       "toolType": "v-bit",
       "toolNumber": 2,
@@ -175,7 +176,9 @@
       "plungeRate": 300,
       "spindleSpeed": 18000,
       "safeZ": 5,
-      "depth": -0.6
+      "depth": -0.6,
+      "stepdown": 0.6,
+      "stepover": 0.4
     }
   ],
   "tools": [

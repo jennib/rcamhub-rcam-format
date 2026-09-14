@@ -12,17 +12,22 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Box-joint panel",
+    "revision": "B",
+    "notes": "cornerStyle 'tbone' is what makes this joint fit: a round cutter leaves a fillet in every square inside corner, and the mating finger has square ones. Finger depth IS the mating panel's thickness — it is driven by stock, not chosen."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-panel",
+      "name": "Panel",
       "color": "#cdd2da",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-panel",
   "entities": [
     {
       "type": "polyline",
@@ -45,11 +50,11 @@
         },
         {
           "x": 110,
-          "y": 70
+          "y": 66
         },
         {
           "x": 90,
-          "y": 70
+          "y": 66
         },
         {
           "x": 90,
@@ -61,11 +66,11 @@
         },
         {
           "x": 70,
-          "y": 70
+          "y": 66
         },
         {
           "x": 50,
-          "y": 70
+          "y": 66
         },
         {
           "x": 50,
@@ -77,11 +82,11 @@
         },
         {
           "x": 30,
-          "y": 70
+          "y": 66
         },
         {
           "x": 10,
-          "y": 70
+          "y": 66
         }
       ],
       "vertexIds": [
@@ -101,39 +106,40 @@
         "13"
       ],
       "closed": true,
-      "id": "panel",
+      "id": "ent-panel",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-panel",
+      "name": "Box-joint panel"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
+      "id": "con-panel-fixed",
       "type": "fixed",
       "points": [],
       "entities": [
-        "panel"
+        "ent-panel"
       ]
     }
   ],
   "dimensions": [
     {
-      "id": "dim-tabwidth",
+      "id": "dim-tab-width",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "panel",
+          "entityId": "ent-panel",
           "key": "v4"
         },
         {
-          "entityId": "panel",
+          "entityId": "ent-panel",
           "key": "v5"
         }
       ],
+      "entities": [],
       "value": 20,
       "driving": false,
-      "offset": 12,
-      "entities": []
+      "offset": 12
     }
   ],
   "variables": [
@@ -154,15 +160,13 @@
   "patterns": [],
   "operations": [
     {
-      "side": "outside",
-      "stepdown": 2,
-      "stepover": 0.4,
-      "id": "op-profile",
+      "id": "op-cut-panel",
       "name": "Cut panel outline",
       "type": "profile",
       "entityIds": [
-        "panel"
+        "ent-panel"
       ],
+      "side": "outside",
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 3,
@@ -171,6 +175,11 @@
       "spindleSpeed": 18000,
       "safeZ": 5,
       "depth": -6.5,
+      "paramExprs": {
+        "depth": "-(stock + 0.5)"
+      },
+      "stepdown": 2,
+      "stepover": 0.4,
       "cornerStyle": "tbone",
       "tabs": {
         "enabled": true,
