@@ -12,17 +12,22 @@
     "y": "front",
     "z": "top"
   },
+  "metadata": {
+    "job": "Enclosure lid",
+    "revision": "A",
+    "notes": "Edit the 120 or the 80 and the recess follows, keeping its 15mm wall — and the pocket still clears the right face, because a region reference names its boundary loops rather than coordinates. The boss in the middle is an island: the pocket goes around it, it is not cut."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
+      "id": "layer-part",
+      "name": "Lid",
       "color": "#cdd2da",
       "visible": true,
       "locked": false
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-part",
   "entities": [
     {
       "type": "rectangle",
@@ -34,9 +39,10 @@
         "x": 135,
         "y": 95
       },
-      "id": "ent1",
+      "id": "ent-lid",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Lid outline"
     },
     {
       "type": "rectangle",
@@ -48,9 +54,10 @@
         "x": 120,
         "y": 80
       },
-      "id": "ent2",
+      "id": "ent-recess",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Recess boundary"
     },
     {
       "type": "circle",
@@ -59,50 +66,174 @@
         "y": 55
       },
       "radius": 10,
-      "id": "ent3",
+      "id": "ent-boss",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-part",
+      "name": "Boss (island)"
     }
   ],
   "constraints": [
     {
-      "id": "con1",
-      "type": "fixed",
-      "points": [],
-      "entities": [
-        "ent1"
+      "id": "con-lid-pin",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        15,
+        15
       ]
     },
     {
-      "id": "con2",
-      "type": "fixed",
-      "points": [],
-      "entities": [
-        "ent2"
-      ]
-    },
-    {
-      "id": "con3",
-      "type": "fixed",
-      "points": [],
-      "entities": [
-        "ent3"
-      ]
+      "id": "con-boss-centred",
+      "type": "midpoint",
+      "points": [
+        {
+          "entityId": "ent-boss",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "tr"
+        }
+      ],
+      "entities": []
     }
   ],
-  "dimensions": [],
+  "dimensions": [
+    {
+      "id": "dim-lid-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 120,
+      "driving": true,
+      "offset": -10
+    },
+    {
+      "id": "dim-lid-height",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 80,
+      "driving": true,
+      "offset": -10
+    },
+    {
+      "id": "dim-wall-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-recess",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": 6
+    },
+    {
+      "id": "dim-wall-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-lid",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-recess",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": 6
+    },
+    {
+      "id": "dim-wall-x2",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-recess",
+          "key": "tr"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "tr"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": 6
+    },
+    {
+      "id": "dim-wall-y2",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-recess",
+          "key": "tr"
+        },
+        {
+          "entityId": "ent-lid",
+          "key": "tr"
+        }
+      ],
+      "entities": [],
+      "value": 15,
+      "driving": true,
+      "offset": 6
+    },
+    {
+      "id": "dim-boss-dia",
+      "type": "diameter",
+      "points": [],
+      "entities": [
+        "ent-boss"
+      ],
+      "value": 20,
+      "driving": true,
+      "offset": 2.356
+    }
+  ],
   "variables": [],
   "bindings": [],
   "patterns": [],
   "operations": [
     {
-      "side": "inside",
-      "stepdown": 2,
-      "stepover": 0.4,
-      "id": "op1",
-      "name": "Pocket recess",
-      "type": "pocket",
-      "entityIds": [],
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 6,
@@ -110,31 +241,29 @@
       "plungeRate": 250,
       "spindleSpeed": 18000,
       "safeZ": 5,
-      "depth": -4,
-      "pocketStrategy": "offset",
+      "stepover": 0.4,
+      "id": "op-pocket-recess",
+      "name": "Pocket recess",
+      "type": "pocket",
+      "side": "inside",
+      "entityIds": [],
       "regions": [
         {
           "containingLoops": [
             [
-              "ent1"
+              "ent-lid"
             ],
             [
-              "ent2"
+              "ent-recess"
             ]
           ]
         }
-      ]
+      ],
+      "depth": -4,
+      "stepdown": 2,
+      "pocketStrategy": "offset"
     },
     {
-      "side": "outside",
-      "stepdown": 2.5,
-      "stepover": 0.4,
-      "id": "op2",
-      "name": "Profile outline",
-      "type": "profile",
-      "entityIds": [
-        "ent1"
-      ],
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 6,
@@ -142,20 +271,21 @@
       "plungeRate": 250,
       "spindleSpeed": 18000,
       "safeZ": 5,
+      "stepover": 0.4,
+      "id": "op-profile-outline",
+      "name": "Profile outline",
+      "type": "profile",
+      "side": "outside",
+      "entityIds": [
+        "ent-lid"
+      ],
       "depth": -11,
+      "stepdown": 2.5,
       "tabs": {
         "enabled": true,
         "count": 4,
         "width": 10,
         "height": 2
-      },
-      "leadIn": {
-        "type": "arc",
-        "length": 3
-      },
-      "leadOut": {
-        "type": "arc",
-        "length": 3
       }
     }
   ],

@@ -13,17 +13,41 @@
     "z": "top"
   },
   "machineKind": "laser",
+  "metadata": {
+    "job": "Fold-up tray",
+    "revision": "A",
+    "notes": "Two jobs, two layers, two powers: Score marks the fold lines at 22% without severing them, Cut takes the outline out at 95%. Score runs first — once the outline is cut the net is loose on the bed, and scoring a part that has shifted is scrap."
+  },
   "groups": [],
   "layers": [
     {
-      "id": "layer-0",
-      "name": "Default",
-      "color": "#cdd2da",
+      "id": "layer-score",
+      "name": "Score",
+      "color": "#ffd43b",
       "visible": true,
-      "locked": false
+      "locked": false,
+      "laser": {
+        "kind": "score",
+        "feedrate": 2400,
+        "laserPower": 22,
+        "laserPasses": 1
+      }
+    },
+    {
+      "id": "layer-cut",
+      "name": "Cut",
+      "color": "#ff6b6b",
+      "visible": true,
+      "locked": false,
+      "laser": {
+        "kind": "cut",
+        "feedrate": 600,
+        "laserPower": 95,
+        "laserPasses": 1
+      }
     }
   ],
-  "activeLayerId": "layer-0",
+  "activeLayerId": "layer-cut",
   "entities": [
     {
       "type": "polyline",
@@ -92,9 +116,10 @@
         "11"
       ],
       "closed": true,
-      "id": "ent-mtpn1wq8-f19iv4",
+      "id": "ent-net",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-cut",
+      "name": "Net outline"
     },
     {
       "type": "line",
@@ -106,9 +131,10 @@
         "x": 115,
         "y": 35
       },
-      "id": "ent-mtpn1wq8-r8hwsz",
+      "id": "ent-fold-bottom",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-score",
+      "name": "Fold line, bottom"
     },
     {
       "type": "line",
@@ -120,9 +146,10 @@
         "x": 115,
         "y": 95
       },
-      "id": "ent-mtpn1wq8-81mra0",
+      "id": "ent-fold-right",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-score",
+      "name": "Fold line, right"
     },
     {
       "type": "line",
@@ -134,9 +161,10 @@
         "x": 35,
         "y": 95
       },
-      "id": "ent-mtpn1wq8-ow82oz",
+      "id": "ent-fold-top",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-score",
+      "name": "Fold line, top"
     },
     {
       "type": "line",
@@ -148,64 +176,65 @@
         "x": 35,
         "y": 35
       },
-      "id": "ent-mtpn1wq8-zhyx4w",
+      "id": "ent-fold-left",
       "isConstruction": false,
-      "layerId": "layer-0"
+      "layerId": "layer-score",
+      "name": "Fold line, left"
     }
   ],
   "constraints": [
     {
-      "id": "con-mtpn1wq8-npkhv6",
+      "id": "con-fixed-ent-net",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent-mtpn1wq8-f19iv4"
+        "ent-net"
       ]
     },
     {
-      "id": "con-mtpn1wq8-0jbgpf",
+      "id": "con-fixed-ent-fold-bottom",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent-mtpn1wq8-r8hwsz"
+        "ent-fold-bottom"
       ]
     },
     {
-      "id": "con-mtpn1wq8-vrll39",
+      "id": "con-fixed-ent-fold-right",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent-mtpn1wq8-81mra0"
+        "ent-fold-right"
       ]
     },
     {
-      "id": "con-mtpn1wq8-fzzr27",
+      "id": "con-fixed-ent-fold-top",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent-mtpn1wq8-ow82oz"
+        "ent-fold-top"
       ]
     },
     {
-      "id": "con-mtpn1wq8-oma7jz",
+      "id": "con-fixed-ent-fold-left",
       "type": "fixed",
       "points": [],
       "entities": [
-        "ent-mtpn1wq8-zhyx4w"
+        "ent-fold-left"
       ]
     }
   ],
   "dimensions": [
     {
-      "id": "dim-mtpn1wq8-2agiw6",
+      "id": "dim-base-width",
       "type": "horizontal",
       "points": [
         {
-          "entityId": "ent-mtpn1wq8-r8hwsz",
+          "entityId": "ent-fold-bottom",
           "key": "a"
         },
         {
-          "entityId": "ent-mtpn1wq8-r8hwsz",
+          "entityId": "ent-fold-bottom",
           "key": "b"
         }
       ],
@@ -221,45 +250,45 @@
   "operations": [
     {
       "side": "outside",
-      "stepdown": 1.5,
-      "stepover": 0.4,
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 0.2,
       "plungeRate": 300,
       "spindleSpeed": 0,
       "safeZ": 5,
+      "stepdown": 1.5,
+      "stepover": 0.4,
       "depth": -1.5,
       "laserPasses": 1,
-      "id": "op1",
+      "id": "op-score-folds",
       "name": "Score the fold lines",
       "type": "score",
       "entityIds": [
-        "ent-mtpn1wq8-r8hwsz",
-        "ent-mtpn1wq8-81mra0",
-        "ent-mtpn1wq8-ow82oz",
-        "ent-mtpn1wq8-zhyx4w"
+        "ent-fold-bottom",
+        "ent-fold-right",
+        "ent-fold-top",
+        "ent-fold-left"
       ],
       "feedrate": 2400,
       "laserPower": 22
     },
     {
       "side": "outside",
-      "stepdown": 1.5,
-      "stepover": 0.4,
       "toolType": "end-mill",
       "toolNumber": 1,
       "diameter": 0.2,
       "plungeRate": 300,
       "spindleSpeed": 0,
       "safeZ": 5,
+      "stepdown": 1.5,
+      "stepover": 0.4,
       "depth": -1.5,
       "laserPasses": 1,
-      "id": "op2",
+      "id": "op-cut-net",
       "name": "Cut the net",
       "type": "profile",
       "entityIds": [
-        "ent-mtpn1wq8-f19iv4"
+        "ent-net"
       ],
       "feedrate": 600,
       "laserPower": 95
