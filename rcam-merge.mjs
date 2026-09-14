@@ -695,7 +695,7 @@ function main(argv) {
 	}
 	writeFileSync(outPath, `${JSON.stringify(result.merged, null, 2)}\n`);
 	for (const c of result.conflicts) {
-		console.log(c.what ? `  ✗ ${c.what}` : `  ✗ ${c.where}`);
+		console.log(c.what ? `  Conflict · ${c.what}` : `  Conflict · ${c.where}`);
 		console.log(`      ${c.reason}`);
 		if (c.ours !== void 0) console.log(`      yours ${c.ours}  ·  theirs ${c.theirs}`);
 		if (c.what) console.log(`      ${c.where}`);
