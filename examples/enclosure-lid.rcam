@@ -142,7 +142,7 @@
       "plungeRate": 250,
       "spindleSpeed": 18000,
       "safeZ": 5,
-      "depth": -12,
+      "depth": -11,
       "tabs": {
         "enabled": true,
         "count": 4,
