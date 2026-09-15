@@ -1016,7 +1016,10 @@ Three optional cut-control fields apply across operation types:
 ### Parametric operation fields
 
 Optional. `paramExprs` drives numeric operation fields from formulas instead of
-fixed numbers, keyed by field name. Expressions are evaluated against
+fixed numbers, keyed by field name. Most numeric fields are bindable — the ones
+the toolpath dialog shows an f(x) badge on — and a key the app does not
+recognise is ignored silently rather than rejected, so a file carrying one loads
+and simply keeps its plain numeric value. Expressions are evaluated against
 [variables](#variables) and `stock` before every solve, then clamped to the
 field's valid range — so an operation can track the material rather than being
 re-typed when it changes.
@@ -1032,9 +1035,16 @@ re-typed when it changes.
   value**, and is the cache/fallback for fields with no expression or whose
   expression fails to evaluate. Always emit it — a file is valid and loadable
   without ever evaluating an expression.
-- Bare numbers inside an expression are **millimetres**, matching variable and
-  dimension formulas — `"0.5"` alone in an inch-unit document is 0.5 in, but
-  `"0.5 * 2"` is 1 mm.
+- Bare numbers inside a `paramExprs` expression are **millimetres**, and
+  `displayUnit` does not change that: in an inch-unit document both `"0.5"` and
+  `"0.5 * 2"` resolve to 0.5 mm and 1 mm respectively.
+
+  **This differs from a [variable](#variables).** A variable whose expression is
+  a *lone length* is parsed in the document's display unit — `"0.5"` in an
+  inch-unit document is 0.5 in — while a variable using arithmetic is evaluated
+  in millimetres like everything else. Operation expressions have no such
+  special case: they are always millimetres. Pinned by
+  `test/fileExpressionUnits.test.ts`.
 - Nested fields accept either the flat or dotted key: `"tabCount"` or
   `"tabs.count"`, `"leadInLen"` or `"leadIn.length"`. An expression for a nested
   field is ignored while its parent object (`tabs`, `leadIn`, `leadOut`) is

@@ -78,15 +78,20 @@ integration guide, inlined as one plain-text document.
 
 ## Parametric CAM operations
 
-- `operations[]` may carry `paramExprs` too — an expression per **numeric op
-  field**, keyed by field name: `{"depth": "-stock", "feedrate": "baseFeed*1.2"}`.
+- `operations[]` may carry `paramExprs` too — an expression per **bindable
+  numeric op field**, keyed by field name: `{"depth": "-stock", "feedrate":
+  "baseFeed*1.2"}`. Bindable means the toolpath dialog shows an f(x) badge on
+  that row; a key the app does not recognise is **ignored silently**, so prefer
+  a field you have seen bound rather than assuming every number takes one.
   Evaluated against `variables` and the built-in keywords before every solve, then clamped to
   the field's valid range.
 - Always also emit the plain numeric field (`depth`, `feedrate`, ...): it is the
   last resolved value and the fallback when a field has no expression or its
   expression fails. A file never needs an expression evaluated to load.
-- Bare numbers in an expression are **millimetres** (as in variable, dimension,
-  and feature formulas) regardless of `displayUnit`.
+- Bare numbers in an op expression are **millimetres** regardless of
+  `displayUnit`. Note the exception elsewhere: a VARIABLE whose expression is a
+  lone length (`"0.5"`, no arithmetic) is read in the document's display unit.
+  Operation expressions never are.
 - Nested fields take either key spelling: `"tabCount"`/`"tabs.count"`,
   `"leadInLen"`/`"leadIn.length"`. Ignored while `tabs`/`leadIn`/`leadOut` is absent.
 - `"depth": "-stock"` is the common case — a profile that always cuts through
