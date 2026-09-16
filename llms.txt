@@ -78,11 +78,11 @@ integration guide, inlined as one plain-text document.
 
 ## Parametric CAM operations
 
-- `operations[]` may carry `paramExprs` too — an expression per **bindable
-  numeric op field**, keyed by field name: `{"depth": "-stock", "feedrate":
-  "baseFeed*1.2"}`. Bindable means the toolpath dialog shows an f(x) badge on
-  that row; a key the app does not recognise is **ignored silently**, so prefer
-  a field you have seen bound rather than assuming every number takes one.
+- `operations[]` may carry `paramExprs` too — an expression per **numeric op
+  field**, keyed by field name: `{"depth": "-stock", "feedrate": "baseFeed*1.2"}`.
+  Every numeric field takes one (pinned by `test/everyNumericOpFieldBinds.test.ts`).
+  A key that is not a numeric op field is **ignored silently** rather than
+  rejected, so a typo costs you the binding without costing you the file.
   Evaluated against `variables` and the built-in keywords before every solve, then clamped to
   the field's valid range.
 - Always also emit the plain numeric field (`depth`, `feedrate`, ...): it is the

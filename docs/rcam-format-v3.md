@@ -1016,10 +1016,10 @@ Three optional cut-control fields apply across operation types:
 ### Parametric operation fields
 
 Optional. `paramExprs` drives numeric operation fields from formulas instead of
-fixed numbers, keyed by field name. Most numeric fields are bindable — the ones
-the toolpath dialog shows an f(x) badge on — and a key the app does not
-recognise is ignored silently rather than rejected, so a file carrying one loads
-and simply keeps its plain numeric value. Expressions are evaluated against
+fixed numbers, keyed by field name. **Every** numeric operation field can be
+bound. A key that names no numeric field is ignored silently rather than
+rejected, so a file carrying a typo still loads and simply keeps its plain
+numeric value. Expressions are evaluated against
 [variables](#variables) and `stock` before every solve, then clamped to the
 field's valid range — so an operation can track the material rather than being
 re-typed when it changes.
