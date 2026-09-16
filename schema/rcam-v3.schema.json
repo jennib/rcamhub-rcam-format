@@ -467,7 +467,8 @@
               "pos": { "$ref": "#/$defs/vec2", "description": "On-curve knot." },
               "inH": { "$ref": "#/$defs/vec2", "description": "Absolute control point for the segment ARRIVING at pos." },
               "outH": { "$ref": "#/$defs/vec2", "description": "Absolute control point for the segment LEAVING pos." },
-              "smooth": { "type": "boolean", "description": "Hold inH and outH collinear through pos. false is a deliberate corner." }
+              "smooth": { "type": "boolean", "description": "Hold inH and outH collinear through pos. false is a deliberate corner." },
+              "symmetric": { "type": "boolean", "description": "When smooth, also hold the two handles at equal length (a mirror node). Omitted = false." }
             }
           }
         },
