@@ -431,8 +431,9 @@ separate editable post in `src/cam/laserposts/`:
 | `marlin` | Marlin, `M3`, power 0–255 |
 | `smoothie` | Smoothieware, inline `S` (0–1) per cut move |
 | `linuxcnc-laser` | LinuxCNC, PWM-spindle (`M3`/`M5` + `S`) |
+| `ruida` | Ruida DSP (`.rd`) binary format [EXPERIMENTAL] |
 
-(Legacy laser files that stored `"grbl"` map to `grbl-dynamic`.)
+(Legacy laser files that stored `"grbl"` map to `grbl-dynamic`. Ruida DSP is an experimental binary format emitting scrambled `.rd` bytecode rather than text G-code.)
 
 Coolant is **per operation** (`operations[].coolant`), not a top-level field.
 Custom program start/end G-code and the "machine has coolant" capability are
