@@ -779,8 +779,8 @@
       "required": ["id", "name", "expr", "value"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$", "description": "Valid identifier; referenced by expressions." },
-        "expr": { "type": "string", "description": "Raw input string, e.g. \"100\", \"50mm\", \"3.5in\", or a formula referencing other variables like \"width * 0.1\" (evaluated in dependency order)." },
+        "name": { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$", "maxLength": 64, "description": "Valid identifier; referenced by expressions. Capped so a generated document cannot carry an unbounded one into anything that renders it." },
+        "expr": { "type": "string", "maxLength": 256, "description": "Raw input string, e.g. \"100\", \"50mm\", \"3.5in\", or a formula referencing other variables like \"width * 0.1\" (evaluated in dependency order). Capped for the same reason as `name`." },
         "value": { "type": "number", "description": "Cached evaluated value in mm." }
       }
     },

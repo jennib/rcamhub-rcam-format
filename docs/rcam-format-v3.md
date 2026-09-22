@@ -677,7 +677,15 @@ edges) and `expr`
 
 Named numbers referenced by dimension/pattern/binding expressions. `expr` is the
 raw input string; `value` is its cached evaluation in mm. `name` must match
-`^[a-zA-Z_][a-zA-Z0-9_]*$`.
+`^[a-zA-Z_][a-zA-Z0-9_]*$` and is capped at 64 characters; `expr` is capped at
+256.
+
+Those caps exist for readers of the format, not for the app. A name is an
+identifier so it can never be markup, but a document is not always written by a
+person — and these two fields are the ones a site publishing `.rcam` files is
+most likely to put on a page. Neither limit is near anything typed by hand:
+`fingerDepth` is eleven characters, `(width - 2 * wall) / (count + 1)` is
+thirty-two.
 
 `expr` may be a plain length (`"100"`, `"50mm"`, `"3.5in"`) **or a formula that
 references other variables** (`"width * 0.1"`). Variables are evaluated in
