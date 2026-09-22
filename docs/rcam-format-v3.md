@@ -694,6 +694,20 @@ way. `test/rcam-schema.test.ts` walks the schema and fails on any expression
 field that has no cap, which is what keeps a newly added one from being the
 exception.
 
+The **param maps are bounded in both directions**: `features[].params`,
+`features[].paramExprs` and `operations[].paramExprs` each take at most 128
+entries, with keys of at most 64 characters. Capping the expression values alone
+bounded nothing, because a document could still carry a million one-character
+keys. These three are keyed by a fixed vocabulary — a generator's declared
+params (twelve at the most, in `spoilboard`) and an operation's numeric fields
+(thirty-five) — so 128 is far above anything real. The longest param name in the
+repo is `counterboreDiameter`, at nineteen characters.
+
+This deliberately does NOT apply to a polyline's `cornerRadii` and `cornerTypes`.
+Those are keyed by vertex id, so they scale with the drawing rather than with a
+fixed vocabulary: a polyline may legitimately carry thousands, and a bound
+copied from the param maps would refuse real geometry.
+
 `expr` may be a plain length (`"100"`, `"50mm"`, `"3.5in"`) **or a formula that
 references other variables** (`"width * 0.1"`). Variables are evaluated in
 dependency order, so declaration order doesn't matter; a reference cycle (or a

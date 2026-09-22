@@ -887,6 +887,20 @@ way. `test/rcam-schema.test.ts` walks the schema and fails on any expression
 field that has no cap, which is what keeps a newly added one from being the
 exception.
 
+The **param maps are bounded in both directions**: `features[].params`,
+`features[].paramExprs` and `operations[].paramExprs` each take at most 128
+entries, with keys of at most 64 characters. Capping the expression values alone
+bounded nothing, because a document could still carry a million one-character
+keys. These three are keyed by a fixed vocabulary — a generator's declared
+params (twelve at the most, in `spoilboard`) and an operation's numeric fields
+(thirty-five) — so 128 is far above anything real. The longest param name in the
+repo is `counterboreDiameter`, at nineteen characters.
+
+This deliberately does NOT apply to a polyline's `cornerRadii` and `cornerTypes`.
+Those are keyed by vertex id, so they scale with the drawing rather than with a
+fixed vocabulary: a polyline may legitimately carry thousands, and a bound
+copied from the param maps would refuse real geometry.
+
 `expr` may be a plain length (`"100"`, `"50mm"`, `"3.5in"`) **or a formula that
 references other variables** (`"width * 0.1"`). Variables are evaluated in
 dependency order, so declaration order doesn't matter; a reference cycle (or a
@@ -1870,7 +1884,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "id": { "type": "string", "minLength": 1 },
         "generatorId": { "type": "string", "minLength": 1, "description": "Generator that produced this feature (e.g. \"box-joint\")." },
         "params": {
-          "type": "object",
+          "type": "object", "maxProperties": 128, "propertyNames": { "minLength": 1, "maxLength": 64 },
           "additionalProperties": { "type": "number" },
           "description": "Parameter name → value the feature was generated with (its re-run inputs)."
         },
@@ -1883,7 +1897,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
           "description": "Translation applied to the generator's origin-based output to place it in the work area; re-applied on regenerate."
         },
         "paramExprs": {
-          "type": "object",
+          "type": "object", "maxProperties": 128, "propertyNames": { "minLength": 1, "maxLength": 64 },
           "additionalProperties": { "type": "string", "maxLength": 256 },
           "description": "Optional expression per generator param, evaluated against document `variables` and `stock` (the stock thickness). `params` holds the last resolved values as cache/fallback: a param with no entry here, or whose expression fails to evaluate, keeps its cached numeric. The feature regenerates when a variable it references changes."
         },
@@ -2597,7 +2611,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
 
         "halftoneLand": { "type": "number", "minimum": 0, "description": "V-carve halftone only: surface left standing between grooves in the BLACKEST area, mm. 0 (default) makes the darkest tone solid; a positive value trades peak blackness for a visible line texture and a shorter cut. Never negative — overlapping the darkest grooves saturates the tone before full depth." },
         "paramExprs": {
-          "type": "object",
+          "type": "object", "maxProperties": 128, "propertyNames": { "minLength": 1, "maxLength": 64 },
           "additionalProperties": { "type": "string", "maxLength": 256 },
           "description": "Optional expression per numeric op field, keyed by field name (e.g. {\"depth\": \"-stock\", \"feedrate\": \"baseFeed * 1.2\"}). Evaluated against document `variables` and `stock` (the stock thickness) before every solve, then clamped to the field's valid range; bare numbers in an expression are internal mm, matching dimension and feature formulas. The sibling numeric field holds the last resolved value as cache/fallback for fields with no expression, or whose expression fails to evaluate. Keys for nested fields use either the flat or dotted form (\"tabCount\"/\"tabs.count\", \"leadInLen\"/\"leadIn.length\"); a nested expression is skipped while its parent object is absent."
         }
