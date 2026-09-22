@@ -875,10 +875,17 @@ raw input string; `value` is its cached evaluation in mm. `name` must match
 
 Those caps exist for readers of the format, not for the app. A name is an
 identifier so it can never be markup, but a document is not always written by a
-person — and these two fields are the ones a site publishing `.rcam` files is
-most likely to put on a page. Neither limit is near anything typed by hand:
-`fingerDepth` is eleven characters, `(width - 2 * wall) / (count + 1)` is
-thirty-two.
+person — and these are the fields a site publishing `.rcam` files is most likely
+to put on a page. Neither limit is near anything typed by hand: `fingerDepth` is
+eleven characters, `(width - 2 * wall) / (count + 1)` is thirty-two.
+
+**Every expression in the format carries the same 256-character cap**, not just
+a variable's. A dimension's `expr`, a binding's, the pattern count and spacing
+expressions, and the per-param `paramExprs` maps on features and operations are
+all the same free text read by the same evaluator, so they are bounded the same
+way. `test/rcam-schema.test.ts` walks the schema and fails on any expression
+field that has no cap, which is what keeps a newly added one from being the
+exception.
 
 `expr` may be a plain length (`"100"`, `"50mm"`, `"3.5in"`) **or a formula that
 references other variables** (`"width * 0.1"`). Variables are evaluated in
@@ -1877,7 +1884,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         },
         "paramExprs": {
           "type": "object",
-          "additionalProperties": { "type": "string" },
+          "additionalProperties": { "type": "string", "maxLength": 256 },
           "description": "Optional expression per generator param, evaluated against document `variables` and `stock` (the stock thickness). `params` holds the last resolved values as cache/fallback: a param with no entry here, or whose expression fails to evaluate, keeps its cached numeric. The feature regenerates when a variable it references changes."
         },
         "keyIds": {
@@ -2331,7 +2338,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
           "maxItems": 2,
           "description": "[t1, t2] parametric anchors for line-distance extension lines."
         },
-        "expr": { "type": "string", "description": "Optional formula driving value, e.g. \"width * 2\"." },
+        "expr": { "type": "string", "maxLength": 256, "description": "Optional formula driving value, e.g. \"width * 2\"." },
         "hidden": { "type": "boolean", "description": "Not drawn. A hidden driving dimension is how a formula typed into a measurement property field (line length, rect W/H) parks in the engine — it drives geometry but shows no annotation." }
       }
     },
@@ -2356,7 +2363,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "id": { "type": "string", "minLength": 1 },
         "entityId": { "type": "string", "minLength": 1 },
         "scalarKey": { "type": "string", "description": "A dofScalars() key on the entity, e.g. \"r\" (circle/arc radius), \"sa\"/\"ea\" (arc angles), \"w\"/\"h\"/\"angle\" (image width/height/rotation), \"cr\" (rectangle corner radius — one binding drives all four corners, and the entity's own cornerRadii hold the last resolved value)." },
-        "expr": { "type": "string", "description": "Variable formula, e.g. \"plateW/2\"." },
+        "expr": { "type": "string", "maxLength": 256, "description": "Variable formula, e.g. \"plateW/2\"." },
         "scale": { "type": "number", "description": "Multiplier from the formula's display unit to the scalar's internal unit. Omitted/1 for lengths (mm); π/180 for an angle scalar (sa/ea, or image angle) entered in degrees." }
       }
     },
@@ -2395,10 +2402,10 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "countY": { "type": "integer", "minimum": 1, "description": "Resolved cache of countYExpr." },
         "spacingX": { "type": "number", "description": "mm" },
         "spacingY": { "type": "number", "description": "mm" },
-        "countXExpr": { "type": "string", "description": "Optional variable expression driving countX, e.g. \"tabs\" or \"n + 1\"; re-evaluated against variables, rounded, clamped ≥1." },
-        "countYExpr": { "type": "string", "description": "Optional variable expression driving countY." },
-        "spacingXExpr": { "type": "string", "description": "Optional variable expression driving spacingX." },
-        "spacingYExpr": { "type": "string", "description": "Optional variable expression driving spacingY." },
+        "countXExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving countX, e.g. \"tabs\" or \"n + 1\"; re-evaluated against variables, rounded, clamped ≥1." },
+        "countYExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving countY." },
+        "spacingXExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving spacingX." },
+        "spacingYExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving spacingY." },
         "spacingMode": { "enum": ["step", "gap"], "description": "What spacingX/spacingY measure: \"step\" (or absent) = centre to centre; \"gap\" = the clear space between copies, so the step becomes the motif's own size plus the gap and a gap of 0 tiles seamlessly. Resolved against the source geometry at build time, so a gapped pattern stays gapped when the motif is resized." },
         "mirrorCols": { "type": "boolean", "description": "Reflect every other column about its own cell centre. Absent = false." },
         "mirrorRows": { "type": "boolean", "description": "Reflect every other row about its own cell centre. Absent = false." }
@@ -2414,9 +2421,9 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "rows": { "type": "integer", "minimum": 1, "description": "Resolved cache of rowsExpr." },
         "spacing": { "type": "number", "description": "mm, centre-to-centre between nearest neighbours. The pitch ACROSS the stagger is derived as spacing*√3/2 and is never stored." },
         "orientation": { "enum": ["row", "column"], "description": "Which axis staggers by half a pitch." },
-        "colsExpr": { "type": "string", "description": "Optional variable expression driving cols; rounded, clamped ≥1." },
-        "rowsExpr": { "type": "string", "description": "Optional variable expression driving rows; rounded, clamped ≥1." },
-        "spacingExpr": { "type": "string", "description": "Optional variable expression driving spacing." }
+        "colsExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving cols; rounded, clamped ≥1." },
+        "rowsExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving rows; rounded, clamped ≥1." },
+        "spacingExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving spacing." }
       }
     },
 
@@ -2429,7 +2436,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "cx": { "type": "number", "description": "rotation centre X, mm" },
         "cy": { "type": "number", "description": "rotation centre Y, mm" },
         "totalAngle": { "type": "number", "description": "radians; 2π = full circle" },
-        "countExpr": { "type": "string", "description": "Optional variable expression driving count; re-evaluated against variables, rounded, clamped ≥2." }
+        "countExpr": { "type": "string", "maxLength": 256, "description": "Optional variable expression driving count; re-evaluated against variables, rounded, clamped ≥2." }
       }
     },
 
@@ -2591,7 +2598,7 @@ Canonical URL: https://rcamhub.com/schema/rcam-v3.schema.json
         "halftoneLand": { "type": "number", "minimum": 0, "description": "V-carve halftone only: surface left standing between grooves in the BLACKEST area, mm. 0 (default) makes the darkest tone solid; a positive value trades peak blackness for a visible line texture and a shorter cut. Never negative — overlapping the darkest grooves saturates the tone before full depth." },
         "paramExprs": {
           "type": "object",
-          "additionalProperties": { "type": "string" },
+          "additionalProperties": { "type": "string", "maxLength": 256 },
           "description": "Optional expression per numeric op field, keyed by field name (e.g. {\"depth\": \"-stock\", \"feedrate\": \"baseFeed * 1.2\"}). Evaluated against document `variables` and `stock` (the stock thickness) before every solve, then clamped to the field's valid range; bare numbers in an expression are internal mm, matching dimension and feature formulas. The sibling numeric field holds the last resolved value as cache/fallback for fields with no expression, or whose expression fails to evaluate. Keys for nested fields use either the flat or dotted form (\"tabCount\"/\"tabs.count\", \"leadInLen\"/\"leadIn.length\"); a nested expression is skipped while its parent object is absent."
         }
       }

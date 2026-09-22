@@ -682,10 +682,17 @@ raw input string; `value` is its cached evaluation in mm. `name` must match
 
 Those caps exist for readers of the format, not for the app. A name is an
 identifier so it can never be markup, but a document is not always written by a
-person — and these two fields are the ones a site publishing `.rcam` files is
-most likely to put on a page. Neither limit is near anything typed by hand:
-`fingerDepth` is eleven characters, `(width - 2 * wall) / (count + 1)` is
-thirty-two.
+person — and these are the fields a site publishing `.rcam` files is most likely
+to put on a page. Neither limit is near anything typed by hand: `fingerDepth` is
+eleven characters, `(width - 2 * wall) / (count + 1)` is thirty-two.
+
+**Every expression in the format carries the same 256-character cap**, not just
+a variable's. A dimension's `expr`, a binding's, the pattern count and spacing
+expressions, and the per-param `paramExprs` maps on features and operations are
+all the same free text read by the same evaluator, so they are bounded the same
+way. `test/rcam-schema.test.ts` walks the schema and fails on any expression
+field that has no cap, which is what keeps a newly added one from being the
+exception.
 
 `expr` may be a plain length (`"100"`, `"50mm"`, `"3.5in"`) **or a formula that
 references other variables** (`"width * 0.1"`). Variables are evaluated in
