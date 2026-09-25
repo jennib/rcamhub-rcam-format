@@ -1,6 +1,6 @@
 # Security Policy
 
-This repository publishes the rcam `.rcam` file format: a JSON Schema, a
+This repository publishes the RapidCAM `.rcam` file format: a JSON Schema, a
 specification, example files, and a merge driver. It contains no server, no
 network code, and no application.
 

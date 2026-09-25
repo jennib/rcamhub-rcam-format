@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // rcam-merge.mjs — the dependency-free .rcam three-way git merge driver.
-// Bundled from the rcam source by scripts/build-merge-driver.ts. MIT licensed;
+// Bundled from the RapidCAM source by scripts/build-merge-driver.ts. MIT licensed;
 // see LICENSE-MIT.
 //
 import { readFileSync, writeFileSync } from "node:fs";
@@ -624,9 +624,9 @@ function addValues(c, addr, ours, theirs, unit) {
 /**
 * The `.rcam` merge driver as a standalone program.
 *
-* `cli/rcam.ts merge` does the same job and more — it also runs the full
+* `cli/rapidcam.ts merge` does the same job and more — it also runs the full
 * `validate` pass on the result — but it needs this repository checked out and
-* `tsx` to run it. rcam is a web app, so the people most likely to keep
+* `tsx` to run it. RapidCAM is a web app, so the people most likely to keep
 * designs in git have neither. This entry exists to be BUILT into one
 * dependency-free file (`dist/rcam-merge.mjs`, served from the site next to
 * the schema and the format guide) that plain `node` can run:
@@ -649,12 +649,12 @@ var USAGE = `rcam-merge — three-way merge for .rcam designs
 Writes the merge over <ours> (what git's %A expects) unless -o is given, and
 exits non-zero when something needs a person. As a git merge driver:
 
-  git config merge.rcam.name "rcam .rcam merge"
+  git config merge.rcam.name "RapidCAM .rcam merge"
   git config merge.rcam.driver "node /path/to/rcam-merge.mjs %O %A %B"
   echo "*.rcam merge=rcam" >> .gitattributes
 
 For the deeper checks — dangling references, whether it still solves, whether
-the toolpaths still cut — run \`rcam validate\` on the result.`;
+the toolpaths still cut — run \`rapidcam validate\` on the result.`;
 /** Parse a `.rcam`, refusing anything this tier cannot safely handle. */
 function read(path) {
 	let text;
@@ -670,7 +670,7 @@ function read(path) {
 		throw new Error(`${path} is not valid JSON: ${e.message}`);
 	}
 	const version = file?.version;
-	if (version !== 3) throw new Error(`${path} is version ${String(version)}; this driver reads version 3. Open and re-save it in rcam first.`);
+	if (version !== 3) throw new Error(`${path} is version ${String(version)}; this driver reads version 3. Open and re-save it in RapidCAM first.`);
 	return file;
 }
 function main(argv) {

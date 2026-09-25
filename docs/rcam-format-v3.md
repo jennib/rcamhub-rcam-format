@@ -1,6 +1,6 @@
-# rcam `.rcam` file format — version 3
+# RapidCAM `.rcam` file format — version 3
 
-This is the authoring guide and stability contract for the rcam project file
+This is the authoring guide and stability contract for the RapidCAM project file
 format. A `.rcam` file is plain JSON. The machine-readable contract lives in
 [`schema/rcam-v3.schema.json`](../schema/rcam-v3.schema.json) (JSON Schema, draft
 2020-12); this document is the human- (and AI-) readable companion that explains
@@ -48,7 +48,7 @@ Version 2 treated a `.rcam` file as a **design**, not an editor session:
   bytes of any non-bundled font a text entity uses, so glyph outlines — and
   therefore toolpaths — reproduce on any machine.
 
-Version-1 and version-2 files still open: rcam upgrades them on load (chaining migrations v1 → v2 → v3).
+Version-1 and version-2 files still open: RapidCAM upgrades them on load (chaining migrations v1 → v2 → v3).
 The set of entity types, constraint types, dimension types, and point-key
 vocabularies is unchanged.
 
@@ -64,7 +64,7 @@ vocabularies is unchanged.
   version render fully in an earlier build: a new value in a closed enum (a
   dimension `type`, an operation `type`) is not a field to ignore, so that
   feature simply does not draw. It is dropped rather than guessed at — an
-  unreadable dimension contributes nothing to the solve and rcam says on
+  unreadable dimension contributes nothing to the solve and RapidCAM says on
   load that the file has one — but it will be **lost on the next save**. Old
   files opening in a new build is the direction the promise is about, and that
   one is exact.
@@ -77,7 +77,7 @@ vocabularies is unchanged.
   otherwise coerce to `0` and put the shape at the origin as though that were
   where it belonged — and geometry drawn in the wrong place gets cut in the
   wrong place.
-- A file written by rcam round-trips losslessly. A hand-authored file only
+- A file written by RapidCAM round-trips losslessly. A hand-authored file only
   needs the required fields below.
 
 ## Coordinate system & units
@@ -326,7 +326,7 @@ omitted entirely.
 - Every `id` is a string, unique within the file. Any unique non-empty string
   works — the short `ent1`/`con3` form used in the examples below is perfectly
   legal to author by hand.
-- Ids rcam itself mints look like `ent-mfk3x9zq-a7b2c1`: a prefix, a base36
+- Ids RapidCAM itself mints look like `ent-mfk3x9zq-a7b2c1`: a prefix, a base36
   timestamp, and a random suffix. They are globally unique, not merely unique
   within the file, so that two people editing copies of one design never mint
   the same id for different things — a counter would hand both `ent8`, and
@@ -334,7 +334,7 @@ omitted entirely.
   generate files programmatically and they may later be merged, mint ids the
   same way rather than counting.
 - `"__origin__"` is **reserved** for the work-coordinate-system origin point.
-  rcam injects it automatically on load — you don't need to author it, and you
+  RapidCAM injects it automatically on load — you don't need to author it, and you
   shouldn't reuse the id.
 - `layerId` on an entity should reference a real layer id; it defaults to
   `"layer-0"`.
@@ -621,7 +621,7 @@ A constraint object is:
 `points`, `entities`, and `params` are each **optional and default to `[]`** — a
 type that uses only one of them may omit the others entirely (e.g. a `horizontal`
 constraint can be just `{ "id": "...", "type": "horizontal", "entities": ["line1"] }`).
-rcam always writes the empty arrays out when saving, but you don't need to
+RapidCAM always writes the empty arrays out when saving, but you don't need to
 author them. The same applies to a dimension's `points`/`entities`.
 
 `center` is **directional** — unlike every other constraint it is not symmetric:
@@ -635,7 +635,7 @@ corners in `points[1]`/`points[2]`, whose midpoint is the centre.
 > **Authoring caution.** A syntactically valid constraint set can still be
 > over-constrained, under-constrained, or fail to converge — and that can only be
 > determined by running the solver, not by reading the JSON. If you are generating
-> constraints programmatically and can't run rcam to check, prefer:
+> constraints programmatically and can't run RapidCAM to check, prefer:
 > (a) emitting geometry already in its solved positions, and (b) pinning with
 > `fixedPoint` + driving `dimensions` rather than dense webs of relational
 > constraints. The bundled examples show idiomatic, convergent constraint sets.
@@ -780,7 +780,7 @@ it does not generate geometry on load.
 > just emit all the copies as ordinary `entities` and omit the `pattern` block
 > entirely (you lose the live link, but the geometry is correct and machinable);
 > or **(b)** author the `pattern` *and* list one `instanceIds` sub-array per copy.
-> If you do author a pattern, rcam self-heals a count mismatch on open
+> If you do author a pattern, RapidCAM self-heals a count mismatch on open
 > (it regenerates the instances to match the resolved count), but the file is
 > cleanest when they already agree. `count*` is a cache; if you also set a
 > `*Expr`, the expression wins on the next regenerate.
@@ -1289,7 +1289,7 @@ three numbers.
   "diameter": 6, "feedrate": 900, "plungeRate": 250, "spindleSpeed": 18000, "safeZ": 5 }
 ```
 
-When rcam saves a file it embeds only the tools actually referenced by an
+When RapidCAM saves a file it embeds only the tools actually referenced by an
 operation, so the file is self-contained and portable. See
 `mounting-plate-cam.rcam` for an example of two operations driven by a shared
 `tools` library.
@@ -1311,7 +1311,7 @@ of the bytes, so the same font always dedupes to the same id), a human-readable
   "format": "ttf", "data": "AAEAAAAL..." }   // base64 font bytes
 ```
 
-rcam embeds only the fonts actually referenced by a text entity. If a text
+RapidCAM embeds only the fonts actually referenced by a text entity. If a text
 entity's `fontId` is neither a bundled font nor present in `fonts`, the text cannot
 be rendered or cut.
 
@@ -1325,7 +1325,7 @@ npm test -- rcam-schema
 External tools can validate against [`schema/rcam-v3.schema.json`](../schema/rcam-v3.schema.json)
 with any JSON Schema (draft 2020-12) validator. The schema enforces structure and
 enumerations; it cannot tell you whether a constraint system converges or a pocket
-seed lands inside its region — for that you need to load the file in rcam.
+seed lands inside its region — for that you need to load the file in RapidCAM.
 
 ## Reference examples
 

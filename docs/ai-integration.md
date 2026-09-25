@@ -1,6 +1,6 @@
-# rcam AI integration
+# RapidCAM AI integration
 
-rcam is built so AI tools — chat assistants and autonomous agents alike —
+RapidCAM is built so AI tools — chat assistants and autonomous agents alike —
 can author, check, and iterate on real, machinable designs. This guide covers
 every integration surface. It is published at
 **`https://rcamhub.com/docs/ai-integration.md`**; the file-format contract it
@@ -52,7 +52,7 @@ Every pasted file passes through, in order:
 |-------|---------|
 | JSON | malformed output, truncated replies |
 | Schema | wrong/missing fields, bad enum values (violations name the allowed values) |
-| Loader | anything rcam itself cannot open |
+| Loader | anything RapidCAM itself cannot open |
 | References | operations/constraints/dimensions/bindings pointing at entities that don't exist; unknown `toolId`s |
 | Solver | contradictory constraint systems that don't converge; geometry stored away from where its own driving dimensions put it (a warning — the file opens, then visibly moves) |
 | Bounds | geometry outside the sheet |
@@ -92,7 +92,7 @@ indexed by [`/llms.txt`](https://rcamhub.com/llms.txt):
 
 ## Headless CLI
 
-For scripts and agents working in a rcam checkout (`git clone` +
+For scripts and agents working in a RapidCAM checkout (`git clone` +
 `npm install`), the same pipeline runs in Node with no browser window:
 
 ```bash
@@ -113,12 +113,12 @@ npm run cli -- decode "<share-url>"          # share link → .rcam JSON (quote 
   (files are still written).
 - **`render`** boots the real app on an ephemeral dev server and screenshots
   the drawing canvas — geometry, dimensions, and stock outline exactly as
-  rcam draws them. First call pays a ~10 s browser boot.
+  RapidCAM draws them. First call pays a ~10 s browser boot.
 - **`open`** is the hand-off: it validates (refusing on errors), encodes the
   design into a share-link URL — the `#d=` fragment format, so the design
-  never touches a server — and launches the default browser at it. rcam
+  never touches a server — and launches the default browser at it. RapidCAM
   opens with the design loaded as a fresh document. `--url http://localhost:5173/`
-  targets a dev server instead of rcamhub.com. Designs too large for a URL
+  targets a dev server instead of rapidcam.app. Designs too large for a URL
   (typically image-bearing reliefs) are refused with a save-the-file hint.
 - **`decode`** is `open` in reverse: it turns a share link — the user copies
   one with **File ▸ Copy Share Link** — back into pretty-printed `.rcam` JSON
@@ -133,10 +133,10 @@ npm run cli -- decode "<share-url>"          # share link → .rcam JSON (quote 
 The [Model Context Protocol](https://modelcontextprotocol.io) server gives MCP
 clients — Claude Code, Claude Desktop, and others — the full **author →
 validate → post → look at a render → open in the user's browser** loop as
-tools. From a rcam checkout:
+tools. From a RapidCAM checkout:
 
 ```bash
-claude mcp add rcam -- npx tsx mcp/server.ts   # Claude Code
+claude mcp add rapidcam -- npx tsx mcp/server.ts   # Claude Code
 npm run mcp                                        # or run it directly (stdio)
 ```
 
@@ -203,5 +203,5 @@ highest-leverage habits:
 - **Never author `__origin__`**, and never include `fonts`/`images` arrays;
   keep existing `fontId`/`imageId` references intact when modifying.
 - **Expect a report, not applause.** When the user (or agent harness) returns
-  a "rcam import report", fix every listed issue and reply with the
+  a "RapidCAM import report", fix every listed issue and reply with the
   complete corrected file as a single JSON code block — never a diff.

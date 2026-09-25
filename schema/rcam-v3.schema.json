@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://rcamhub.com/schema/rcam-v3.schema.json",
-  "title": "rcam Project (.rcam) — version 3",
-  "description": "Contract for the rcam v3 file format. A .rcam file is JSON describing a design (not an editor session): unlike v1 it carries no selection/UI state, and it may embed the fonts its text entities use. All lengths are in millimetres, in a Y-up world frame, regardless of displayUnit. See docs/rcam-format-v3.md for the authoring guide.",
+  "title": "RapidCAM Project (.rcam) — version 3",
+  "description": "Contract for the .rcam v3 file format, RapidCAM's project file. A .rcam file is JSON describing a design (not an editor session): unlike v1 it carries no selection/UI state, and it may embed the fonts its text entities use. All lengths are in millimetres, in a Y-up world frame, regardless of displayUnit. See docs/rcam-format-v3.md for the authoring guide.",
   "type": "object",
   "additionalProperties": false,
   "required": [

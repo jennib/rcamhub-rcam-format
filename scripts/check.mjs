@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 //
 // Self-check for the public rcam-format mirror. The mirror is derived from the
-// rcam source repository (which runs the full schema drift guard before
+// RapidCAM source repository (which runs the full schema drift guard before
 // publishing anything here), so this script only re-checks what a published
 // tree must hold: the schema is intact, every example parses and declares
 // version 3, the generated index matches the files on disk, and no hand edit

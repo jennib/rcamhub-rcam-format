@@ -1,6 +1,6 @@
-# rcam
+# RapidCAM
 
-> rcam (https://rcamhub.com) is a browser-based parametric 2D CAD +
+> RapidCAM (https://rapidcam.app) is a parametric 2D CAD +
 > CAM application for CNC mills, rotary (4th-axis) machines, and lasers. Its
 > project format, `.rcam`, is plain JSON with a published JSON Schema, and is
 > explicitly designed so that automated tools — including LLMs — can author
@@ -22,7 +22,7 @@ integration guide, inlined as one plain-text document.
   example projects, each validated against the schema on every commit; fetch
   any listed file at `https://rcamhub.com/examples/<name>`
 - [AI integration guide](https://rcamhub.com/docs/ai-integration.md): every
-  way an AI can work with rcam — the in-app assistant loop, this index,
+  way an AI can work with RapidCAM — the in-app assistant loop, this index,
   the headless CLI, and the MCP server — plus authoring tips
 - [Version control guide](https://rcamhub.com/docs/version-control.md): keeping
   `.rcam` files in git — why saving an unchanged design is byte-identical, and
@@ -136,7 +136,7 @@ integration guide, inlined as one plain-text document.
   `{"type": "angle-x", "value": 0.785}` meaning 45° gives a line at 0.785° —
   plausible-looking and wrong. Write `45`.
 - You do not need exact coordinates: emit rough positions plus constraints and
-  dimensions, and rcam's parametric solver snaps the geometry exact.
+  dimensions, and RapidCAM's parametric solver snaps the geometry exact.
 - A **rounded, coved or chamfered rectangle is still a `rectangle`** — give it
   `cornerRadii` (one radius per corner, `bl` `br` `tr` `tl`) and a treatment per
   corner (`"round"` | `"inverted"` | `"chamfer"`): `cornerType` for one treatment
@@ -177,9 +177,9 @@ integration guide, inlined as one plain-text document.
 
 - Declare `"version": 3` and validate your output against the schema before
   presenting it to a user.
-- Opening a file in rcam reports schema, solver, and CAM lint problems;
+- Opening a file in RapidCAM reports schema, solver, and CAM lint problems;
   iterate on that feedback rather than aiming for a perfect first attempt.
-- Agents on the user's machine with a rcam checkout can run those same
+- Agents on the user's machine with a RapidCAM checkout can run those same
   checks headlessly (CLI: `npm run cli -- validate|post|render|open|decode`)
   or as MCP tools (`npm run mcp`), including `open` — which delivers a
   validated design straight into the user's browser via a share-link URL —

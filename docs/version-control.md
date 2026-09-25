@@ -26,14 +26,14 @@ either person drew.
 
 ## Installing the merge driver
 
-rcam ships a three-way merge that works on objects instead of lines. It
+RapidCAM ships a three-way merge that works on objects instead of lines. It
 needs [Node](https://nodejs.org) and nothing else — download one file, then run
 three commands in the repository holding your designs:
 
 ```sh
 curl -O https://rcamhub.com/rcam-merge.mjs
 
-git config merge.rcam.name "rcam .rcam merge"
+git config merge.rcam.name "RapidCAM .rcam merge"
 git config merge.rcam.driver "node /full/path/to/rcam-merge.mjs %O %A %B"
 echo "*.rcam merge=rcam" >> .gitattributes
 ```
@@ -50,20 +50,20 @@ With it installed, all four rows above merge cleanly and correctly.
 
 ### The fuller version
 
-If you have this repository checked out, `rcam merge` does the same merge
+If you have this repository checked out, `rapidcam merge` does the same merge
 and then runs the whole `validate` pass on the result — dangling references,
 whether the constraint system still solves, whether the toolpaths still cut
 anything:
 
 ```sh
-git config merge.rcam.driver "npx tsx /path/to/rcam/cli/rcam.ts merge %O %A %B"
+git config merge.rcam.driver "npx tsx /path/to/rcam/cli/rapidcam.ts merge %O %A %B"
 ```
 
 The standalone file deliberately leaves those out. They need the document model,
 the solver, the CAM stack and the bundled font outlines, and without the fonts a
 design dimensioned to the width of a word measures a *different* width — the
 checks would report confidently wrong numbers, which is worse than not running
-them. Run `rcam validate` on the result when you want them.
+them. Run `rapidcam validate` on the result when you want them.
 
 ## What still conflicts, and why that is right
 
@@ -133,7 +133,7 @@ and a bare number cannot mislabel itself.
 ## Two things a merge cannot decide
 
 Structure and meaning are different questions, so the driver runs the same check
-as `rcam validate` on the result and reports what it finds:
+as `rapidcam validate` on the result and reports what it finds:
 
 - **A reference to something the other side deleted.** You dimension a circle;
   a colleague deletes it. Neither edit touches the other's object, so there is
@@ -207,7 +207,7 @@ drawing rather than leaving them silent.
 - **Save before you commit.** Opening a design and saving it produces the same
   bytes as long as nothing changed, so a diff shows only what you actually
   edited. Text designs are the exception — the first save embeds the font.
-- **`rcam validate <file>` in a pre-commit hook** catches a design whose
+- **`rapidcam validate <file>` in a pre-commit hook** catches a design whose
   stored geometry no longer satisfies its own dimensions, which is a change you
   will otherwise notice as the drawing jumping when someone opens it.
 - **Review the diff, not the file.** Coordinates are stored to full precision;

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "name": "rcam Logo",
+  "name": "RapidCAM Logo",
   "canvas": {
     "width": 192,
     "height": 192
@@ -13,7 +13,7 @@
     "z": "top"
   },
   "metadata": {
-    "job": "rcam mark",
+    "job": "RapidCAM mark",
     "revision": "A",
     "notes": "A drawing, not a job — the one bundled example with no operations. The 80mm ring is construction geometry: dimensioned and drawn dashed, never cut. Concentric rather than three pinned centres, so editing the outer diameter carries the hub and the guide with it."
   },
