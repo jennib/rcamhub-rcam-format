@@ -265,12 +265,12 @@
     },
     {
       "type": "text",
-      "text": "RCAM",
+      "text": "RAPIDCAM",
       "fontId": "roboto-bold",
       "sizeMM": 18,
       "position": {
         "x": 66.3984375,
-        "y": 100.10071786234172
+        "y": 79.76722176859172
       },
       "angle": 1.5707963267948966,
       "id": "ent-name",
