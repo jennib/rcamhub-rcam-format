@@ -93,7 +93,8 @@ integration guide, inlined as one plain-text document.
   lone length (`"0.5"`, no arithmetic) is read in the document's display unit.
   Operation expressions never are.
 - Nested fields take either key spelling: `"tabCount"`/`"tabs.count"`,
-  `"leadInLen"`/`"leadIn.length"`. Ignored while `tabs`/`leadIn`/`leadOut` is absent.
+  `"leadInLen"`/`"leadIn.length"`, `"perforateGapWidth"`/`"perforate.gapWidth"`.
+  Ignored while `tabs`/`leadIn`/`leadOut`/`perforate` is absent.
 - `"depth": "-stock"` is the common case — a profile that always cuts through
   whatever the stock currently is.
 

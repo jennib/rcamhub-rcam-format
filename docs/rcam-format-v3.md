@@ -1084,9 +1084,10 @@ re-typed when it changes.
   special case: they are always millimetres. Pinned by
   `test/fileExpressionUnits.test.ts`.
 - Nested fields accept either the flat or dotted key: `"tabCount"` or
-  `"tabs.count"`, `"leadInLen"` or `"leadIn.length"`. An expression for a nested
-  field is ignored while its parent object (`tabs`, `leadIn`, `leadOut`) is
-  absent, and applies once it exists.
+  `"tabs.count"`, `"leadInLen"` or `"leadIn.length"`, `"perforateGapWidth"` or
+  `"perforate.gapWidth"`. An expression for a nested field is ignored while its
+  parent object (`tabs`, `leadIn`, `leadOut`, `perforate`) is absent, and
+  applies once it exists.
 - Renaming a variable in the app rewrites references inside `paramExprs`, as it
   does for dimension and feature expressions.
 
@@ -1103,6 +1104,7 @@ instead:
 | `laserPower` | both | beam power as a percentage (0–100) of the controller's max (GRBL `$30`), scaled to an `S` word. Default 80 |
 | `laserPasses` | both | times the beam re-traces each path — the fixed-Z analogue of stepdown. Default 1 |
 | `kerfWidth` | `profile` | beam kerf (mm); the closed contour is offset outward (`side: "outside"`) or inward (`"inside"`) by half this. 0 = cut on the line |
+| `perforate` | `profile` | leave short beam-off gaps along the cut instead of severing it continuously — a dashed/perforated line for a tear-away sheet, or small uncut bridges holding a freed piece in place. See below |
 | `laserFill` | `engrave` | flood closed shapes with parallel scan lines (area/solid engraving) on top of the outline; counters (the hole in "O") stay clear. Default false |
 | `laserFillSpacing` | `engrave` | scan-line spacing (mm) when `laserFill` is on — roughly the beam width. Default 0.2 |
 | `laserOverscan` | `engrave` | fill **or** raster: distance (mm) the head runs past each scan line's/row's ends with the beam off, so it's at full speed when the beam fires (avoids over-burned edges). 0 = off. Default 0 |
@@ -1113,6 +1115,34 @@ instead:
 | `rasterDither` | `engrave` (image), laser | raster: reproduce tone as a **1-bit dot pattern** instead of modulating power per dot. Every fired dot burns at `laserPower` and tone comes from dot DENSITY, so `rasterMinPower` is unused. `floyd-steinberg` (classic), `jarvis` (smoother, wider kernel), `atkinson` (higher contrast) are error-diffusion; `ordered` is an 8x8 Bayer pattern. Omitted or `none` = greyscale power, the default |
 | `rasterInvert` | `engrave` (image) | raster: engrave the light areas instead of the dark (photo negative). Default false |
 | `laserOverride` | both | cut with this op's own beam settings, ignoring any `laser` recipe on its layer (see below). Default false |
+
+#### Perforated cuts
+
+`perforate` is the laser analogue of a mill's `tabs` — the same `count`/
+`spacing` placement, but a beam has no Z to lift over a bridge, so the region
+is simply never cut instead of being ridden over at reduced depth:
+
+```jsonc
+{ "id": "op1", "name": "Tear-away cut", "type": "profile",
+  "entityIds": ["ent1"], "side": "outside",
+  "toolType": "end-mill", "toolNumber": 1, "diameter": 0,
+  "feedrate": 300, "plungeRate": 300, "spindleSpeed": 0, "safeZ": 5,
+  "depth": -3, "stepdown": 1.5, "stepover": 0.4,
+  "laserPower": 100, "kerfWidth": 0.15,
+  // 12 gaps of 1mm each, evenly spaced — a coupon-style tear line. Unlike a
+  // mill tab's `width`, `gapWidth` needs no cutter-radius correction: a beam
+  // has no radius to sweep into the gap, so the gap (and the bridge) you ask
+  // for is the one you get.
+  "perforate": { "enabled": true, "count": 12, "gapWidth": 1 }
+  // …or a few wide gaps to hold a freed piece instead of a tear line:
+  // { "enabled": true, "count": 3, "gapWidth": 4 }
+  // …or by spacing: { "enabled": true, "strategy": "spacing", "spacing": 15, "gapWidth": 1 }
+}
+```
+
+A gap wide enough (or numerous enough) to consume the whole contour leaves
+nothing to cut; the generator emits a `; NOTE:` comment rather than a silently
+vanished profile, the same way an inside kerf wider than the feature does.
 
 #### Per-layer beam recipes
 

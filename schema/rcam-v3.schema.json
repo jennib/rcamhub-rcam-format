@@ -895,6 +895,20 @@
       }
     },
 
+    "perforateDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "count", "gapWidth"],
+      "description": "Laser profile (cut) only: leave short beam-off gaps along the cut instead of severing it continuously — dashed/perforated lines for a tear-away sheet, or small uncut bridges holding a freed piece in place. The laser analogue of tabDef; unlike a mill tab's width, gapWidth needs no cutter-radius correction (a beam has no radius to sweep into the gap).",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "strategy": { "enum": ["count", "spacing"], "description": "How gap quantity is set: \"count\" (default) places `count` gaps evenly; \"spacing\" places one roughly every `spacing` mm of perimeter (a longer contour gets more)." },
+        "count": { "type": "integer", "minimum": 0, "description": "Number of gaps, evenly distributed (\"count\" strategy)." },
+        "spacing": { "type": "number", "exclusiveMinimum": 0, "description": "Perimeter distance (mm) between gaps (\"spacing\" strategy)." },
+        "gapWidth": { "type": "number", "description": "arc-length of each beam-off gap, mm" }
+      }
+    },
+
     "regionRef": {
       "type": "object",
       "additionalProperties": false,
@@ -1010,6 +1024,7 @@
         "laserPasses": { "type": "integer", "minimum": 1, "description": "Laser only: number of times the beam re-traces each path (the fixed-Z analogue of milling stepdown). Default 1." },
         "laserOverride": { "type": "boolean", "description": "Laser only: cut with this operation's own beam settings, ignoring any \"laser\" recipe on the layer its geometry sits on. Omitted/false = follow the layer when it has one. Set on operations whose numbers ARE the point, such as the cells of a material-test grid." },
         "kerfWidth": { "type": "number", "minimum": 0, "description": "Laser profile only: beam kerf width (mm). Closed profiles are offset by half this — outward for side \"outside\", inward for \"inside\". 0 = cut on the line. Engrave ignores it." },
+        "perforate": { "$ref": "#/$defs/perforateDef" },
         "laserFill": { "type": "boolean", "description": "Laser engrave only: flood the interior of closed shapes with parallel scan lines (area/solid engraving) in addition to outlining them. Closed contours are grouped even–odd so letter counters stay unfilled. Default false." },
         "laserFillSpacing": { "type": "number", "exclusiveMinimum": 0, "description": "Laser fill only: spacing (mm) between scan lines — roughly the beam/line width. Default 0.2." },
         "laserOverscan": { "type": "number", "minimum": 0, "description": "Laser fill / raster only: overscan distance (mm) the head runs past each scan line's/row's ends with the beam off, so it's at full speed when the beam fires (avoids over-burned edges). 0 = off. Default 0." },
