@@ -15,7 +15,7 @@
   "metadata": {
     "job": "Flat-pack box",
     "revision": "A",
-    "notes": "Edit boxW, boxD or boxH in the Variables panel and all three panels resize together. cornerR drives every corner through a binding (no dimension on the canvas). The end panel is boxD - 2 * stock, so changing the material thickness in Settings resizes it too."
+    "notes": "Edit boxW, boxD or boxH in the Variables panel and all three panels resize together. cornerR drives every corner through a binding (no dimension on the canvas). The end panel is boxD - 2 * stock and the cut depth is -(stock + 0.5), so changing the material thickness in Settings resizes the panel and keeps the cut going all the way through."
   },
   "groups": [
     {
@@ -460,6 +460,9 @@
       "spindleSpeed": 18000,
       "safeZ": 5,
       "depth": -9.5,
+      "paramExprs": {
+        "depth": "-(stock + 0.5)"
+      },
       "stepdown": 4.5,
       "stepover": 0.4,
       "tabs": {

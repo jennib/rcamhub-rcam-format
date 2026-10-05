@@ -1571,7 +1571,8 @@ had gone stale by eleven files before that check existed.
 - `bolt-circle.rcam` — `variables` + a circular `pattern`.
 - `parametric-box.rcam` — the three parametric channels side by side: a dimension
   `expr`, a `ScalarBinding` (which drives geometry and draws nothing), and `stock`
-  as a built-in.
+  as a built-in, which reaches both the end panel's width and, through `paramExprs`,
+  the toolpath's depth.
 - `block-hole-pattern.rcam` — `blockDefinitions` + `groups` with `definitionId`: one
   definition placed four times, each instance `rigid` with its own `angle`. Note that
   a rigid block's degrees of freedom belong to the block, so a `fixedPoint` on one of
