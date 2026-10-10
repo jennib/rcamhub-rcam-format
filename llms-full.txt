@@ -1584,6 +1584,10 @@ had gone stale by eleven files before that check existed.
 
 - `mounting-plate-cam.rcam` — drill + tabbed profile `operations`.
 - `enclosure-lid.rcam` — pocket with parametric region `containingLoops` and an island.
+- `round-bar-center-finder.rcam` — variables that derive other variables (`slotStart`, `slotEnd`,
+  `run` from `barMax` and `barMin`), dimensions whose `expr` names them, a `drill` over four registration holes, and a pocket named by a
+  `regions` entry rather than by `entityIds`. 45° steps are paired horizontal and vertical
+  dimensions; there is no trig in the expression language, so an angle cannot be a variable.
 - `clamped-toolplate.rcam` — a positioned `stockRect` (the blank inside a larger work
   area), a `features[]` entry from the `clamp` generator, a layer with `fixture: true`
   so pre-flight treats its shapes as keep-outs, and the only use of
@@ -1607,6 +1611,8 @@ had gone stale by eleven files before that check existed.
 **Other machine kinds**
 
 - `laser-coaster.rcam` — `machineKind: "laser"` with outline/fill engraves and a kerf-compensated cut.
+- `round-bar-center-finder-laser.rcam` — the same sketch under `machineKind: "laser"`: a `cut` layer
+  whose `kerfWidth` offsets each outline outward and the slot inward.
 - `fold-tray.rcam` — `score` beside `profile`, on layers carrying their own `laser`
   recipes, so re-tuning a layer moves every operation on it.
 - `rotary-spiral-dowel.rcam` — `machineKind: "mill-rotary"` + the `rotary` cylinder block.

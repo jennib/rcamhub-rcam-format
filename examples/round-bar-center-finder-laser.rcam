@@ -1,0 +1,1134 @@
+{
+  "version": 3,
+  "name": "Round Bar Center Finder (Laser)",
+  "canvas": {
+    "width": 140,
+    "height": 175
+  },
+  "displayUnit": "mm",
+  "stockThickness": 3,
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "machineKind": "laser",
+  "metadata": {
+    "job": "Round bar center finder",
+    "revision": "B",
+    "notes": "Glue the fence under the plate, flush along the plate's two straight edges, so the lips hang down; pin the parts together through the four ⌀1.5 alignment holes (wire or brads) while the glue sets, then pull the pins. Set the plate on the end of the bar and push the corner against it: the lips' inside faces touch the bar, so its center is on the slot's line. Scribe along the slot, move the tool round the bar, scribe again; the lines cross at the center. The mill file's two parts, cut on a laser: same variables, same sketch. The Cut layer carries the beam recipe, so re-tuning it re-tunes every operation. The holes and the slot are cut first and the outlines last: once an outline is severed the part is loose on the bed. Power and speed are starting points for 3mm cast acrylic on a CO2 laser; test on offcuts. The beam has width, so the layer compensates by its kerf: the path runs half a kerf outside each outline and half a kerf inside the slot, which puts the lips' faces and the slot on the drawn lines."
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-cut",
+      "name": "Cut",
+      "color": "#ff6b6b",
+      "visible": true,
+      "locked": false,
+      "laser": {
+        "kind": "cut",
+        "feedrate": 600,
+        "laserPower": 70,
+        "laserPasses": 1,
+        "kerfWidth": 0.2,
+        "airAssist": true
+      }
+    },
+    {
+      "id": "layer-bisector",
+      "name": "Bisector",
+      "color": "#868e96",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-cut",
+  "entities": [
+    {
+      "type": "polyline",
+      "points": [
+        {
+          "x": 20,
+          "y": 120
+        },
+        {
+          "x": 48.99137802864845,
+          "y": 148.99137802864846
+        },
+        {
+          "x": 72.9827560572969,
+          "y": 125
+        },
+        {
+          "x": 90.01219330881975,
+          "y": 125
+        },
+        {
+          "x": 90.01219330881975,
+          "y": 115
+        },
+        {
+          "x": 72.9827560572969,
+          "y": 115
+        },
+        {
+          "x": 48.99137802864845,
+          "y": 91.00862197135154
+        }
+      ],
+      "vertexIds": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "closed": true,
+      "cornerRadii": {
+        "3": 5,
+        "4": 5
+      },
+      "cornerType": "round",
+      "id": "ent-cf-plate",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Plate outline"
+    },
+    {
+      "type": "polyline",
+      "points": [
+        {
+          "x": 20,
+          "y": 50.0172439427031
+        },
+        {
+          "x": 48.99137802864845,
+          "y": 79.00862197135154
+        },
+        {
+          "x": 51.81980515339464,
+          "y": 76.18019484660536
+        },
+        {
+          "x": 25.65685424949238,
+          "y": 50.0172439427031
+        },
+        {
+          "x": 51.81980515339464,
+          "y": 23.85429303880084
+        },
+        {
+          "x": 48.99137802864845,
+          "y": 21.02586591405465
+        }
+      ],
+      "vertexIds": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "closed": true,
+      "id": "ent-cf-fence",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Fence (lips)"
+    },
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 30.727922061357855,
+        "y": 119
+      },
+      "p1": {
+        "x": 86.01219330881975,
+        "y": 121
+      },
+      "cornerRadii": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cornerType": "round",
+      "id": "ent-cf-slot",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Scribe slot"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 20,
+        "y": 120
+      },
+      "b": {
+        "x": 90.01219330881975,
+        "y": 120
+      },
+      "id": "ent-cf-bisector",
+      "isConstruction": true,
+      "layerId": "layer-bisector",
+      "name": "Bisector"
+    },
+    {
+      "type": "line",
+      "a": {
+        "x": 20,
+        "y": 50.0172439427031
+      },
+      "b": {
+        "x": 48.99137802864845,
+        "y": 50.0172439427031
+      },
+      "id": "ent-cf-fence-axis",
+      "isConstruction": true,
+      "layerId": "layer-bisector",
+      "name": "Fence axis"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 44.748737341529164,
+        "y": 141.92031021678298
+      },
+      "radius": 0.75,
+      "id": "ent-cf-pin-plate-top",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Pin hole, plate, top"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 44.748737341529164,
+        "y": 98.07968978321702
+      },
+      "radius": 0.75,
+      "id": "ent-cf-pin-plate-bottom",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Pin hole, plate, bottom"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 44.748737341529164,
+        "y": 71.93755415948607
+      },
+      "radius": 0.75,
+      "id": "ent-cf-pin-fence-top",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Pin hole, fence, top"
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 44.748737341529164,
+        "y": 28.096933725920124
+      },
+      "radius": 0.75,
+      "id": "ent-cf-pin-fence-bottom",
+      "isConstruction": false,
+      "layerId": "layer-cut",
+      "name": "Pin hole, fence, bottom"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-plate-pin",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        }
+      ],
+      "entities": [],
+      "params": [
+        20,
+        120
+      ]
+    },
+    {
+      "id": "con-tail-top-h",
+      "type": "horizontal",
+      "points": [],
+      "entities": [
+        "ent-cf-plate#2"
+      ]
+    },
+    {
+      "id": "con-mirror-fence",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v1"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v6"
+        }
+      ],
+      "entities": [
+        "ent-cf-bisector"
+      ]
+    },
+    {
+      "id": "con-mirror-barb",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v2"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v5"
+        }
+      ],
+      "entities": [
+        "ent-cf-bisector"
+      ]
+    },
+    {
+      "id": "con-mirror-tail",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v3"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v4"
+        }
+      ],
+      "entities": [
+        "ent-cf-bisector"
+      ]
+    },
+    {
+      "id": "con-bisector-start",
+      "type": "coincident",
+      "points": [
+        {
+          "entityId": "ent-cf-bisector",
+          "key": "a"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con-bisector-level",
+      "type": "horizontal",
+      "points": [],
+      "entities": [
+        "ent-cf-bisector"
+      ]
+    },
+    {
+      "id": "con-fence-follows-plate",
+      "type": "center",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        }
+      ],
+      "entities": [],
+      "params": [
+        0
+      ]
+    },
+    {
+      "id": "con-fence-axis-start",
+      "type": "coincident",
+      "points": [
+        {
+          "entityId": "ent-cf-fence-axis",
+          "key": "a"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        }
+      ],
+      "entities": []
+    },
+    {
+      "id": "con-fence-axis-level",
+      "type": "horizontal",
+      "points": [],
+      "entities": [
+        "ent-cf-fence-axis"
+      ]
+    },
+    {
+      "id": "con-fence-seat-on-axis",
+      "type": "pointOnLine",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v3"
+        }
+      ],
+      "entities": [
+        "ent-cf-fence-axis"
+      ]
+    },
+    {
+      "id": "con-mirror-lip-end",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v2"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v4"
+        }
+      ],
+      "entities": [
+        "ent-cf-fence-axis"
+      ]
+    },
+    {
+      "id": "con-mirror-lip-outer",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v5"
+        }
+      ],
+      "entities": [
+        "ent-cf-fence-axis"
+      ]
+    },
+    {
+      "id": "con-pin-plate-mirror",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-pin-plate-bottom",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-cf-pin-plate-top",
+          "key": "c"
+        }
+      ],
+      "entities": [
+        "ent-cf-bisector"
+      ]
+    },
+    {
+      "id": "con-pin-plate-equal",
+      "type": "equal",
+      "points": [],
+      "entities": [
+        "ent-cf-pin-plate-bottom",
+        "ent-cf-pin-plate-top"
+      ]
+    },
+    {
+      "id": "con-pin-fence-mirror",
+      "type": "symmetric",
+      "points": [
+        {
+          "entityId": "ent-cf-pin-fence-bottom",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-cf-pin-fence-top",
+          "key": "c"
+        }
+      ],
+      "entities": [
+        "ent-cf-fence-axis"
+      ]
+    },
+    {
+      "id": "con-pin-fence-equal",
+      "type": "equal",
+      "points": [],
+      "entities": [
+        "ent-cf-pin-fence-bottom",
+        "ent-cf-pin-fence-top"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-plate-fence-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 28.991378028648448,
+      "driving": true,
+      "offset": 20,
+      "expr": "run"
+    },
+    {
+      "id": "dim-plate-fence-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 28.991378028648448,
+      "driving": true,
+      "offset": -30,
+      "expr": "run"
+    },
+    {
+      "id": "dim-plate-barb-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v1"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v2"
+        }
+      ],
+      "entities": [],
+      "value": 23.991378028648448,
+      "driving": true,
+      "offset": 18,
+      "expr": "run - tailW / 2"
+    },
+    {
+      "id": "dim-plate-barb-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v2"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 23.991378028648448,
+      "driving": true,
+      "offset": 14,
+      "expr": "run - tailW / 2"
+    },
+    {
+      "id": "dim-tail-len",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v2"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v3"
+        }
+      ],
+      "entities": [],
+      "value": 17.02943725152285,
+      "driving": true,
+      "offset": -16,
+      "expr": "tailLen"
+    },
+    {
+      "id": "dim-slot-start",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-slot",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "value": 10.727922061357855,
+      "driving": true,
+      "offset": -12,
+      "expr": "slotStart"
+    },
+    {
+      "id": "dim-slot-length",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-slot",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-cf-slot",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 55.28427124746189,
+      "driving": true,
+      "offset": 10,
+      "expr": "slotLen"
+    },
+    {
+      "id": "dim-slot-width",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-slot",
+          "key": "br"
+        },
+        {
+          "entityId": "ent-cf-slot",
+          "key": "tr"
+        }
+      ],
+      "entities": [],
+      "value": 2,
+      "driving": true,
+      "offset": 8,
+      "expr": "slotW"
+    },
+    {
+      "id": "dim-slot-centered",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-slot",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        }
+      ],
+      "entities": [],
+      "value": 1,
+      "driving": true,
+      "offset": -4,
+      "expr": "slotW / 2"
+    },
+    {
+      "id": "dim-bisector-length",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-bisector",
+          "key": "a"
+        },
+        {
+          "entityId": "ent-cf-bisector",
+          "key": "b"
+        }
+      ],
+      "entities": [],
+      "value": 70.01219330881975,
+      "driving": true,
+      "offset": 46,
+      "expr": "slotEnd + wall"
+    },
+    {
+      "id": "dim-fence-gap",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v6"
+        }
+      ],
+      "entities": [],
+      "value": 12,
+      "driving": true,
+      "offset": 12,
+      "expr": "gap"
+    },
+    {
+      "id": "dim-fence-axis-length",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-fence-axis",
+          "key": "a"
+        },
+        {
+          "entityId": "ent-cf-fence-axis",
+          "key": "b"
+        }
+      ],
+      "entities": [],
+      "value": 28.991378028648448,
+      "driving": true,
+      "offset": -46,
+      "expr": "run"
+    },
+    {
+      "id": "dim-fence-outer-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 28.991378028648448,
+      "driving": true,
+      "offset": 19,
+      "expr": "run"
+    },
+    {
+      "id": "dim-fence-outer-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 28.991378028648448,
+      "driving": true,
+      "offset": -30,
+      "expr": "run"
+    },
+    {
+      "id": "dim-fence-end-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v2"
+        }
+      ],
+      "entities": [],
+      "value": 2.82842712474619,
+      "driving": true,
+      "offset": 6,
+      "expr": "lipDiag"
+    },
+    {
+      "id": "dim-fence-end-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v2"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v1"
+        }
+      ],
+      "entities": [],
+      "value": 2.82842712474619,
+      "driving": true,
+      "offset": 8,
+      "expr": "lipDiag"
+    },
+    {
+      "id": "dim-fence-seat-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v3"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v2"
+        }
+      ],
+      "entities": [],
+      "value": 26.162950903902257,
+      "driving": true,
+      "offset": 14,
+      "expr": "run - lipDiag"
+    },
+    {
+      "id": "dim-pin-plate-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-pin-plate-bottom",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "value": 24.74873734152916,
+      "driving": true,
+      "offset": -19,
+      "expr": "pinX"
+    },
+    {
+      "id": "dim-pin-plate-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-pin-plate-bottom",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-cf-plate",
+          "key": "v0"
+        }
+      ],
+      "entities": [],
+      "value": 21.920310216782973,
+      "driving": true,
+      "offset": -34,
+      "expr": "pinY"
+    },
+    {
+      "id": "dim-pin-plate-dia",
+      "type": "diameter",
+      "points": [],
+      "entities": [
+        "ent-cf-pin-plate-bottom"
+      ],
+      "value": 1.5,
+      "driving": true,
+      "offset": -0.785
+    },
+    {
+      "id": "dim-pin-fence-x",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        },
+        {
+          "entityId": "ent-cf-pin-fence-bottom",
+          "key": "c"
+        }
+      ],
+      "entities": [],
+      "value": 24.74873734152916,
+      "driving": true,
+      "offset": -19,
+      "expr": "pinX"
+    },
+    {
+      "id": "dim-pin-fence-y",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-cf-pin-fence-bottom",
+          "key": "c"
+        },
+        {
+          "entityId": "ent-cf-fence",
+          "key": "v0"
+        }
+      ],
+      "entities": [],
+      "value": 21.920310216782973,
+      "driving": true,
+      "offset": -34,
+      "expr": "pinY"
+    },
+    {
+      "id": "dim-pin-fence-dia",
+      "type": "diameter",
+      "points": [],
+      "entities": [
+        "ent-cf-pin-fence-bottom"
+      ],
+      "value": 1.5,
+      "driving": true,
+      "offset": -0.785
+    }
+  ],
+  "variables": [
+    {
+      "id": "var-barMax",
+      "name": "barMax",
+      "expr": "50",
+      "value": 50
+    },
+    {
+      "id": "var-barMin",
+      "name": "barMin",
+      "expr": "10",
+      "value": 10
+    },
+    {
+      "id": "var-lipW",
+      "name": "lipW",
+      "expr": "4",
+      "value": 4
+    },
+    {
+      "id": "var-fenceMargin",
+      "name": "fenceMargin",
+      "expr": "12",
+      "value": 12
+    },
+    {
+      "id": "var-slotW",
+      "name": "slotW",
+      "expr": "2",
+      "value": 2
+    },
+    {
+      "id": "var-wall",
+      "name": "wall",
+      "expr": "4",
+      "value": 4
+    },
+    {
+      "id": "var-reach",
+      "name": "reach",
+      "expr": "2",
+      "value": 2
+    },
+    {
+      "id": "var-gap",
+      "name": "gap",
+      "expr": "12",
+      "value": 12
+    },
+    {
+      "id": "var-pinAt",
+      "name": "pinAt",
+      "expr": "8",
+      "value": 8
+    },
+    {
+      "id": "var-seat",
+      "name": "seat",
+      "expr": "lipW * 2 ^ 0.5",
+      "value": 0
+    },
+    {
+      "id": "var-lipDiag",
+      "name": "lipDiag",
+      "expr": "lipW / 2 ^ 0.5",
+      "value": 0
+    },
+    {
+      "id": "var-fenceLen",
+      "name": "fenceLen",
+      "expr": "barMax / 2 + lipW + fenceMargin",
+      "value": 0
+    },
+    {
+      "id": "var-run",
+      "name": "run",
+      "expr": "fenceLen / 2 ^ 0.5",
+      "value": 0
+    },
+    {
+      "id": "var-tailW",
+      "name": "tailW",
+      "expr": "slotW + 2 * wall",
+      "value": 0
+    },
+    {
+      "id": "var-slotStart",
+      "name": "slotStart",
+      "expr": "seat + barMin / 2 ^ 0.5 - reach",
+      "value": 0
+    },
+    {
+      "id": "var-slotEnd",
+      "name": "slotEnd",
+      "expr": "seat + barMax / 2 * (2 ^ 0.5 + 1)",
+      "value": 0
+    },
+    {
+      "id": "var-slotLen",
+      "name": "slotLen",
+      "expr": "slotEnd - slotStart",
+      "value": 0
+    },
+    {
+      "id": "var-tailLen",
+      "name": "tailLen",
+      "expr": "slotEnd + wall - (2 * run - tailW / 2)",
+      "value": 0
+    },
+    {
+      "id": "var-pinX",
+      "name": "pinX",
+      "expr": "(fenceLen - pinAt + lipW / 2) / 2 ^ 0.5",
+      "value": 0
+    },
+    {
+      "id": "var-pinY",
+      "name": "pinY",
+      "expr": "(fenceLen - pinAt - lipW / 2) / 2 ^ 0.5",
+      "value": 0
+    }
+  ],
+  "bindings": [
+    {
+      "id": "bind-slot-ends",
+      "entityId": "ent-cf-slot",
+      "scalarKey": "cr",
+      "expr": "slotW / 2"
+    }
+  ],
+  "patterns": [],
+  "operations": [
+    {
+      "type": "profile",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "feedrate": 600,
+      "laserPower": 70,
+      "laserPasses": 1,
+      "kerfWidth": 0.2,
+      "airAssist": true,
+      "id": "op-cut-pins",
+      "name": "Cut alignment holes",
+      "side": "inside",
+      "entityIds": [
+        "ent-cf-pin-plate-top",
+        "ent-cf-pin-plate-bottom",
+        "ent-cf-pin-fence-top",
+        "ent-cf-pin-fence-bottom"
+      ]
+    },
+    {
+      "type": "profile",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "feedrate": 600,
+      "laserPower": 70,
+      "laserPasses": 1,
+      "kerfWidth": 0.2,
+      "airAssist": true,
+      "id": "op-cut-slot",
+      "name": "Cut scribe slot",
+      "side": "inside",
+      "entityIds": [
+        "ent-cf-slot"
+      ]
+    },
+    {
+      "type": "profile",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "feedrate": 600,
+      "laserPower": 70,
+      "laserPasses": 1,
+      "kerfWidth": 0.2,
+      "airAssist": true,
+      "id": "op-cut-plate",
+      "name": "Cut plate",
+      "side": "outside",
+      "entityIds": [
+        "ent-cf-plate"
+      ]
+    },
+    {
+      "type": "profile",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 0.2,
+      "plungeRate": 300,
+      "spindleSpeed": 0,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 3,
+      "stepover": 0.4,
+      "feedrate": 600,
+      "laserPower": 70,
+      "laserPasses": 1,
+      "kerfWidth": 0.2,
+      "airAssist": true,
+      "id": "op-cut-fence",
+      "name": "Cut fence",
+      "side": "outside",
+      "entityIds": [
+        "ent-cf-fence"
+      ]
+    }
+  ],
+  "tools": []
+}
