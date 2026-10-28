@@ -950,6 +950,7 @@ mirrored about the flip axis. It is ignored when `flip` is absent.
 | `score` | **laser only** (`machineKind: "laser"`): traces the geometry centreline with **no kerf offset** at low power — a fold/crease line rather than a cut (the UI's "Score / Fold", defaulting to 15% power). On a mill there is no score; use `engrave`. Mill-only op types (`drill`, `pocket`, `chamfer`, `vcarve`, `relief-rough`) are conversely skipped with a G-code note on a laser |
 | `tuft-line` | **tufting only** (`machineKind: "tufting"`): tufts one row of yarn along each line — see [Tufting operations](#tufting-operations) |
 | `tuft-fill` | **tufting only**: fills each closed shape with rows of yarn, after tufting its outline; holes stay empty. See [Tufting operations](#tufting-operations) |
+| `drag-knife` | **mill only**: cuts thin sheet (vinyl, card, leather, gasket) with a swivel drag knife in the collet, **spindle off**, at `depth` and `feedrate` — the holder offset and swivelled so the blade's trailing tip follows the lines. Uses `dragKnifeOffset`, `dragKnifeAngle`, `dragKnifeSwivelDepth`; see [Drag knife operations](#drag-knife-operations) |
 | `relief-rough` | **Roughs** a greyscale **image** relief in flat Z-levels with a coarse flat / bull-nose tool: resamples the image at the tool's `stepover` (× diameter), and clears the bulk down to `finishAllowance` mm above the final relief surface in `stepdown` planes, leaving that allowance for the ball-nose relief **finish** pass (an `engrave` op on the same image) to carve. Runs the raster boustrophedon, **ramping into each cut** and hopping over uncut areas at a low clearance above the stock. Set its `depth` / `stepdown` / `stepover` / `reliefGamma` / `rasterInvert` to match the finish op, and order it **before** the finish op (a tool change between them). `restToolDiameter` turns it into a **rest pass**: name the larger tool that already roughed, and it cuts only the cells that tool left more than one `stepdown` of stock on — the narrow valleys a big cutter cannot drop into, which are otherwise handed to the finish bit at full width. The editor warns if a roughing op's depth (less its allowance) would cut past the finish op's surface — a gouge |
 
 `regions` (pocket/vcarve/inlay) is an alternative to explicit `entityIds`. While you can just list your boundary lines/arcs directly in `entityIds` (they will be chained into closed boundaries automatically) and list `islandIds` for any holes, the legacy/flood-fill way clears one or more **enclosed
@@ -1305,6 +1306,33 @@ from the back), and the gun's on/off commands are the opener's Machine Settings.
 The generator splits every line into runs the gun can stitch facing the way it
 travels, and the pre-flight re-reads the posted program to check each of those
 rules held.
+
+### Drag knife operations
+
+A `drag-knife` operation (mill documents, flat stock) cuts with a passive swivel
+knife clamped in the collet. The spindle is never started for it, and a switch
+between a knife and a cutter is always a tool change, even under one tool
+number. It follows every line it names, open or closed, text included, joining
+lines that meet end to end, in one pass at `depth`, fed at `feedrate` and plunged
+at `plungeRate`. `stepdown`, `startDepth`, `coolant` and the tool's diameter and
+speed are ignored.
+
+| Field | Meaning |
+|-------|---------|
+| `dragKnifeOffset` | how far the blade tip trails the holder's axis (mm): the blade offset the knife's maker quotes. Default 0.25 |
+| `dragKnifeAngle` | the tolerance angle (degrees, 1–180): a turn at least this sharp gets a swivel. Default 10 |
+| `dragKnifeSwivelDepth` | the depth (mm, negative like `depth`) the knife is raised to for a swivel, held between `depth` and 0. Default −0.1 |
+
+The posted path is the HOLDER's, built so the tip cuts the drawing: on a straight
+cut the holder runs `dragKnifeOffset` ahead of the tip, so each cut ends that far
+past its corner; at a turn of at least `dragKnifeAngle` the knife lifts to the
+swivel depth and the holder arcs (G2/G3) about the corner at that radius, from
+the old direction to the new, so the blade turns while the tip stays on the
+corner. The program assumes the blade points along +X when the knife is loaded,
+and starts every cut with a swivel from wherever the previous cut left it. Each
+cut also starts with a lead-in: a closed shape starts at its sharpest corner and
+re-cuts its own last 6 offsets first; an open line starts with a slit 3 offsets
+long on along its first direction.
 
 ## Tools
 

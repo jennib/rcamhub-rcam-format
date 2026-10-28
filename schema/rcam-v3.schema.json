@@ -970,7 +970,7 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string" },
-        "type": { "enum": ["profile", "engrave", "drill", "pocket", "chamfer", "vcarve", "inlay", "relief-rough", "score", "face", "tuft-line", "tuft-fill"] },
+        "type": { "enum": ["profile", "engrave", "drill", "pocket", "chamfer", "vcarve", "inlay", "relief-rough", "score", "face", "tuft-line", "tuft-fill", "drag-knife"] },
         "entityIds": { "type": "array", "items": { "type": "string" }, "description": "Target geometry ids." },
         "side": { "enum": ["outside", "inside"], "description": "Which side of the contour the cut runs on. Required for \"profile\" (and drives laser kerf offset); ignored — and may be omitted — for every other type." },
         "followPattern": { "type": "boolean", "description": "When the op's geometry belongs to a pattern, the toolpath covers the whole pattern and follows its count. Set false to cut only the literal entityIds. Default (omitted) = follow." },
@@ -1033,6 +1033,9 @@
         "tuftFillAngle": { "type": "number", "description": "Tuft fill only: the direction the rows run, degrees, in the design as drawn (90 = rows run up the frame, 0 = across). Rows are lines, so 0 and 180 are the same fill. Default 90." },
         "tuftOutline": { "type": "boolean", "description": "Tuft fill only: tuft each shape's outline before filling it. Omitted = true; written only as false." },
         "tuftPause": { "type": "boolean", "description": "Tufting only: stop the program (M0) before this toolpath so the operator can change yarn. Never emitted before the first toolpath. Omitted = true; written only as false." },
+        "dragKnifeOffset": { "type": "number", "minimum": 0, "description": "Drag knife only: how far the blade tip trails the holder's axis, mm — the blade offset the knife's maker quotes. The holder is posted this far ahead of the tip along the direction of travel, and swivelled about each sharp corner on an arc of this radius, so the trailing tip cuts the drawn line. 0 = follow the line uncompensated. Default 0.25." },
+        "dragKnifeAngle": { "type": "number", "minimum": 1, "maximum": 180, "description": "Drag knife only: the tolerance angle, degrees. A change of direction at least this sharp gets a swivel (the knife lifts to dragKnifeSwivelDepth and the holder circles the corner so the blade turns before the next cut); gentler turns are followed without one. Default 10." },
+        "dragKnifeSwivelDepth": { "type": "number", "maximum": 0, "description": "Drag knife only: the depth the knife swivels at, mm below the stock top (negative, like depth) — still in the material so the blade can turn, shallower than the cut so the turn does not score it. Held between depth and 0. Default -0.1." },
         "rasterLineInterval": { "type": "number", "exclusiveMinimum": 0, "description": "Image-engrave only (an Engrave op targeting an image entity — a LASER raster or a MILL relief): vertical pitch (mm) between scan rows (the line interval for a laser, the stepover for a mill). Laser default 0.1; mill relief default 0.3." },
         "rasterDotPitch": { "type": "number", "minimum": 0, "description": "Image-engrave only: horizontal pitch (mm) between dots within a row. Omitted = square dots (uses rasterLineInterval)." },
         "rasterMinPower": { "type": "number", "minimum": 0, "maximum": 100, "description": "Laser raster engrave only: beam power (%) for the lightest engraved dot (laserPower is the power for a fully black dot). Default 0." },
