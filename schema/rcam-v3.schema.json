@@ -56,8 +56,8 @@
     },
     "origin": { "$ref": "#/$defs/origin" },
     "machineKind": {
-      "enum": ["mill", "laser", "mill-rotary", "laser-rotary"],
-      "description": "Machine the document outputs for. Two independent choices: the HEAD (\"mill\" = spindle + Z, the default; \"laser\" = fixed-Z beam, routing export through the beam generator — beam on/off, power + passes, no Z — with the operations using the laser fields laserPower/laserPasses/kerfWidth/laserFill) and the STOCK (a \"-rotary\" kind machines a cylinder, so the canvas is its unrolled surface and the top-level \"rotary\" block is required). The head behaviour is unchanged by the stock. \"mill-rotary\" behaves like \"mill\" except that export WRAPS the finished flat program around the cylinder — one work axis stays linear, the wrapped one is emitted as rotary-axis degrees. \"laser-rotary\" behaves like \"laser\" including at export: the wrapped axis is SUBSTITUTED, i.e. left as its ordinary linear word in surface millimetres, with the machine set up so one revolution equals the circumference of travel on that axis (GRBL, which drives most laser rotaries, has no 4th axis). Its posted program is therefore the flat one plus a setup banner."
+      "enum": ["mill", "laser", "mill-rotary", "laser-rotary", "tufting"],
+      "description": "Machine the document outputs for. Two independent choices: the HEAD (\"mill\" = spindle + Z, the default; \"laser\" = fixed-Z beam, routing export through the beam generator — beam on/off, power + passes, no Z — with the operations using the laser fields laserPower/laserPasses/kerfWidth/laserFill) and the STOCK (a \"-rotary\" kind machines a cylinder, so the canvas is its unrolled surface and the top-level \"rotary\" block is required). The head behaviour is unchanged by the stock. \"mill-rotary\" behaves like \"mill\" except that export WRAPS the finished flat program around the cylinder — one work axis stays linear, the wrapped one is emitted as rotary-axis degrees. \"laser-rotary\" behaves like \"laser\" including at export: the wrapped axis is SUBSTITUTED, i.e. left as its ordinary linear word in surface millimetres, with the machine set up so one revolution equals the circumference of travel on that axis (GRBL, which drives most laser rotaries, has no 4th axis). Its posted program is therefore the flat one plus a setup banner. \"tufting\" is a third head, flat stock only: a CNC tufting gun on a vertical frame of cloth, where Z moves the needle in and out and an A axis turns the gun to face the way it travels. Its operations are the two tufting types (\"tuft-line\", \"tuft-fill\"); how far the needle goes in, how the gun turns and how it is switched are machine configuration and never in the file."
     },
     "endPosition": {
       "oneOf": [
@@ -970,7 +970,7 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string" },
-        "type": { "enum": ["profile", "engrave", "drill", "pocket", "chamfer", "vcarve", "inlay", "relief-rough", "score", "face"] },
+        "type": { "enum": ["profile", "engrave", "drill", "pocket", "chamfer", "vcarve", "inlay", "relief-rough", "score", "face", "tuft-line", "tuft-fill"] },
         "entityIds": { "type": "array", "items": { "type": "string" }, "description": "Target geometry ids." },
         "side": { "enum": ["outside", "inside"], "description": "Which side of the contour the cut runs on. Required for \"profile\" (and drives laser kerf offset); ignored — and may be omitted — for every other type." },
         "followPattern": { "type": "boolean", "description": "When the op's geometry belongs to a pattern, the toolpath covers the whole pattern and follows its count. Set false to cut only the literal entityIds. Default (omitted) = follow." },
@@ -1029,6 +1029,10 @@
         "laserFillSpacing": { "type": "number", "exclusiveMinimum": 0, "description": "Laser fill only: spacing (mm) between scan lines — roughly the beam/line width. Default 0.2." },
         "laserOverscan": { "type": "number", "minimum": 0, "description": "Laser fill / raster only: overscan distance (mm) the head runs past each scan line's/row's ends with the beam off, so it's at full speed when the beam fires (avoids over-burned edges). 0 = off. Default 0." },
         "airAssist": { "type": "boolean", "description": "Laser only: enable air assist for this operation (the post's air command, M8/M9 by default), kept on across consecutive ops that request it and off otherwise. Default false." },
+        "tuftRowSpacing": { "type": "number", "minimum": 0.5, "description": "Tuft fill only (machineKind \"tufting\"): distance between neighbouring rows of yarn, mm (the gauge). Also the width a row is drawn at in the preview. Default 4." },
+        "tuftFillAngle": { "type": "number", "description": "Tuft fill only: the direction the rows run, degrees, in the design as drawn (90 = rows run up the frame, 0 = across). Rows are lines, so 0 and 180 are the same fill. Default 90." },
+        "tuftOutline": { "type": "boolean", "description": "Tuft fill only: tuft each shape's outline before filling it. Omitted = true; written only as false." },
+        "tuftPause": { "type": "boolean", "description": "Tufting only: stop the program (M0) before this toolpath so the operator can change yarn. Never emitted before the first toolpath. Omitted = true; written only as false." },
         "rasterLineInterval": { "type": "number", "exclusiveMinimum": 0, "description": "Image-engrave only (an Engrave op targeting an image entity — a LASER raster or a MILL relief): vertical pitch (mm) between scan rows (the line interval for a laser, the stepover for a mill). Laser default 0.1; mill relief default 0.3." },
         "rasterDotPitch": { "type": "number", "minimum": 0, "description": "Image-engrave only: horizontal pitch (mm) between dots within a row. Omitted = square dots (uses rasterLineInterval)." },
         "rasterMinPower": { "type": "number", "minimum": 0, "maximum": 100, "description": "Laser raster engrave only: beam power (%) for the lightest engraved dot (laserPower is the power for a fully black dot). Default 0." },

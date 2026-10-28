@@ -1,0 +1,227 @@
+{
+  "version": 3,
+  "name": "Tufted Door Mat",
+  "canvas": {
+    "width": 760,
+    "height": 560
+  },
+  "displayUnit": "mm",
+  "stockThickness": 10,
+  "stockRect": {
+    "x": 30,
+    "y": 30,
+    "width": 700,
+    "height": 500
+  },
+  "origin": {
+    "x": "left",
+    "y": "front",
+    "z": "top"
+  },
+  "machineKind": "tufting",
+  "metadata": {
+    "job": "HELLO door mat",
+    "revision": "A",
+    "notes": "Three yarns, three toolpaths: the program stops to change yarn before the blue and the grey. It is posted mirrored, because a rug is tufted from its back - the front reads HELLO. Stitch speed 1200 mm/min and 4 mm rows are starting points; set the needle Z and gun angles in Machine Settings."
+  },
+  "groups": [],
+  "layers": [
+    {
+      "id": "layer-yarn-yellow",
+      "name": "Yellow yarn",
+      "color": "#ffd43b",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-yarn-blue",
+      "name": "Blue yarn",
+      "color": "#4dabf7",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "layer-yarn-grey",
+      "name": "Grey yarn",
+      "color": "#cdd2da",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "activeLayerId": "layer-yarn-blue",
+  "entities": [
+    {
+      "type": "rectangle",
+      "p0": {
+        "x": 80,
+        "y": 80
+      },
+      "p1": {
+        "x": 680,
+        "y": 480
+      },
+      "id": "ent-mat",
+      "isConstruction": false,
+      "layerId": "layer-yarn-grey",
+      "name": "Mat"
+    },
+    {
+      "type": "text",
+      "text": "HELLO",
+      "fontId": "roboto-bold",
+      "sizeMM": 140,
+      "position": {
+        "x": 167.7783203125,
+        "y": 230.234375
+      },
+      "angle": 0,
+      "id": "ent-hello",
+      "isConstruction": false,
+      "layerId": "layer-yarn-yellow",
+      "name": "Lettering"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-mat-pin",
+      "type": "fixedPoint",
+      "points": [
+        {
+          "entityId": "ent-mat",
+          "key": "bl"
+        }
+      ],
+      "entities": [],
+      "params": [
+        80,
+        80
+      ]
+    },
+    {
+      "id": "con-hello-centred",
+      "type": "center",
+      "points": [
+        {
+          "entityId": "ent-hello",
+          "key": "center"
+        },
+        {
+          "entityId": "ent-mat",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-mat",
+          "key": "tr"
+        }
+      ],
+      "entities": []
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "dim-mat-width",
+      "type": "horizontal",
+      "points": [
+        {
+          "entityId": "ent-mat",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-mat",
+          "key": "br"
+        }
+      ],
+      "entities": [],
+      "value": 600,
+      "driving": true,
+      "offset": -25
+    },
+    {
+      "id": "dim-mat-height",
+      "type": "vertical",
+      "points": [
+        {
+          "entityId": "ent-mat",
+          "key": "bl"
+        },
+        {
+          "entityId": "ent-mat",
+          "key": "tl"
+        }
+      ],
+      "entities": [],
+      "value": 400,
+      "driving": true,
+      "offset": -25
+    }
+  ],
+  "variables": [],
+  "bindings": [],
+  "patterns": [],
+  "operations": [
+    {
+      "side": "outside",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 6,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 1.5,
+      "stepover": 0.4,
+      "feedrate": 1200,
+      "id": "op-letters",
+      "name": "Lettering, yellow",
+      "type": "tuft-fill",
+      "entityIds": [
+        "ent-hello"
+      ],
+      "tuftRowSpacing": 4,
+      "tuftFillAngle": 90
+    },
+    {
+      "side": "outside",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 6,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 1.5,
+      "stepover": 0.4,
+      "feedrate": 1200,
+      "id": "op-background",
+      "name": "Background, blue",
+      "type": "tuft-fill",
+      "entityIds": [
+        "ent-mat",
+        "ent-hello"
+      ],
+      "tuftRowSpacing": 4,
+      "tuftFillAngle": 90,
+      "tuftOutline": false
+    },
+    {
+      "side": "outside",
+      "toolType": "end-mill",
+      "toolNumber": 1,
+      "diameter": 6,
+      "plungeRate": 300,
+      "spindleSpeed": 18000,
+      "safeZ": 5,
+      "depth": -3,
+      "stepdown": 1.5,
+      "stepover": 0.4,
+      "feedrate": 1200,
+      "id": "op-border",
+      "name": "Border, grey",
+      "type": "tuft-line",
+      "entityIds": [
+        "ent-mat"
+      ]
+    }
+  ],
+  "tools": []
+}

@@ -102,7 +102,7 @@ vocabularies is unchanged.
   "stockThickness": 10,                         // mm, default 10
   "counter": 1,                                 // incrementing serial counter, default 1 (omitted when 1)
   "origin": { "x": "left", "y": "front", "z": "top" },
-  "machineKind": "mill",                         // "mill" | "laser" | "mill-rotary" | "laser-rotary", default "mill"
+  "machineKind": "mill",                         // "mill" | "laser" | "mill-rotary" | "laser-rotary" | "tufting", default "mill"
   "endPosition": null,                          // optional park position; see below
   "metadata": { "job": "", "revision": "", "notes": "" }, // optional job info; see below
   "groups": [],
@@ -220,6 +220,11 @@ the top-level `rotary` block (see below). The head behaviour is unchanged by it:
   therefore the ordinary flat one plus a setup banner stating what one revolution
   must measure; what the rotary machine kind buys you is the cylinder-sized
   canvas, the wrap hint, the preview, and that banner.
+
+`"tufting"` is a third head, on flat stock only: a CNC tufting gun working on a
+vertical frame of cloth, where Z moves the needle in and out and an A axis turns
+the gun to face the way it travels. Its operations are the two tufting types —
+see [Tufting operations](#tufting-operations).
 
 **The controller is NOT in the file.** As of v3 a `.rcam` is a drawing, so it
 carries the design and not the author's machine: the post-processor, the
@@ -943,6 +948,8 @@ mirrored about the flip axis. It is ignored when `flip` is absent.
 | `vcarve` | **v-carves** a region at variable depth with a **v-bit**: the area (text glyphs, explicit `entityIds` chained into loops, or a flood-fill `region` with islands) is offset-peeled inward and each peel ring is cut at the depth where the bit's flanks touch both walls — so strokes taper to a sharp spine, and areas wider than the bit bottom out flat at \|`depth`\| (the max/floor depth, labelled **Flat depth** in the editor). A `depth` of **0** means *no* floor: every stroke peels all the way to its own spine, however deep that is. `vStep` (mm, default 0.4) is the radial pitch between peel passes — smaller = smoother floor, more passes. Optional `vHopClearance` (mm above the stock) hops between a region's contours at that low height instead of retracting to `safeZ` each time; leave it unset/0 (the safe default) if a clamp stands above the stock inside the carve footprint |
 | `inlay` | **v-carves two boards from one design** with a **v-bit**: board A gets the pocket (offset-peeled to a flat floor at `pocketDepth`); board B gets the plug — the same design inside a boundary (`inlayMargin` mm out, or a boundary you drew), field cleared and **mirrored** so the plug flips and seats. `glueGap` shrinks the plug by `glueGap · tan(½·vAngle)` at every depth (the apex void is where the glue goes); `sawAllowance` deepens the male only, leaving stock to saw flush. Posts **two programs** (pocket + plug) |
 | `score` | **laser only** (`machineKind: "laser"`): traces the geometry centreline with **no kerf offset** at low power — a fold/crease line rather than a cut (the UI's "Score / Fold", defaulting to 15% power). On a mill there is no score; use `engrave`. Mill-only op types (`drill`, `pocket`, `chamfer`, `vcarve`, `relief-rough`) are conversely skipped with a G-code note on a laser |
+| `tuft-line` | **tufting only** (`machineKind: "tufting"`): tufts one row of yarn along each line — see [Tufting operations](#tufting-operations) |
+| `tuft-fill` | **tufting only**: fills each closed shape with rows of yarn, after tufting its outline; holes stay empty. See [Tufting operations](#tufting-operations) |
 | `relief-rough` | **Roughs** a greyscale **image** relief in flat Z-levels with a coarse flat / bull-nose tool: resamples the image at the tool's `stepover` (× diameter), and clears the bulk down to `finishAllowance` mm above the final relief surface in `stepdown` planes, leaving that allowance for the ball-nose relief **finish** pass (an `engrave` op on the same image) to carve. Runs the raster boustrophedon, **ramping into each cut** and hopping over uncut areas at a low clearance above the stock. Set its `depth` / `stepdown` / `stepover` / `reliefGamma` / `rasterInvert` to match the finish op, and order it **before** the finish op (a tool change between them). `restToolDiameter` turns it into a **rest pass**: name the larger tool that already roughed, and it cuts only the cells that tool left more than one `stepdown` of stock on — the narrow valleys a big cutter cannot drop into, which are otherwise handed to the finish bit at full width. The editor warns if a roughing op's depth (less its allowance) would cut past the finish op's surface — a gouge |
 
 `regions` (pocket/vcarve/inlay) is an alternative to explicit `entityIds`. While you can just list your boundary lines/arcs directly in `entityIds` (they will be chained into closed boundaries automatically) and list `islandIds` for any holes, the legacy/flood-fill way clears one or more **enclosed
@@ -1271,6 +1278,34 @@ Independently of halftoning, a relief's `stepdown` passes after the first now vi
   "laserPower": 90, "laserPasses": 2, "kerfWidth": 0.2 }
 ```
 
+### Tufting operations
+
+When the document's `machineKind` is `"tufting"`, the program drives a tufting
+gun rather than a cutter, and only the two tufting types apply; any other type
+is skipped with a G-code note (and a tufting type is skipped the same way on a
+mill or laser). Each tufting operation is one yarn. Its stitch speed is
+`feedrate`; the tool, depth and spindle fields are ignored.
+
+| Field | Applies to | Meaning |
+|-------|-----------|---------|
+| `tuftRowSpacing` | `tuft-fill` | distance between neighbouring rows of yarn (mm) — the gauge. Also the width a row is drawn at in the preview. Default 4 |
+| `tuftFillAngle` | `tuft-fill` | the direction the rows run, degrees, in the design as drawn: 90 = up the frame, 0 = across. Default 90 |
+| `tuftOutline` | `tuft-fill` | tuft each shape's outline before filling it. Omitted = true; written only as `false` |
+| `tuftPause` | both | stop the program (`M0`) before this operation so the yarn can be changed; never before the first. Omitted = true; written only as `false` |
+
+A `tuft-line` follows every line it names — open or closed, text included; lines
+that meet end to end are joined first, so the gun doesn't lift at every join. A `tuft-fill` floods the closed
+outlines it names, grouped even–odd so a counter (the hole in "O") stays empty,
+and skips open shapes with a note.
+
+**The machine is not in the file.** How far the needle goes in and comes out, the
+angles the gun can turn to (or the range it turns freely within), whether Y may
+only move up while stitching, whether the design is mirrored (rugs are tufted
+from the back), and the gun's on/off commands are the opener's Machine Settings.
+The generator splits every line into runs the gun can stitch facing the way it
+travels, and the pre-flight re-reads the posted program to check each of those
+rules held.
+
 ## Tools
 
 The top-level `tools` array holds reusable tool definitions. An operation
@@ -1424,6 +1459,9 @@ had gone stale by eleven files before that check existed.
 - `rotary-spiral-dowel.rcam` — `machineKind: "mill-rotary"` + the `rotary` cylinder block.
 - `tumbler-wrap.rcam` — `machineKind: "laser-rotary"`: the same `rotary` block with a beam
   head, so the wrapped axis is substituted rather than wrapped.
+- `tufted-door-mat.rcam` — `machineKind: "tufting"`: a `tuft-fill` per yarn and a `tuft-line`
+  border. The background fill names the mat *and* the lettering, so the even–odd fill leaves
+  the letters open, and it sets `tuftOutline: false` because the border tufts that edge.
 
 In both rotary files the canvas height is π × diameter **exactly**, because the
 canvas *is* the unrolled surface: a rounded constant leaves the wrap seam open.
