@@ -1290,7 +1290,7 @@ mill or laser). Each tufting operation is one yarn. Its stitch speed is
 | Field | Applies to | Meaning |
 |-------|-----------|---------|
 | `tuftRowSpacing` | `tuft-fill` | distance between neighbouring rows of yarn (mm) — the gauge. Also the width a row is drawn at in the preview. Default 4 |
-| `tuftFillAngle` | `tuft-fill` | the direction the rows run, degrees, in the design as drawn: 90 = up the frame, 0 = across. Default 90 |
+| `tuftFillAngle` | `tuft-fill` | the direction the rows run, degrees, in the design as drawn: 90 = up the frame, 0 = across. Default 0 (until 2026-10-29 it was 90) |
 | `tuftOutline` | `tuft-fill` | tuft each shape's outline before filling it. Omitted = true; written only as `false` |
 | `tuftPause` | both | stop the program (`M0`) before this operation so the yarn can be changed; never before the first. Omitted = true; written only as `false` |
 
