@@ -5,14 +5,13 @@
 // see LICENSE-MIT.
 //
 import { readFileSync, writeFileSync } from "node:fs";
-//#region src/core/units.ts
+// src/core/units.ts
 var MM_PER_INCH = 25.4;
 /** Convert an internal millimetre value to `unit`. */
 function fromMM(mm, unit) {
 	return unit === "in" ? mm / MM_PER_INCH : mm;
 }
-//#endregion
-//#region src/io/rcamObjectNames.ts
+// src/io/rcamObjectNames.ts
 /**
 * Naming the thing a merge conflict is about.
 *
@@ -169,8 +168,7 @@ var SCALAR_LABEL = {
 function describeScalar(field) {
 	return SCALAR_LABEL[field.split(".")[0]] ?? null;
 }
-//#endregion
-//#region src/io/rcamMerge.ts
+// src/io/rcamMerge.ts
 /** Every collection in the format that is keyed by `id`, in file order. */
 var COLLECTIONS = [
 	"groups",
@@ -619,8 +617,7 @@ function addValues(c, addr, ours, theirs, unit) {
 	c.ours = shownA;
 	c.theirs = shownB;
 }
-//#endregion
-//#region cli/mergeDriver.ts
+// cli/mergeDriver.ts
 /**
 * The `.rcam` merge driver as a standalone program.
 *
@@ -708,5 +705,4 @@ function main(argv) {
 	return 1;
 }
 if (process.argv[1] && /rcam-merge|mergeDriver/.test(process.argv[1])) process.exit(main(process.argv));
-//#endregion
 export { main };
