@@ -16,7 +16,7 @@ on. Every surface below closes that loop at a different level.
 
 ## The AI Assistant (in the app)
 
-**File ▸ AI Assistant** is the copy/paste loop for people using any AI chat
+**AI Assistant** (the top-bar button) is the copy/paste loop for people using any AI chat
 (Claude, ChatGPT, Gemini, …). No API keys, no accounts — the human is the
 transport.
 
